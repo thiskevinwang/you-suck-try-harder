@@ -1,0 +1,9 @@
+{
+  "name": "you-suck-try-harder",
+  "version": "0.0.0-alpha.1",
+  "description": "You suck, try harder!",
+  "main": "index.ts",
+  "repository": "https://github.com/thiskevinwang/you-suck-try-harder",
+  "author": "Kevin Wang",
+  "license": "MIT"
+}
