@@ -24,7 +24,9 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "format": "prettier --write '**/*.tsx?'",
+    "lint": "tslint -c tslint.json -p tsconfig.json '**/*.tsx?'"
   },
   "husky": {
     "hooks": {
