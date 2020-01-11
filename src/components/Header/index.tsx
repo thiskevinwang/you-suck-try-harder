@@ -2,7 +2,7 @@ import Link from "next/link"
 
 export const Header = () => {
   return (
-    <ul>
+    <div>
       <li>
         <Link href="/">
           <a>Home</a>
@@ -13,6 +13,6 @@ export const Header = () => {
           <a>About Us</a>
         </Link>
       </li>
-    </ul>
+    </div>
   )
 }
