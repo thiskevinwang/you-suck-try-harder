@@ -16,5 +16,4 @@ const Page = () => (
     <Content />
   </Layout>
 )
-
 export default Page
