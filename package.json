@@ -18,17 +18,13 @@
     "husky": "^4.0.6",
     "lint-staged": "^9.5.0",
     "prettier": "^1.19.1",
-    "tslint": "^5.20.1",
-    "tslint-plugin-prettier": "^2.1.0",
-    "tslint-react": "^4.1.0",
     "typescript": "^3.7.4"
   },
   "scripts": {
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "format": "prettier --write '**/*.tsx?'",
-    "lint": "tslint -c tslint.json -p tsconfig.json '**/*.tsx?'"
+    "format": "prettier --write '**/*.tsx?'"
   },
   "husky": {
     "hooks": {
@@ -38,7 +34,6 @@
   "lint-staged": {
     "*.ts?(x)": [
       "prettier --write",
-      "npm run lint",
       "git add"
     ]
   }
