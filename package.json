@@ -12,6 +12,7 @@
     "apollo-client": "^2.6.8",
     "apollo-link-context": "^1.0.19",
     "apollo-link-http": "^1.5.16",
+    "d3": "^5.15.0",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "isomorphic-unfetch": "^3.0.0",
@@ -23,6 +24,7 @@
     "swr": "^0.1.16"
   },
   "devDependencies": {
+    "@types/d3": "^5.7.2",
     "@types/node": "^13.1.6",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
