@@ -4,9 +4,11 @@ import { client } from "../../../apolloClient"
 
 const GET_USER_BY_ID_QUERY = gql`
   query GetUserById($id: ID!) {
-    getUserById(id: $id) {
+    user: getUserById(id: $id) {
       id
       username
+      first_name
+      last_name
       created
       updated
       avatar_url
@@ -14,7 +16,10 @@ const GET_USER_BY_ID_QUERY = gql`
   }
 `
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async function GetUserById(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { id } = req.query
 
   try {

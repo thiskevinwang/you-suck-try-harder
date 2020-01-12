@@ -13,6 +13,7 @@ function fetcher(url: string) {
 const Img = styled.img`
   height: 3rem;
   width: 3rem;
+  border-radius: 50%;
 `
 
 const Row = styled.div`
