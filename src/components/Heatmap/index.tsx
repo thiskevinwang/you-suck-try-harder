@@ -42,6 +42,25 @@ const HeatmapContainer = styled(animated.div)`
   width: 100%;
   height: ${(HEIGHT + STROKE_MARGIN) * 2 + 7 * 13}px;
   margin-bottom: 1rem;
+  overflow-x: hidden;
+
+  @media (min-width: 768px) {
+  }
+  /* Large devices (desktops, less than 1200px) */
+  @media (max-width: 1199.98px) {
+  }
+  /* Medium devices (tablets, less than 992px) */
+  @media (max-width: 991.98px) {
+  }
+  /* Small devices (landscape phones, less than 768px) */
+  @media (max-width: 767.98px) {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+  /* Extra small devices (portrait phones, less than 576px) */
+  @media (max-width: 575.98px) {
+  }
 `
 const Svg = styled(animated.svg)`
   padding: 10px;
@@ -49,8 +68,9 @@ const Svg = styled(animated.svg)`
   border-radius: 0.2rem;
   /* margin-left: auto; */
   /* margin-right: auto; */
-  display: flex;
-  width: 100%;
+
+  /* TODO */
+  width: 690px;
 `
 const BASE_LIGHT = Colors.silverLighter
 const BASE_DARK = Colors.blackDarker
