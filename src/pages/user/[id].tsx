@@ -1,8 +1,11 @@
 import { useRouter } from "next/router"
 import useSWR from "swr"
 import { ApolloQueryResult } from "apollo-client"
+import _ from "lodash"
+import ms from "ms"
 
 import { Layout } from "../../components/Layout"
+import Heatmap, { Week } from "../../components/Heatmap"
 
 function fetcher(url: string) {
   return fetch(url).then(r => r.json())
@@ -18,7 +21,7 @@ interface User {
   avatar_url: string
 }
 
-export default function UserPage() {
+export default function UserPage({ heatmapData }) {
   const router = useRouter()
   const { id } = router.query
   const { data, error } = useSWR<ApolloQueryResult<{ user: User }>>(
@@ -42,6 +45,28 @@ export default function UserPage() {
       <p>
         {user.first_name} {user.last_name}
       </p>
+      <Heatmap data={heatmapData} />
     </Layout>
   )
+}
+
+UserPage.getInitialProps = async ({
+  req,
+}): Promise<{ heatmapData: Week[] }> => {
+  const data = Array(365) // [0...364]
+    .fill(null)
+    .map((e, i) => {
+      const time = new Date().getTime() - ms(`${364 - i} days`)
+      const month = new Date(time).getMonth() + 1
+      const date = new Date(time).getDate()
+      const year = new Date(time).getFullYear()
+
+      return {
+        value: Math.floor(Math.random() * 100),
+        date: `${month}-${date}-${year}`,
+      }
+    })
+  return {
+    heatmapData: _.chunk(data, 7) as Week[],
+  }
 }
