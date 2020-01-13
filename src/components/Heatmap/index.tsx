@@ -3,17 +3,17 @@ import * as d3 from "d3"
 import _ from "lodash"
 import styled from "styled-components"
 import { animated } from "react-spring"
-import ms from "ms"
 import { useSelector } from "react-redux"
 
-import { SEO } from "../../components/SEO"
+import { RootState } from "../../state"
+import { Colors } from "../../consts/Colors"
 
-interface Bin {
+export interface Bin {
   value: number
   date: string
 }
-type Week = [Bin, Bin, Bin, Bin, Bin, Bin, Bin]
-interface Props {
+export type Week = [Bin, Bin, Bin, Bin, Bin, Bin, Bin]
+export interface Props {
   data?: Week[]
 }
 
@@ -52,9 +52,10 @@ const Svg = styled(animated.svg)`
   display: flex;
   width: 100%;
 `
-const BASE = "#ebedf0"
-const LIGHT = "#0f3fa1"
-const DARK = "#f81ce5"
+const BASE_LIGHT = Colors.silverLighter
+const BASE_DARK = Colors.blackDarker
+const LIGHT = Colors.geistCyan
+const DARK = Colors.geistPurple
 
 /**
  * @usage
@@ -64,16 +65,16 @@ const DARK = "#f81ce5"
 const myColor = d3
   .scaleLinear<string, string>()
   .domain([0, 100])
-  .range([BASE, LIGHT])
+  .range([BASE_LIGHT, LIGHT])
 const myDarkColor = d3
   .scaleLinear<string, string>()
   .domain([0, 100])
-  .range([BASE, DARK])
+  .range([BASE_DARK, DARK])
 
 export default function Heatmap({ data }: Props) {
   const d3Container = useRef(null)
   const tooltipRef = useRef(null)
-  const isDarkMode = useSelector(s => s.isDarkMode)
+  const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
 
   useEffect(() => {
     if (data && d3Container.current) {
@@ -156,9 +157,7 @@ export default function Heatmap({ data }: Props) {
   // prettier-ignore
   return (
     <>
-      <SEO title="Heatmap" />
-
-      <h1>Heatmap</h1>
+      <h2>Heatmap</h2>
       
       <HeatmapContainer>
         <Svg className="d3-component" ref={d3Container} />
@@ -168,21 +167,21 @@ export default function Heatmap({ data }: Props) {
   )
 }
 
-Heatmap.getInitialProps = async ({ req }): Promise<{ data: Week[] }> => {
-  const data = Array(365) // [0...364]
-    .fill(null)
-    .map((e, i) => {
-      const time = new Date().getTime() - ms(`${364 - i} days`)
-      const month = new Date(time).getMonth() + 1
-      const date = new Date(time).getDate()
-      const year = new Date(time).getFullYear()
+// Heatmap.getInitialProps = async ({ req }): Promise<{ data: Week[] }> => {
+//   const data = Array(365) // [0...364]
+//     .fill(null)
+//     .map((e, i) => {
+//       const time = new Date().getTime() - ms(`${364 - i} days`)
+//       const month = new Date(time).getMonth() + 1
+//       const date = new Date(time).getDate()
+//       const year = new Date(time).getFullYear()
 
-      return {
-        value: Math.floor(Math.random() * 100),
-        date: `${month}-${date}-${year}`,
-      }
-    })
-  return {
-    data: _.chunk(data, 7) as Week[],
-  }
-}
+//       return {
+//         value: Math.floor(Math.random() * 100),
+//         date: `${month}-${date}-${year}`,
+//       }
+//     })
+//   return {
+//     data: _.chunk(data, 7) as Week[],
+//   }
+// }
