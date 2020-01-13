@@ -4,7 +4,7 @@ import { ThemeProvider, createGlobalStyle } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
 
 import { Colors } from "../consts/Colors"
-import { store, setIsDarkMode } from "../state"
+import { store, setIsDarkMode, RootState } from "../state"
 
 const GlobalStyleLight = createGlobalStyle`
   body {
@@ -69,7 +69,7 @@ const GlobalStyleDark = createGlobalStyle`
 
 const ColorSchemeProvider = ({ children }) => {
   const prefersDark = useMediaQuery("(prefers-color-scheme: dark)")
-  const isDarkMode = useSelector(state => state.isDarkMode)
+  const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setIsDarkMode(prefersDark))
