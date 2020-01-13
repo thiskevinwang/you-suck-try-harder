@@ -34,7 +34,7 @@ const GlobalStyleDark = createGlobalStyle`
     transition: background-color 200ms ease-in-out;
     will-change: background-color;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1, h2, h3, h4, h5, h6, span, div, p, b, i {
     color: ${Colors.silver};
     transition: color 200ms ease-in-out;
     will-change: color;
