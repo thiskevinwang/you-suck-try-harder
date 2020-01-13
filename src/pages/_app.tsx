@@ -27,6 +27,14 @@ const GlobalStyleLight = createGlobalStyle`
   a:hover {
     box-shadow: ${Colors.geistCyan} 0px -1.5rem 0px inset;
   }
+  rect {
+    transition: fill 500ms ease, stroke 200ms ease, stroke-width 200ms ease;
+  }
+  rect:hover {
+    stroke: ${Colors.greyDarker};
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
 `
 const GlobalStyleDark = createGlobalStyle`
   body {
@@ -48,6 +56,14 @@ const GlobalStyleDark = createGlobalStyle`
   }
   a:hover {
     box-shadow: ${Colors.geistPurple} 0px -1.5rem 0px inset;
+  }
+  rect {
+    transition: fill 500ms ease, stroke 200ms ease, stroke-width 200ms ease;
+  }
+  rect:hover {
+    stroke: ${Colors.greyLighter};
+    stroke-width: 2;
+    stroke-linejoin: round;
   }
 `
 

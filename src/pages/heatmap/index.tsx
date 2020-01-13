@@ -4,6 +4,7 @@ import _ from "lodash"
 import styled from "styled-components"
 import { animated } from "react-spring"
 import ms from "ms"
+import { useSelector } from "react-redux"
 
 import { SEO } from "../../components/SEO"
 
@@ -18,6 +19,7 @@ interface Props {
 
 const HEIGHT = 10
 const MARGIN = 3
+const STROKE_MARGIN = 1
 
 const Tooltip = styled(animated.div)`
   border: solid;
@@ -38,7 +40,7 @@ const Tooltip = styled(animated.div)`
 const HeatmapContainer = styled(animated.div)`
   display: flex;
   width: 100%;
-  height: ${20 + 7 * 13}px;
+  height: ${(HEIGHT + STROKE_MARGIN) * 2 + 7 * 13}px;
   margin-bottom: 1rem;
 `
 const Svg = styled(animated.svg)`
@@ -51,7 +53,7 @@ const Svg = styled(animated.svg)`
   width: 100%;
 `
 const BASE = "#ebedf0"
-const LIGHT = "#0f0fe1"
+const LIGHT = "#0f3fa1"
 const DARK = "#f81ce5"
 
 /**
@@ -65,12 +67,13 @@ const myColor = d3
   .range([BASE, LIGHT])
 const myDarkColor = d3
   .scaleLinear<string, string>()
-  .domain([-100, 0, 100])
+  .domain([0, 100])
   .range([BASE, DARK])
 
 export default function Heatmap({ data }: Props) {
   const d3Container = useRef(null)
   const tooltipRef = useRef(null)
+  const isDarkMode = useSelector(s => s.isDarkMode)
 
   useEffect(() => {
     if (data && d3Container.current) {
@@ -106,36 +109,49 @@ export default function Heatmap({ data }: Props) {
       const g = svg
         .selectAll("g")
         .data(data)
-        .enter()
-        .append("g")
+        .join(
+          enter => enter.append("g"),
+          update => update,
+          exit => exit.remove()
+        )
         /** translate X of the columns, based on the week */
         .attr(
           "transform",
-          (d: Week, i) => `translate(${i * (HEIGHT + MARGIN)},0)`
+          (d: Week, i) =>
+            `translate(${i * (HEIGHT + MARGIN) + STROKE_MARGIN},0)`
         )
 
-      const update = g
+      const rects = g
         .selectAll("rect")
         /** past nested data to <rect> children */
-        .data((d: Week) => d)
+        .data(function(d: Week, i) {
+          return d
+        })
 
-      update
-        .enter()
-        .append("rect")
+      rects
+        .join(
+          enter => enter.append("rect"),
+          update => update,
+          exit => exit.remove()
+        )
         .attr("width", HEIGHT)
         .attr("height", HEIGHT)
         /** offset Y, based on the day */
         .attr("y", (d, i) => {
-          return i * (HEIGHT + MARGIN)
+          return i * (HEIGHT + MARGIN) + STROKE_MARGIN
         })
         .attr("data-count", d => d.value)
         .attr("data-date", d => d.date)
-        .attr("fill", d => myColor(d.value))
-        .on("mouseover", mouseover)
+        .attr("fill", d =>
+          isDarkMode ? myDarkColor(d.value) : myColor(d.value)
+        )
+        .on("mouseover", function(e) {
+          mouseover(e)
+        })
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
     }
-  }, [data, d3Container.current])
+  }, [data, d3Container.current, isDarkMode])
 
   // prettier-ignore
   return (
