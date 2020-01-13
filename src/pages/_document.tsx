@@ -45,7 +45,6 @@ const GlobalStyle = createGlobalStyle`
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
     const sheet = new ServerStyleSheet()
-    console.log("sheet", sheet.instance)
     const originalRenderPage = ctx.renderPage
 
     const initialProps = await Document.getInitialProps(ctx)
