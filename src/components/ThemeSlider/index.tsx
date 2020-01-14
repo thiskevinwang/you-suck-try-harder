@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import styled from "styled-components"
 import { animated, useSpring } from "react-spring"
 import { useSelector, useDispatch } from "react-redux"
@@ -27,7 +28,7 @@ const Container = styled(animated.div)`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  width: calc(4rem + 8px);
+  width: calc(2 * 2rem + 8px);
   height: calc(2rem + 4px);
 `
 
@@ -35,14 +36,24 @@ export const ThemeSlider = () => {
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
   const dispatch = useDispatch()
 
-  const moonProps = useSpring({
+  const [moonProps, setMoonProps] = useSpring(() => ({
     opacity: isDarkMode ? 1 : 0,
     transform: `translateX(${isDarkMode ? 0 : 100}%)`,
-  })
-  const sunProps = useSpring({
+  }))
+  const [sunProps, setSunProps] = useSpring(() => ({
     opacity: isDarkMode ? 0 : 1,
     transform: `translateX(${isDarkMode ? -100 : 0}%)`,
-  })
+  }))
+  useEffect(() => {
+    setMoonProps({
+      opacity: isDarkMode ? 1 : 0,
+      transform: `translateX(${isDarkMode ? 0 : 100}%)`,
+    })
+    setSunProps({
+      opacity: isDarkMode ? 0 : 1,
+      transform: `translateX(${isDarkMode ? -100 : 0}%)`,
+    })
+  }, [isDarkMode])
 
   return (
     <Container onClick={() => dispatch(setIsDarkMode(!isDarkMode))}>
