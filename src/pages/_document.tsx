@@ -47,7 +47,6 @@ class MyDocument extends Document {
     const sheet = new ServerStyleSheet()
     const originalRenderPage = ctx.renderPage
 
-    const initialProps = await Document.getInitialProps(ctx)
     try {
       ctx.renderPage = () =>
         originalRenderPage({
@@ -59,6 +58,10 @@ class MyDocument extends Document {
               </>
             ),
         })
+      /**
+       * getInitialProps has to be called AFTER sheet.collectStyles()
+       */
+      const initialProps = await Document.getInitialProps(ctx)
       return {
         ...initialProps,
         styles: (
