@@ -1,9 +1,5 @@
 import Document, { Html, Head, Main, NextScript } from "next/document"
-import {
-  ServerStyleSheet,
-  StyleSheetManager,
-  createGlobalStyle,
-} from "styled-components"
+import { ServerStyleSheet, createGlobalStyle } from "styled-components"
 
 /**
  * Docs on `public` vs `static` directory
@@ -55,17 +51,18 @@ class MyDocument extends Document {
     try {
       ctx.renderPage = () =>
         originalRenderPage({
-          enhanceApp: App => props => (
-            <StyleSheetManager sheet={sheet.instance}>
-              <App {...props} />
-            </StyleSheetManager>
-          ),
+          enhanceApp: App => props =>
+            sheet.collectStyles(
+              <>
+                <GlobalStyle />
+                <App {...props} />
+              </>
+            ),
         })
       return {
         ...initialProps,
         styles: (
           <>
-            <GlobalStyle />
             {initialProps.styles}
             {sheet.getStyleElement()}
           </>
