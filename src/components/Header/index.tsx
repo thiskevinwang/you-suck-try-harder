@@ -13,6 +13,11 @@ export const Header = () => {
           <a>About</a>
         </Link>
       </li>
+      <li>
+        <Link href="/heatmap">
+          <a>Heatmap</a>
+        </Link>
+      </li>
     </div>
   )
 }
