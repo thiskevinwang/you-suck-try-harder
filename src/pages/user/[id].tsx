@@ -1,11 +1,13 @@
 import { useRouter } from "next/router"
 import useSWR from "swr"
 import { ApolloQueryResult } from "apollo-client"
+import gql from "graphql-tag"
 import _ from "lodash"
 import ms from "ms"
 
 import { Layout } from "../../components/Layout"
-import Heatmap, { Week } from "../../components/Heatmap"
+import Heatmap from "../../components/Heatmap/V2"
+import { client } from "../../apolloClient"
 
 function fetcher(url: string) {
   return fetch(url).then(r => r.json())
@@ -50,23 +52,81 @@ export default function UserPage({ heatmapData }) {
   )
 }
 
-UserPage.getInitialProps = async ({
-  req,
-}): Promise<{ heatmapData: Week[] }> => {
-  const data = Array(365) // [0...364]
+const GET_ALL_SESSIONS = gql`
+  query GetAllSessions {
+    getAllSessions {
+      id
+      created
+      attempts {
+        id
+        grade
+        send
+      }
+    }
+  }
+`
+interface Data {
+  getAllSessions: {
+    // [Session]
+    id: string
+    created: Date
+    attempts: {
+      // [Attempt]
+      id: string
+      grade: string
+      send: boolean
+    }[]
+  }[]
+}
+UserPage.getInitialProps = async ({ req }) => {
+  const masterList = Array(365) // [0...364]
     .fill(null)
     .map((e, i) => {
-      const time = new Date().getTime() - ms(`${364 - i} days`)
-      const month = new Date(time).getMonth() + 1
-      const date = new Date(time).getDate()
-      const year = new Date(time).getFullYear()
+      const timestamp = new Date(+new Date() - ms(`${364 - i} days`))
+      const month = timestamp.getMonth()
+      const date = timestamp.getDate()
+      const year = timestamp.getFullYear()
 
-      return {
-        value: Math.floor(Math.random() * 100),
-        date: `${month}-${date}-${year}`,
-      }
+      return { date: new Date(year, month, date) }
     })
-  return {
-    heatmapData: _.chunk(data, 7) as Week[],
+
+  try {
+    const queryResult = await client.query<Data>({
+      query: GET_ALL_SESSIONS,
+    })
+
+    const {
+      data: { getAllSessions: data },
+    } = queryResult
+
+    const indices: any[] = _.flow(
+      _.partialRight(_.map, e => {
+        const timestamp = new Date(e.created)
+        const month = timestamp.getMonth()
+        const date = timestamp.getDate()
+        const year = timestamp.getFullYear()
+
+        if (e.attempts.length > 0) return +new Date(year, month, date)
+      }),
+      _.compact
+    )(data)
+
+    const heatmapData = _.flow(
+      _.partialRight(_.map, e => {
+        const index = indices.indexOf(+e.date)
+        return {
+          date: e.date,
+          attempts: index >= -1 ? data[index]?.attempts ?? [] : [],
+        }
+      }),
+      _.partialRight(_.chunk, 7)
+    )(masterList)
+
+    return {
+      heatmapData: heatmapData,
+    }
+  } catch (error) {
+    console.log(error)
+    return
   }
 }
