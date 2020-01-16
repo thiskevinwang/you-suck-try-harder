@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react"
 import * as d3 from "d3"
 import _ from "lodash"
 import styled from "styled-components"
-import { animated } from "react-spring"
+import { animated, useSprings } from "react-spring"
 import { useSelector } from "react-redux"
 import { html } from "common-tags"
 
@@ -29,6 +29,14 @@ const HEIGHT = 10
 const MARGIN = 3
 const STROKE_MARGIN = 1
 
+const Total = styled(animated.div)`
+  display: flex;
+  justify-content: center;
+`
+const Sends = styled(animated.div)`
+  display: flex;
+  justify-content: center;
+`
 const Tooltip = styled(animated.div)`
   border: solid;
   border-color: lightgrey;
@@ -102,17 +110,50 @@ const myDarkColor = d3
 export default function Heatmap({ data }: Props) {
   const d3Container = useRef(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
+
+  const refs = Array(11)
+    .fill(null)
+    .map((e, i) => useRef<HTMLDivElement>(null))
+
+  const maxAttempts = useRef(0)
+  const [springs, set] = useSprings(refs.length, index => ({
+    opacity: 0.2,
+    backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
+    sendWidth: `0%`,
+    totalWidth: `0%`,
+  }))
+
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
 
+  const mouseover = function(d: Bin) {
+    const attemptMap = _.groupBy(d.attempts, o => o.grade)
+    const grades = _.keys(attemptMap)
+    set(i => grades.includes(`${i}`) && { opacity: 1 })
+  }
+  const mouseleave = function(d: Bin) {
+    const attemptMap = _.groupBy(d.attempts, o => o.grade)
+    const grades = _.keys(attemptMap)
+    set(
+      i =>
+        grades.includes(`${i}`) && {
+          opacity: 0,
+          sendWidth: `0%`,
+          totalWidth: `0%`,
+        }
+    )
+    maxAttempts.current = 0
+  }
   const mousemove = function(d: Bin) {
     const tooltip = tooltipRef.current
-    // if (!tooltip) return
 
     const timestamp = new Date(d.date)
     const year = timestamp.getFullYear()
     const month = timestamp.getMonth() + 1
     const date = timestamp.getDate()
     const display = `${month}-${date}-${year}`
+    tooltip.innerHTML = html`
+      <div><h3>${display}</h3></div>
+    `
 
     /**
      * group together based on grade (0-10)
@@ -123,73 +164,66 @@ export default function Heatmap({ data }: Props) {
     )
     /**
      * array of attemptMap keys to access the value pairs
+     * [0...10]
      */
     const grades = _.keys(attemptMap)
-
-    const dateHtml = html`
-      <div><h3>${display}</h3></div>
-    `
-    const attemptsHtml = grades
-      .reverse() // reverse to map drawing Pyramid UI easier
+    set(
+      i =>
+        grades.includes(`${i}`) && {
+          opacity: 1,
+          // width: `100%`,
+          backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
+        }
+    )
+    console.group("GROUP")
+    grades
+      .slice()
+      .reverse()
       .map(grade => {
-        /**
-         * group already graded attempts, by send
-         * - at index [0]: send === true
-         * - at index [1]: send === false
-         */
+        console.group(grade)
+        // [10...0]
+
         const attemptsGradedAndGroupedBySend = _.partition(
           attemptMap[grade],
           "send"
         )
-
         const sends = attemptsGradedAndGroupedBySend[0].length
         const fails = attemptsGradedAndGroupedBySend[1].length
-        return html`
-          <div
-            style="display: flex; flex-direction: row; width: 300px; align-items: center; height: 2rem"
-          >
-            <div style="min-width: 2rem;">
-              V${grade}
-            </div> 
-            <div
-              style="display: flex; flex-direction: row; width: 250px; border: 1px solid lightgrey; border-radius: 5px; overflow: hidden;"
-            >
-              <div style="display: flex; flex: ${sends}; justify-content: center; background-color: green">
-                ${sends !== 0 && sends}
-              </div>
-              <div style="display: flex; flex: ${fails}; justify-content: center; background-color: grey">
-                ${fails !== 0 && fails}
-              </div>
-            </div>
-            </div>
-          </div>
-        `
-      })
-      .join("")
+        const total = sends + fails
+        if (total >= maxAttempts.current) {
+          maxAttempts.current = total
+        }
+        const percent = (sends / (sends + fails)) * 100
+        console.log("sends", sends, "fails", fails, percent + "%")
+        console.log(
+          "total",
+          total,
+          "maxAttempts.current",
+          maxAttempts.current,
+          total / maxAttempts.current + "%"
+        )
+        console.groupEnd()
 
-    tooltip.innerHTML = dateHtml + attemptsHtml
+        set(
+          i =>
+            `${i}` === grade && {
+              sendWidth: `${percent}%`,
+              totalWidth: `${(total / maxAttempts.current) * 100}%`,
+            }
+        )
+        refs.slice().reverse()[
+          grade
+        ].current.innerHTML = /** `V${grade}: ${sends}, ${fails}` */ `${sends} : ${fails}`
+      })
+    console.groupEnd()
+
     // These don't work yet, given my nested Array data structure
     // .style("left", d3.mouse(this)[0] + 70 + "px")
     // .style("top", d3.mouse(this)[1] + "px")
   }
 
   useEffect(() => {
-    console.log(data)
     if (data && d3Container.current) {
-      const tooltip = d3
-        .select(tooltipRef.current)
-        .style("opacity", 0)
-        .attr("class", "tooltip")
-
-      // the mouse event handlers can be moved outside
-      // - see `mousemove`
-      const mouseover = function(d: Bin) {
-        tooltip.style("opacity", 1)
-      }
-      const mouseleave = function(d: Bin) {
-        tooltip.style("opacity", 0.2)
-      }
-
       const svg = d3
         /** create an empty sub-selection */
         .select(d3Container.current)
@@ -250,6 +284,45 @@ export default function Heatmap({ data }: Props) {
         <Svg className="d3-component" ref={d3Container} />
       </HeatmapContainer>
       <Tooltip ref={tooltipRef}></Tooltip>
+      {springs
+        .slice()
+        .reverse()
+        .map((props, i) => (
+          <div key={i} style={{ display: "flex", overflowY: `hidden` }}>
+            <div style={{ width: `40px` }}>V{refs.length - 1 - i}</div>
+            <div
+              style={{
+                display: `flex`,
+                justifyContent: `center`,
+                backgroundColor: isDarkMode
+                  ? Colors.blackDark
+                  : Colors.silverLight,
+                width: `200px`,
+                height: 21,
+              }}
+            >
+              <Total
+                style={{
+                  width: props.totalWidth,
+                  backgroundColor: isDarkMode
+                    ? Colors.blackLighter
+                    : Colors.silverDarker,
+                }}
+              >
+                <Sends
+                  style={{
+                    width: props.sendWidth,
+                    ...props,
+                  }}
+                >
+                  <div style={{ position: `absolute` }} ref={refs[i]}>
+                    ?
+                  </div>
+                </Sends>
+              </Total>
+            </div>
+          </div>
+        ))}
     </>
   )
 }
