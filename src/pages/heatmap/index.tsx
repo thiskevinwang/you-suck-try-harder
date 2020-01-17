@@ -1,12 +1,17 @@
 import _ from "lodash"
 import ms from "ms"
 
+import { SEO } from "../../components/SEO"
+import { Layout } from "../../components/Layout"
 import Heatmap, { Week } from "../../components/Heatmap"
 
 export default function HeatmapPage({ data }) {
   return (
     <>
-      <Heatmap data={data} />
+      <SEO title="About" />
+      <Layout>
+        <Heatmap data={data} />
+      </Layout>
     </>
   )
 }

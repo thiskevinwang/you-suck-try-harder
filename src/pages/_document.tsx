@@ -1,9 +1,5 @@
 import Document, { Html, Head, Main, NextScript } from "next/document"
-import {
-  ServerStyleSheet,
-  StyleSheetManager,
-  createGlobalStyle,
-} from "styled-components"
+import { ServerStyleSheet, createGlobalStyle } from "styled-components"
 
 /**
  * Docs on `public` vs `static` directory
@@ -43,6 +39,11 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: Cereal, Arial, sans-serif;
+    max-width: 800px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: auto;
+    margin-right: auto;
   }
 `
 
@@ -51,21 +52,25 @@ class MyDocument extends Document {
     const sheet = new ServerStyleSheet()
     const originalRenderPage = ctx.renderPage
 
-    const initialProps = await Document.getInitialProps(ctx)
     try {
       ctx.renderPage = () =>
         originalRenderPage({
-          enhanceApp: App => props => (
-            <StyleSheetManager sheet={sheet.instance}>
-              <App {...props} />
-            </StyleSheetManager>
-          ),
+          enhanceApp: App => props =>
+            sheet.collectStyles(
+              <>
+                <GlobalStyle />
+                <App {...props} />
+              </>
+            ),
         })
+      /**
+       * getInitialProps has to be called AFTER sheet.collectStyles()
+       */
+      const initialProps = await Document.getInitialProps(ctx)
       return {
         ...initialProps,
         styles: (
           <>
-            <GlobalStyle />
             {initialProps.styles}
             {sheet.getStyleElement()}
           </>

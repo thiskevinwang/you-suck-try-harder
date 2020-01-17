@@ -1,18 +1,27 @@
 import Link from "next/link"
+import styled from "styled-components"
+
+import { ThemeSlider } from "../ThemeSlider"
+
+const A = styled.a`
+  margin-right: 0.5rem;
+`
 
 export const Header = () => {
   return (
     <div>
-      <li>
+      <ThemeSlider />
+      <div>
         <Link href="/">
-          <a>Home</a>
+          <A>Home</A>
         </Link>
-      </li>
-      <li>
         <Link href="/about">
-          <a>About</a>
+          <A>About</A>
         </Link>
-      </li>
+        <Link href="/heatmap">
+          <A>Heatmap</A>
+        </Link>
+      </div>
     </div>
   )
 }
