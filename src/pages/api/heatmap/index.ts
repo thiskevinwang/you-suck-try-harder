@@ -32,9 +32,25 @@ interface Data {
   }[]
 }
 
+/**
+ * This API route returns `_.chunk(..., 7)`'d data to be passed to a `<Heatmap>(v2)`
+ * component.
+ *
+ * Fetch it with:
+ * ```tsx
+ * async function fetcher(url: string) {
+ *   const r = await fetch(url)
+ *   return await r.json()
+ * }
+ * const { data: hData, error: hError } = useSWR(
+ *   `/api/heatmap?count=${count ?? 365}`,
+ *   fetcher
+ * )
+ * ```
+ */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { count } = req.query
-  const SELECT = parseInt(count)
+  const SELECT = parseInt(count) ?? 365
   const masterList = Array(SELECT) // [0...364]
     .fill(null)
     .map((e, i) => {
@@ -83,7 +99,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         attempts: index > -1 ? data[index].attempts : [],
       }
     })
-    // console.log(heatmapData)
 
     const chunked = _.chunk(heatmapData, 7)
     res.status(200).json({
