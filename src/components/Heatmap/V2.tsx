@@ -48,10 +48,6 @@ const Tooltip = styled(animated.div)`
   width: 400px;
 
   margin-right: auto;
-  .tooltip {
-    transition: opacity 100ms;
-    will-change: opacity;
-  }
 `
 const HeatmapContainer = styled(animated.div)`
   display: flex;
@@ -152,7 +148,7 @@ export default function Heatmap({ data }: Props) {
     const date = timestamp.getDate()
     const display = `${month}-${date}-${year}`
     tooltip.innerHTML = html`
-      <div><h3>${display}</h3></div>
+      <div>${display}</div>
     `
 
     /**
@@ -175,12 +171,11 @@ export default function Heatmap({ data }: Props) {
           backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
         }
     )
-    console.group("GROUP")
+
     grades
       .slice()
       .reverse()
       .map(grade => {
-        console.group(grade)
         // [10...0]
 
         const attemptsGradedAndGroupedBySend = _.partition(
@@ -194,15 +189,6 @@ export default function Heatmap({ data }: Props) {
           maxAttempts.current = total
         }
         const percent = (sends / (sends + fails)) * 100
-        console.log("sends", sends, "fails", fails, percent + "%")
-        console.log(
-          "total",
-          total,
-          "maxAttempts.current",
-          maxAttempts.current,
-          total / maxAttempts.current + "%"
-        )
-        console.groupEnd()
 
         set(
           i =>
@@ -213,9 +199,8 @@ export default function Heatmap({ data }: Props) {
         )
         refs.slice().reverse()[
           grade
-        ].current.innerHTML = /** `V${grade}: ${sends}, ${fails}` */ `${sends} : ${fails}`
+        ].current.innerHTML = /** `V${grade}: ${sends}, ${fails}` */ `<code>${sends} : ${fails}</code>`
       })
-    console.groupEnd()
 
     // These don't work yet, given my nested Array data structure
     // .style("left", d3.mouse(this)[0] + 70 + "px")
@@ -268,6 +253,10 @@ export default function Heatmap({ data }: Props) {
           const value = d.attempts?.length ?? 0
           return isDarkMode ? myDarkColor(value) : myColor(value)
         })
+        /** @TODO - buggy */
+        // .attr("tabindex", "0")
+        // .on("focus", mousemove)
+        // .on("blur", mouseleave)
         .on("mouseover", function(e) {
           mouseover(e)
         })
