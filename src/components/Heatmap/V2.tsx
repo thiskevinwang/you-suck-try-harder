@@ -89,6 +89,7 @@ const BASE_DARK = Colors.blackDarker
 const LIGHT = Colors.geistCyan
 const DARK = Colors.geistPurple
 
+const DOMAIN = [0, 40]
 /**
  * @usage
  * ```ts
@@ -96,11 +97,11 @@ const DARK = Colors.geistPurple
  */
 const myColor = d3
   .scaleLinear<string, string>()
-  .domain([0, 10])
+  .domain(DOMAIN)
   .range([BASE_LIGHT, LIGHT])
 const myDarkColor = d3
   .scaleLinear<string, string>()
-  .domain([0, 10])
+  .domain(DOMAIN)
   .range([BASE_DARK, DARK])
 
 export default function Heatmap({ data }: Props) {
