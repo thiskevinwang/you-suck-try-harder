@@ -50,7 +50,7 @@ interface Data {
  */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { count } = req.query
-  const SELECT = parseInt(count) ?? 365
+  const SELECT = parseInt(Array.isArray(count) ? count[0] : count) ?? 365
   const masterList = Array(SELECT) // [0...364]
     .fill(null)
     .map((e, i) => {
