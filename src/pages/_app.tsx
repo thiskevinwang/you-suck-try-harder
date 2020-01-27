@@ -3,8 +3,8 @@ import { useMediaQuery } from "@material-ui/core"
 import { ThemeProvider, createGlobalStyle } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
 
-import { Colors } from "../consts/Colors"
-import { store, setIsDarkMode, RootState } from "../state"
+import { Colors } from "consts/Colors"
+import { store, setIsDarkMode, RootState } from "state"
 
 const GlobalStyleLight = createGlobalStyle`
   body {

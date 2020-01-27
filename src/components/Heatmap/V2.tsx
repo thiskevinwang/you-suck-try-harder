@@ -20,7 +20,7 @@ export interface Bin {
   attempts: Attempt[]
   date: string
 }
-export type Week = [Bin, Bin, Bin, Bin, Bin, Bin, Bin]
+type Week = [Bin, Bin, Bin, Bin, Bin, Bin, Bin]
 export interface Props {
   data?: Week[]
 }
@@ -28,6 +28,7 @@ export interface Props {
 const HEIGHT = 10
 const MARGIN = 3
 const STROKE_MARGIN = 1
+const ROWS = 8
 
 const Total = styled(animated.div)`
   display: flex;
@@ -52,7 +53,7 @@ const Tooltip = styled(animated.div)`
 const HeatmapContainer = styled(animated.div)`
   display: flex;
   width: 100%;
-  height: ${(HEIGHT + STROKE_MARGIN) * 2 + 7 * 13}px;
+  height: ${(HEIGHT + STROKE_MARGIN) * 2 + ROWS * 13}px;
   margin-bottom: 1rem;
   overflow-x: hidden;
 
@@ -89,6 +90,7 @@ const BASE_DARK = Colors.blackDarker
 const LIGHT = Colors.geistCyan
 const DARK = Colors.geistPurple
 
+const DOMAIN = [0, 40]
 /**
  * @usage
  * ```ts
@@ -96,13 +98,16 @@ const DARK = Colors.geistPurple
  */
 const myColor = d3
   .scaleLinear<string, string>()
-  .domain([0, 10])
+  .domain(DOMAIN)
   .range([BASE_LIGHT, LIGHT])
 const myDarkColor = d3
   .scaleLinear<string, string>()
-  .domain([0, 10])
+  .domain(DOMAIN)
   .range([BASE_DARK, DARK])
 
+/**
+ * the `data` prop is `_.chunk(..., 7)`'d
+ */
 export default function Heatmap({ data }: Props) {
   const d3Container = useRef(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -213,7 +218,7 @@ export default function Heatmap({ data }: Props) {
         /** create an empty sub-selection */
         .select(d3Container.current)
 
-      const g = svg
+      const columns = svg
         .selectAll("g")
         .data(data)
         .join(
@@ -228,14 +233,80 @@ export default function Heatmap({ data }: Props) {
             `translate(${i * (HEIGHT + MARGIN) + STROKE_MARGIN},0)`
         )
 
-      const rects = g
+      /** Create the Month labels */
+      svg
+        .selectAll(".columnLabel")
+        .data(data)
+        .join(
+          enter => enter.append("text"),
+          update => update,
+          exit => exit.remove()
+        )
+        .text((currWeek: Week, i) => {
+          const currDay = _.first(currWeek)
+          const currDateString = currDay.date
+          // check the month of the first element of the matrix member
+          const currMonth = new Date(currDateString).getMonth()
+
+          // when looking at the very first column,
+          // check if the next column is a different month
+          if (i === 0) {
+            const nextWeek = data[i + 1]
+            const nextDay = _.first(nextWeek)
+            const nextDateString = nextDay.date
+            const nextMonth = new Date(nextDateString).getMonth()
+            // if the next month is different, don't display the
+            // current month, or else the text will be cramped
+            if (currMonth !== nextMonth) return ""
+          }
+          /* @TODO repeat same above logic for 2nd column */
+
+          // it doesn't look like d3 has a `Array.map` capability,
+          // so there's not an easy way to iterate through and hold
+          // a "currentMonth" counter
+          //
+          // instead, for each column, we can check the previous
+          // column, and see if it is the same/different month
+          const prevWeek = data[i - 1]
+          const prevDay = _.first(prevWeek)
+          const prevDateString = prevDay.date
+          const prevMonth = prevDateString
+            ? new Date(prevDateString).getMonth()
+            : -1
+          // don't display if the previous column is the same month
+          // this will only display month labels for the first column
+          // of a month
+          if (currMonth === prevMonth) return ""
+          // prettier-ignore
+          switch (currMonth) {
+            case 0: return "Jan"
+            case 1: return "Feb"
+            case 2: return "Mar"
+            case 3: return "Apr"
+            case 4: return "May"
+            case 5: return "Jun"
+            case 6: return "Jul"
+            case 7: return "Aug"
+            case 8: return "Sep"
+            case 9: return "Oct"
+            case 10: return "Nov"
+            case 11: return "Dec"
+            default: return ""
+          }
+        })
+        .attr("fill", isDarkMode ? "white" : "black")
+        .attr("font-size", HEIGHT)
+        .attr("y", HEIGHT)
+        .attr("x", (d, i) => {
+          return i * (HEIGHT + MARGIN) + STROKE_MARGIN
+        })
+
+      const squares = columns
         .selectAll("rect")
         /** past nested data to <rect> children */
         .data(function(d: Week, i) {
           return d
         })
-
-      rects
         .join(
           enter => enter.append("rect"),
           update => update,
@@ -245,7 +316,7 @@ export default function Heatmap({ data }: Props) {
         .attr("height", HEIGHT)
         /** offset Y, based on the day */
         .attr("y", (d, i) => {
-          return i * (HEIGHT + MARGIN) + STROKE_MARGIN
+          return (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN
         })
         .attr("data-count", d => d.attempts?.length ?? 0)
         .attr("data-date", d => d.date)

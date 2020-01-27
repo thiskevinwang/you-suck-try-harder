@@ -6,37 +6,6 @@ import { ServerStyleSheet, createGlobalStyle } from "styled-components"
  * @see https://nextjs.org/blog/next-9-1#public-directory-support
  */
 const GlobalStyle = createGlobalStyle`
-  @font-face {
-    font-family: "Cereal";
-    src: url("/fonts/AirbnbCereal-Light.ttf");
-    font-weight: 300;
-  }
-  @font-face {
-    font-family: "Cereal";
-    src: url("/fonts/AirbnbCereal-Book.ttf");
-    font-weight: 400;
-  }
-  @font-face {
-    font-family: "Cereal";
-    src: url("/fonts/AirbnbCereal-Medium.ttf");
-    font-weight: 500;
-  }
-  @font-face {
-    font-family: "Cereal";
-    src: url("/fonts/AirbnbCereal-Bold.ttf");
-    font-weight: 700;
-  }
-  @font-face {
-    font-family: "Cereal";
-    src: url("/fonts/AirbnbCereal-ExtraBold.ttf");
-    font-weight: 800;
-  }
-  @font-face {
-    font-family: "Cereal";
-    src: url("/fonts/AirbnbCereal-Black.ttf");
-    font-weight: 900;
-  }
-
   body {
     font-family: Cereal, Arial, sans-serif;
     max-width: 800px;
