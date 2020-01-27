@@ -24,13 +24,13 @@ interface User {
 
 export default function UserPage() {
   const router = useRouter()
-  const { id, count } = router.query
+  const { id } = router.query
 
   const { data: uData, error: uError } = useSWR<
     ApolloQueryResult<{ user: User }>
   >(`/api/user/${id}`, fetcher)
   const { data: hData, error: hError } = useSWR(
-    `/api/heatmap?count=${count ?? 365}`,
+    `/api/heatmap?count=365`,
     fetcher
   )
 

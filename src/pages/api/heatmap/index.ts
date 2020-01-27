@@ -32,6 +32,7 @@ interface Data {
   }[]
 }
 
+const YEAR = 365
 /**
  * This API route returns `_.chunk(..., 7)`'d data to be passed to a `<Heatmap>(v2)`
  * component.
@@ -50,13 +51,18 @@ interface Data {
  */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { count } = req.query
-  const SELECT = parseInt(Array.isArray(count) ? count[0] : count) ?? 365
-  const masterList = Array(SELECT) // [0...364]
+  const now = new Date()
+  const currentWeekDay = now.getUTCDay()
+
+  const parsedCount = parseInt(Array.isArray(count) ? count[0] : count)
+
+  const select = (parsedCount ?? YEAR) + currentWeekDay
+
+  // The template
+  const masterList = Array(select) // [0...364]
     .fill(null)
     .map((e, i) => {
-      const timestamp = new Date(
-        new Date().getTime() - ms(`${SELECT - 1 - i} days`)
-      )
+      const timestamp = new Date(now.getTime() - ms(`${select - 1 - i} days`))
       const month = timestamp.getUTCMonth()
       const date = timestamp.getUTCDate()
       const year = timestamp.getUTCFullYear()
