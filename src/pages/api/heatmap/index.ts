@@ -49,7 +49,7 @@ const YEAR = 365
  * ```
  */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { count } = req.query
+  const { count, userId } = req.query
   const now = new Date()
   const currentWeekDay = now.getUTCDay()
 
@@ -69,8 +69,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const queryResult = await client.query<Data>({
       query: GET_ATTEMPTS_BY_USER_ID,
       variables: {
-        /** @todo grab userId from query */
-        userId: 1,
+        userId,
       },
     })
 

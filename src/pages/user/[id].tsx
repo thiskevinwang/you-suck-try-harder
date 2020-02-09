@@ -25,7 +25,7 @@ export default function UserPage({ id }) {
     ApolloQueryResult<{ user: User }>
   >(`/api/user/${id}`, fetcher)
   const { data: hData, error: hError } = useSWR(
-    () => `/api/heatmap?count=365&userId=`,
+    () => `/api/heatmap?count=365&userId=${id}`,
     fetcher
   )
 
