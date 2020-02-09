@@ -1,4 +1,3 @@
-import { useRouter } from "next/router"
 import useSWR from "swr"
 import { ApolloQueryResult } from "apollo-client"
 import _ from "lodash"
@@ -21,15 +20,12 @@ interface User {
   avatar_url: string
 }
 
-export default function UserPage() {
-  const router = useRouter()
-  const { id } = router.query
-
+export default function UserPage({ id }) {
   const { data: uData, error: uError } = useSWR<
     ApolloQueryResult<{ user: User }>
   >(`/api/user/${id}`, fetcher)
   const { data: hData, error: hError } = useSWR(
-    `/api/heatmap?count=365`,
+    () => `/api/heatmap?count=365&userId=`,
     fetcher
   )
 
@@ -57,4 +53,10 @@ export default function UserPage() {
       <Heatmap data={heatmapData} />
     </Layout>
   )
+}
+
+UserPage.getInitialProps = async ({ req, query }) => {
+  // const userAgent = req ? req.headers["user-agent"] : navigator.userAgent
+  const { id } = query
+  return { id }
 }
