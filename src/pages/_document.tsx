@@ -8,11 +8,12 @@ import { ServerStyleSheet, createGlobalStyle } from "styled-components"
 const GlobalStyle = createGlobalStyle`
   body {
     font-family: Cereal, Arial, sans-serif;
-    max-width: 800px;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin-left: auto;
-    margin-right: auto;
+    /* max-width: 800px; */
+    /* padding-left: 1rem; */
+    /* padding-right: 1rem; */
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    margin: 0;
   }
 `
 
