@@ -96,8 +96,8 @@ const ColorSchemeProvider = ({ children }) => {
   }, [setIsDarkMode, dispatch, isDarkMode])
 
   const theme = isDarkMode
-    ? { background: Colors.blackDarker }
-    : { background: Colors.silverLighter }
+    ? { background: Colors.blackDarker, isDarkMode: true }
+    : { background: Colors.silverLighter, isDarkMode: false }
 
   return (
     <ThemeProvider theme={theme}>
