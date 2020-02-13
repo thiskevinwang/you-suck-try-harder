@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { useMediaQuery } from "@material-ui/core"
 import { ThemeProvider, createGlobalStyle } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
+import _ from "lodash"
 
 import { Colors } from "consts/Colors"
 import { store, setIsDarkMode, RootState } from "state"
@@ -98,6 +99,15 @@ const ColorSchemeProvider = ({ children }) => {
   const theme = isDarkMode
     ? { background: Colors.blackDarker, isDarkMode: true }
     : { background: Colors.silverLighter, isDarkMode: false }
+
+  _.assign(theme, {
+    breakpoints: {
+      lgDown: `(max-width: 1199.98px)`,
+      mdDown: `(max-width: 991.98px)`,
+      smDown: `(max-width: 767.98px)`,
+      xsDown: `(max-width: 575.98px)`,
+    },
+  })
 
   return (
     <ThemeProvider theme={theme}>
