@@ -100,15 +100,6 @@ const ColorSchemeProvider = ({ children }) => {
     ? { background: Colors.blackDarker, isDarkMode: true }
     : { background: Colors.silverLighter, isDarkMode: false }
 
-  _.assign(theme, {
-    breakpoints: {
-      lgDown: `(max-width: 1199.98px)`,
-      mdDown: `(max-width: 991.98px)`,
-      smDown: `(max-width: 767.98px)`,
-      xsDown: `(max-width: 575.98px)`,
-    },
-  })
-
   return (
     <ThemeProvider theme={theme}>
       {isDarkMode ? <GlobalStyleDark /> : <GlobalStyleLight />}

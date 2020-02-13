@@ -42,16 +42,16 @@ interface Users {
   }[]
 }
 
-function Home() {
+function Overview() {
   const { data, error } = useSWR<ApolloQueryResult<Users>>(
     `/api/users`,
     fetcher
   )
   return (
     <>
-      <SEO title="Home" />
+      <SEO title="Overview" />
       <Layout>
-        <h1>Home</h1>
+        <h1>Overview</h1>
         <ul>
           {data?.data?.users.map(user => (
             <UserLink
@@ -71,4 +71,4 @@ function Home() {
 //   return { userAgent }
 // }
 
-export default Home
+export default Overview
