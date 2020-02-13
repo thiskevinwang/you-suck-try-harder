@@ -4,32 +4,31 @@ import ms from "ms"
 import _ from "lodash"
 
 import { client } from "../../../apolloClient"
+import { Attempt } from "components/Heatmap/V2"
 
-const GET_ALL_SESSIONS = gql`
-  query GetAllSessions {
-    getAllSessions {
+const getBaseDay = (input: Date | string | number): number => {
+  const timestamp = new Date(input)
+  const month = timestamp.getUTCMonth()
+  const date = timestamp.getUTCDate()
+  const year = timestamp.getUTCFullYear()
+  return +new Date(year, month, date)
+}
+
+const GET_ATTEMPTS_BY_USER_ID = gql`
+  query GetAttemptsByUserId($userId: ID!) {
+    getAttemptsByUserId(userId: $userId) {
+      date
       id
-      created
-      attempts {
+      grade
+      send
+      user {
         id
-        grade
-        send
       }
     }
   }
 `
 interface Data {
-  getAllSessions: {
-    // [Session]
-    id: string
-    created: Date
-    attempts: {
-      // [Attempt]
-      id: string
-      grade: string
-      send: boolean
-    }[]
-  }[]
+  getAttemptsByUserId: Attempt[]
 }
 
 const YEAR = 365
@@ -50,7 +49,7 @@ const YEAR = 365
  * ```
  */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { count } = req.query
+  const { count, userId } = req.query
   const now = new Date()
   const currentWeekDay = now.getUTCDay()
 
@@ -59,50 +58,53 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const select = (parsedCount ?? YEAR) + currentWeekDay
 
   // The template
-  const masterList = Array(select) // [0...364]
+  const masterList: { baseDay: number }[] = Array(select) // [0...364]
     .fill(null)
     .map((e, i) => {
       const timestamp = new Date(now.getTime() - ms(`${select - 1 - i} days`))
-      const month = timestamp.getUTCMonth()
-      const date = timestamp.getUTCDate()
-      const year = timestamp.getUTCFullYear()
-
-      return { date: new Date(year, month, date) }
+      return { baseDay: getBaseDay(timestamp) }
     })
 
   try {
     const queryResult = await client.query<Data>({
-      query: GET_ALL_SESSIONS,
+      query: GET_ATTEMPTS_BY_USER_ID,
+      variables: {
+        userId,
+      },
     })
 
     const {
-      data: { getAllSessions: data },
+      data: { getAttemptsByUserId: data },
     } = queryResult
 
     /**
-     * @WARN
-     * indices.length must equal data.length
-     * DONOT _.compact out the falsy values.
+     * create a dictionary of Attempts, key'd by
+     * date (baseDay)
+     *
+     * ```ts
+     * const groupedData = {
+     *   '1580965200000': [
+     *     {
+     *       date: '2020-02-06T15:11:03.642Z',
+     *       ...otherFields
+     *     }
+     *   ]
+     * }
+     * ```
      */
-    const indices: any[] = _.flow(
-      _.partialRight(_.map, e => {
-        const timestamp = new Date(e.created)
-        const month = timestamp.getUTCMonth()
-        const date = timestamp.getUTCDate()
-        const year = timestamp.getUTCFullYear()
+    const attemptsGroupedByBaseDay = _.groupBy(data, attempt =>
+      getBaseDay(attempt.date)
+    )
 
-        if (e.attempts.length > 0) {
-          return +new Date(year, month, date)
-        }
-      })
-      // _.compact
-    )(data)
-
-    const heatmapData = _.map(masterList, e => {
-      const index = indices.indexOf(+e.date)
+    // map through the 365 dates from masterList[]
+    // and return objects with attempts from the _.groupBy
+    // dictionary, accessed by `baseDay`
+    const heatmapData = _.map(masterList, ({ baseDay }, index) => {
+      const attempts = attemptsGroupedByBaseDay[baseDay] ?? []
+      if (attempts.length < 1) console.log("empty day", index)
       return {
-        date: new Date(e.date),
-        attempts: index > -1 ? data[index].attempts : [],
+        date: new Date(baseDay),
+        attempts,
       }
     })
 

@@ -13,6 +13,10 @@ export interface Attempt {
   id: string
   grade: number
   send: boolean
+  date: Date
+  user: {
+    id: number
+  }
 }
 
 export interface Bin {
@@ -269,7 +273,7 @@ export default function Heatmap({ data }: Props) {
           // column, and see if it is the same/different month
           const prevWeek = data[i - 1]
           const prevDay = _.first(prevWeek)
-          const prevDateString = prevDay.date
+          const prevDateString = prevDay?.date
           const prevMonth = prevDateString
             ? new Date(prevDateString).getMonth()
             : -1

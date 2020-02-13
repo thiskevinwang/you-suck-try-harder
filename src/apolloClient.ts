@@ -4,6 +4,8 @@ import { HttpLink } from "apollo-link-http"
 import { setContext } from "apollo-link-context"
 import fetch from "isomorphic-unfetch"
 
+const __DEV__ = process.env.NODE_ENV === "development"
+
 // Instantiate required constructor fields
 const cache = new InMemoryCache()
 const authLink = setContext((_, { headers }) => {
@@ -17,7 +19,7 @@ const authLink = setContext((_, { headers }) => {
   }
 })
 const httpLink = new HttpLink({
-  uri: "http://localhost:4044/",
+  uri: __DEV__ ? "http://localhost:4044/" : process.env.GRAPHQL_URI,
   fetch,
 })
 

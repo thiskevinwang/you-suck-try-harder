@@ -18,9 +18,6 @@ export const Header = () => {
         <Link href="/about">
           <A>About</A>
         </Link>
-        <Link href="/heatmap">
-          <A>Heatmap</A>
-        </Link>
       </div>
     </div>
   )

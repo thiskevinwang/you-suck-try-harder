@@ -1,6 +1,6 @@
 {
   "name": "you-suck-try-harder",
-  "version": "0.0.0-alpha.3",
+  "version": "0.0.1-alpha.3",
   "description": "You suck, try harder!",
   "main": "index.ts",
   "repository": "https://github.com/thiskevinwang/you-suck-try-harder",
@@ -26,7 +26,7 @@
     "react-dom": "^16.12.0",
     "react-is": "^16.12.0",
     "react-redux": "^7.1.3",
-    "react-spring": "^9.0.0-beta.34",
+    "react-spring": "^9.0.0-canary.808.14.192785c",
     "redux": "^4.0.5",
     "styled-components": "^5.0.0",
     "swr": "^0.1.16"
