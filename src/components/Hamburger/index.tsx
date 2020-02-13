@@ -4,7 +4,7 @@ import { useSpring, animated, config } from "react-spring"
 
 import { Colors } from "consts/Colors"
 
-const LineContainer = styled(animated.div)`
+export const LineContainer = styled(animated.div)`
   width: 24px;
   height: 40px;
   display: flex;
@@ -34,7 +34,7 @@ const Line = styled(animated.div)`
   width: 22px;
   background-color: ${props =>
     props.theme.isDarkMode ? Colors.silverDarker : Colors.blackLighter};
-  transition: background-color 500ms ease 0s;
+  transition: background-color 200ms ease-in-out;
 `
 
 interface HamburgerProps {
