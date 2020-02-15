@@ -1,0 +1,2 @@
+const CreateAttempt = () => {}
+export {}

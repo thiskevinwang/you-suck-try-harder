@@ -7,6 +7,8 @@ import { Colors } from "consts/Colors"
 export const LineContainer = styled(animated.div)`
   width: 24px;
   height: 40px;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   display: flex;
   flex-direction: column;
   -webkit-box-pack: center;

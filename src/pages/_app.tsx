@@ -73,6 +73,7 @@ const GlobalStyleDark = createGlobalStyle`
 const ColorSchemeProvider = ({ children }) => {
   const prefersDark = useMediaQuery("(prefers-color-scheme: dark)")
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
+  const isNavOpen = useSelector((state: RootState) => state.isNavOpen)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setIsDarkMode(prefersDark))
@@ -99,8 +100,26 @@ const ColorSchemeProvider = ({ children }) => {
   }, [setIsDarkMode, dispatch, isDarkMode])
 
   const theme = isDarkMode
-    ? { background: Colors.blackDarker, isDarkMode: true }
-    : { background: Colors.silverLighter, isDarkMode: false }
+    ? {
+        headerHeight: "50px",
+        isNavOpen,
+        isDarkMode,
+        background: Colors.blackDarker,
+        colors: {
+          borderColor: Colors.greyDarker,
+          leftSidebarNavBackground: Colors.blackDark,
+        },
+      }
+    : {
+        headerHeight: "50px",
+        isNavOpen,
+        isDarkMode,
+        background: Colors.silverLighter,
+        colors: {
+          borderColor: Colors.greyLighter,
+          leftSidebarNavBackground: Colors.silver,
+        },
+      }
 
   return (
     <ThemeProvider theme={theme}>

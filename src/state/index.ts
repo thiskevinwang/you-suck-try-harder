@@ -15,20 +15,29 @@ export const setIsDarkMode = (isDarkMode: boolean) => {
     isDarkMode,
   }
 }
+export const setIsNavOpen = (isNavOpen: boolean) => {
+  return {
+    type: TOGGLE_NAV_OPEN,
+    isNavOpen,
+  }
+}
 
 /**
  * actionTypes
  */
 const TOGGLE_DARKMODE = "TOGGLE_DARKMODE"
+const TOGGLE_NAV_OPEN = "TOGGLE_NAV_OPEN"
 
 export interface RootState {
   isDarkMode: boolean
+  isNavOpen: boolean
 }
 /**
  * initialState
  */
 const initialState: RootState = {
   isDarkMode: false,
+  isNavOpen: false,
 }
 
 /**
@@ -38,6 +47,8 @@ const reducer = (state = initialState, action: any) => {
   switch (action.type) {
     case TOGGLE_DARKMODE:
       return { ...state, isDarkMode: action.isDarkMode }
+    case TOGGLE_NAV_OPEN:
+      return { ...state, isNavOpen: action.isNavOpen }
     default:
       return state
   }

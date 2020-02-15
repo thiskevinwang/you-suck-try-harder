@@ -1,37 +1,75 @@
-import { useReducer } from "react"
 import Link from "next/link"
 import styled, { css } from "styled-components"
+import { useSelector, useDispatch } from "react-redux"
 
-import { Colors } from "consts/Colors"
 import { Breakpoints } from "consts/Breakpoints"
 
+import { LineContainer } from "../Hamburger"
 import { ThemeSlider } from "../ThemeSlider"
-import { Hamburger, LineContainer } from "../Hamburger"
+import { Hamburger } from "../Hamburger"
+import { RootState, setIsNavOpen } from "state"
+
+export const Header = () => {
+  const isNavOpen = useSelector((s: RootState) => s.isNavOpen)
+  const dispatch = useDispatch()
+  const toggleIsNavOpen = () => dispatch(setIsNavOpen(!isNavOpen))
+  return (
+    <StyledHeader>
+      <HeaderSection>
+        <Hamburger isOpen={isNavOpen} clickHandler={toggleIsNavOpen} />
+        <NavLinks>
+          <Link href="/">
+            <A>Overview</A>
+          </Link>
+          <Link href="/about">
+            <A>About</A>
+          </Link>
+          <Link href="">
+            <A>Settings</A>
+          </Link>
+        </NavLinks>
+      </HeaderSection>
+      <HeaderSection>
+        <NavHeader>
+          <ThemeSlider />
+        </NavHeader>
+      </HeaderSection>
+    </StyledHeader>
+  )
+}
 
 const A = styled.a`
   margin-right: 0.5rem;
 `
-const HeaderItems = styled.div`
+const StyledHeader = styled.header`
   display: flex;
-  flex-direction: column;
-  position: sticky;
-  top: 0;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem;
+  z-index: 5;
+  border-bottom: 1px solid ${p => p.theme.colors.borderColor};
+  transform: ${p => (p.theme.isNavOpen ? `translateX(16rem)` : null)};
+
   background-color: ${props => props.theme.background};
-  transition: background-color 200ms ease-in-out;
+  transition: background-color 200ms ease-in-out, transform 200ms ease-in-out;
 
-  padding-left: 1rem;
-  padding-right: 1rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  @media ${Breakpoints.lgUp} {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 1.2rem;
+    transform: translateX(0);
 
-  ${LineContainer} {
-    @media ${Breakpoints.smDown} {
-      justify-self: flex-end;
-    }
-    @media ${Breakpoints.mdUp} {
+    ${LineContainer} {
       display: none;
     }
   }
+`
+
+const HeaderSection = styled.div`
+  display: flex;
+  align-items: center;
 `
 
 const NavHeader = styled.div`
@@ -43,29 +81,3 @@ const NavLinks = styled.div`
   display: flex;
   align-items: center;
 `
-
-export const Header = () => {
-  const [hamburgerIsOpen, toggleHamburgerIsOpen] = useReducer(s => !s, false)
-  return (
-    <HeaderItems>
-      <NavHeader>
-        <ThemeSlider />
-        <Hamburger
-          isOpen={hamburgerIsOpen}
-          clickHandler={toggleHamburgerIsOpen}
-        />
-      </NavHeader>
-      <NavLinks>
-        <Link href="/">
-          <A>Overview</A>
-        </Link>
-        <Link href="/about">
-          <A>About</A>
-        </Link>
-        <Link href="">
-          <A>Settings</A>
-        </Link>
-      </NavLinks>
-    </HeaderItems>
-  )
-}
