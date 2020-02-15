@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import Link from "next/link"
 import styled, { css } from "styled-components"
 import { useSelector, useDispatch } from "react-redux"
@@ -17,6 +18,12 @@ export const Header = () => {
   const toggleIsNavOpen = () => dispatch(setIsNavOpen(!isNavOpen))
 
   const lgUp = useMediaQuery(Breakpoints.lgUp)
+
+  // reset navbar state when expanding the browser
+  useEffect(() => {
+    if (lgUp) dispatch(setIsNavOpen(false))
+  }, [lgUp])
+
   const props = useSpring({
     transform: lgUp
       ? `translateX(0rem)`
