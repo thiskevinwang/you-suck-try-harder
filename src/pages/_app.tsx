@@ -3,9 +3,11 @@ import { useMediaQuery } from "@material-ui/core"
 import { ThemeProvider, createGlobalStyle } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
 import _ from "lodash"
+import { ApolloProvider } from "@apollo/client"
 
 import { Colors } from "consts/Colors"
 import { store, setIsDarkMode, RootState } from "state"
+import { client } from "apolloClient"
 
 const GlobalStyleLight = createGlobalStyle`
   body {
@@ -110,11 +112,13 @@ const ColorSchemeProvider = ({ children }) => {
 
 function MyApp({ Component, pageProps }) {
   return (
-    <Provider store={store}>
-      <ColorSchemeProvider>
-        <Component {...pageProps} />
-      </ColorSchemeProvider>
-    </Provider>
+    <ApolloProvider client={client}>
+      <Provider store={store}>
+        <ColorSchemeProvider>
+          <Component {...pageProps} />
+        </ColorSchemeProvider>
+      </Provider>
+    </ApolloProvider>
   )
 }
 
