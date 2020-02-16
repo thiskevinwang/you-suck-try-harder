@@ -1,9 +1,13 @@
+import { NextPageContext } from "next"
 import useSWR from "swr"
 import { ApolloQueryResult } from "apollo-client"
 import _ from "lodash"
+import styled from "styled-components"
 
 import { Layout } from "../../components/Layout"
 import Heatmap from "../../components/Heatmap/V2"
+import { LoadingIndicator } from "components/Loaders"
+import { UserDetailsLoader } from "components/Loaders/UserDetailsLoader"
 
 async function fetcher(url: string) {
   const r = await fetch(url)
@@ -20,7 +24,7 @@ interface User {
   avatar_url: string
 }
 
-export default function UserPage({ id }) {
+const UserPage = ({ id }) => {
   const { data: uData, error: uError } = useSWR<
     ApolloQueryResult<{ user: User }>
   >(`/api/user/${id}`, fetcher)
@@ -29,34 +33,64 @@ export default function UserPage({ id }) {
     fetcher
   )
 
-  if (!uData) return "User Loading"
-  if (uData.loading) return "User Loading..."
-  if (uData.errors) return "Query error"
-  if (uError) return `User error: ${uError}`
+  if (!uData)
+    return (
+      <Layout>
+        <UserDetailsLoader />
+      </Layout>
+    )
+  // if (uData.loading) return <Layout>"User Loading..."</Layout>
+  // if (uData.errors) return <Layout>"Query error"</Layout>
+  // if (uError) return <Layout>{`User error: ${uError}`}</Layout>
 
-  if (!hData) return "Heatmap Loading"
-  if (hData.loading) return "Heatmap Loading..."
-  if (hError) return `Heatmap error: ${hError}`
+  if (!hData)
+    return (
+      <Layout>
+        <LoadingIndicator />
+      </Layout>
+    )
+  // if (hData.loading) return <Layout>"Heatmap Loading..."</Layout>
+  // if (hError) return <Layout>{`Heatmap error: ${hError}`}</Layout>
 
-  const { user } = uData.data
-  const { heatmapData } = hData
+  if (!id) return <Layout>"router loading"</Layout>
+  const user = uData?.data?.user
+  const heatmapData = hData?.heatmapData
   return (
     <Layout>
-      <h1>{user.username}</h1>
-      <img
-        src={user.avatar_url}
-        style={{ width: `5rem`, height: `5rem`, borderRadius: `50%` }}
-      />
-      <p>
-        {user.first_name} {user.last_name}
-      </p>
+      <UserDetails>
+        <img src={user?.avatar_url} />
+
+        <div>
+          <h3>{user?.username}</h3>
+          <p>
+            {user?.first_name} {user?.last_name}
+          </p>
+        </div>
+      </UserDetails>
       <Heatmap data={heatmapData} />
     </Layout>
   )
 }
 
-UserPage.getInitialProps = async ({ req, query }) => {
+UserPage.getInitialProps = async ({ query }: NextPageContext) => {
   // const userAgent = req ? req.headers["user-agent"] : navigator.userAgent
-  const { id } = query
-  return { id }
+  return query
 }
+
+const UserDetails = styled.div`
+  display: flex;
+  align-items: center;
+  img {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+  }
+  div > h3,
+  div > p {
+    margin: 0px !important;
+  }
+`
+
+export default UserPage
