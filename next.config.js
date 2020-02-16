@@ -7,6 +7,7 @@ module.exports = {
     config.resolve.alias["components"] = path.join(__dirname, "src/components")
     config.resolve.alias["consts"] = path.join(__dirname, "src/consts")
     config.resolve.alias["state"] = path.join(__dirname, "src/state")
+    config.resolve.alias["hooks"] = path.join(__dirname, "src/hooks")
     config.resolve.alias["apolloClient"] = path.join(
       __dirname,
       "src/apolloClient.ts"
