@@ -14,12 +14,12 @@ const Loader = styled(animated.div)`
   }
   div > h3 {
     min-height: 1rem;
-    min-width: 8rem;
+    width: 8rem;
     margin: 0px 0px 1pt;
   }
   div > p {
     min-height: 1rem;
-    min-width: 5rem;
+    width: 5rem;
     margin: 0px;
   }
 `
