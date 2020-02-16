@@ -1,8 +1,8 @@
 import React from "react"
 import styled from "styled-components"
-import { useSpring, animated, config } from "react-spring"
+import { animated } from "react-spring"
 
-import { Colors } from "consts/Colors"
+import { useLoadingStyles } from "hooks/useLoadingStyles"
 
 const Loader = styled(animated.div)`
   display: flex;
@@ -25,18 +25,7 @@ const Loader = styled(animated.div)`
 `
 
 export const UserDetailsLoader = () => {
-  const props = useSpring({
-    from: {
-      background: Colors.greyDarker,
-    },
-    to: async next => {
-      while (1) {
-        await next({ background: Colors.greyLighter })
-        await next({ background: Colors.greyDarker })
-      }
-    },
-    config: config.molasses,
-  })
+  const props = useLoadingStyles()
   return (
     <Loader>
       <div style={{ marginLeft: `1rem`, marginRight: `1rem` }}>
