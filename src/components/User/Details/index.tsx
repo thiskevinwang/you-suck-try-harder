@@ -32,6 +32,8 @@ export const UserDetails: React.FC<{ user: User }> = ({ user }) => {
 }
 
 const StyledUserDetails = styled.div`
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
   img {
