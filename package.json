@@ -49,17 +49,12 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "format": "prettier --write '**/*.tsx?'"
+    "format": "prettier --write '**/*.tsx?'",
+    "lint-staged": "lint-staged"
   },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  },
-  "lint-staged": {
-    "*.ts?(x)": [
-      "prettier --write",
-      "git add"
-    ]
   }
 }
