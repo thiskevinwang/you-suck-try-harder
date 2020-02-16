@@ -17,3 +17,17 @@
 ### Network Tab Explained
 
 https://developers.google.com/web/tools/chrome-devtools/network/reference#timing-explanation
+
+### "would clobber existing tag" warning
+
+If you get the following output log when trying to _Synchronize Changes_ via VSCode,
+
+```bash
+From github.com:thiskevinwang/you-suck-try-harder
+ * branch            layout-stuff   -> FETCH_HEAD
+ ! [rejected]        v0.0.0-alpha.3 -> v0.0.0-alpha.3  (would clobber existing tag)
+```
+
+... run `git fetch --tags -f` and it should work again.
+
+- https://github.com/concourse/git-resource/issues/233
