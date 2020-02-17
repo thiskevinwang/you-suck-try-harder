@@ -21,7 +21,7 @@ export const useLoadingStyles = () => {
         await next({ background: Colors.greyDarker, opacity: 0.5 })
       }
     },
-    config: config.molasses,
+    config: { ...config.molasses, duration: 1000 },
     delay: DELAY,
   })
 
