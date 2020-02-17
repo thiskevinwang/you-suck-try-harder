@@ -1,4 +1,5 @@
 import * as React from "react"
+import Link from "next/link"
 import PropTypes from "prop-types"
 import { useSelector } from "react-redux"
 import { useMediaQuery } from "@material-ui/core"
@@ -8,6 +9,15 @@ import { animated, useSpring } from "react-spring"
 import { RootState } from "state"
 
 import { Breakpoints } from "consts/Breakpoints"
+
+const StyledNavItem = styled.li`
+  position: relative;
+  display: block;
+  padding: 0;
+  margin: 0.2rem 0;
+  width: 100%;
+  list-style: none;
+`
 
 const LeftSidebar = () => {
   const isNavOpen = useSelector((s: RootState) => s.isNavOpen)
@@ -22,7 +32,21 @@ const LeftSidebar = () => {
   return (
     <LeftSidebarWrapper>
       <LeftSidebarNav style={props}>
-        <div>this is a test</div>
+        <StyledNavItem>
+          <Link href="/">
+            <a>Home</a>
+          </Link>
+        </StyledNavItem>
+        <StyledNavItem>
+          <Link href="/">
+            <a>Explore</a>
+          </Link>
+        </StyledNavItem>
+        <StyledNavItem>
+          <Link href="/">
+            <a>Notifications</a>
+          </Link>
+        </StyledNavItem>
       </LeftSidebarNav>
     </LeftSidebarWrapper>
   )
