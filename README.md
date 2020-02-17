@@ -31,3 +31,9 @@ From github.com:thiskevinwang/you-suck-try-harder
 ... run `git fetch --tags -f` and it should work again.
 
 - https://github.com/concourse/git-resource/issues/233
+
+### Inspiration
+
+Used https://github.com/codebushi/gatsby-theme-document/tree/master/gatsby-theme-document/src/components for inspiration when I got stuck and didn't know how to layout my site.
+
+- The leftsidebar code taught me alot

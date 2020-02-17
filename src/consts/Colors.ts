@@ -28,4 +28,7 @@ export enum Colors {
   //--geist-purple: #f81ce5;
   geistCyan = "#79ffe1",
   geistPurple = "#f81ce5",
+
+  errorDark = "#a00",
+  errorLight = "#e00",
 }

@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useMediaQuery } from "@material-ui/core"
-import { ThemeProvider, createGlobalStyle } from "styled-components"
+import { ThemeProvider, createGlobalStyle, BaseProps } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
 import _ from "lodash"
 import { ApolloProvider } from "@apollo/client"
@@ -8,6 +8,9 @@ import { ApolloProvider } from "@apollo/client"
 import { Colors } from "consts/Colors"
 import { store, setIsDarkMode, RootState } from "state"
 import { client } from "apolloClient"
+
+import DARK_THEME from "theme/dark"
+import LIGHT_THEME from "theme/light"
 
 const GlobalStyleLight = createGlobalStyle`
   body {
@@ -109,6 +112,8 @@ const ColorSchemeProvider = ({ children }) => {
           borderColor: Colors.greyDarker,
           leftSidebarNavBackground: Colors.blackDark,
         },
+        mode: "dark",
+        ...DARK_THEME,
       }
     : {
         headerHeight: "50px",
@@ -119,6 +124,8 @@ const ColorSchemeProvider = ({ children }) => {
           borderColor: Colors.greyLighter,
           leftSidebarNavBackground: Colors.silver,
         },
+        mode: "light",
+        ...LIGHT_THEME,
       }
 
   return (
