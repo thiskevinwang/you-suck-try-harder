@@ -6,6 +6,7 @@ import { Layout } from "components/Layout"
 import Heatmap from "components/Heatmap/V2"
 import { LoadingIndicator } from "components/Loaders"
 import { UserDetails } from "components/User/Details"
+import { CreateAttempt } from "components/CreateAttempt"
 
 async function fetcher(url: string) {
   const r = await fetch(url)
@@ -52,6 +53,7 @@ const UserPage = ({ id }) => {
     <Layout>
       <UserDetails user={uData?.data?.user}></UserDetails>
       <HeatmapLoadingWrapper data={hData?.heatmapData}></HeatmapLoadingWrapper>
+      <CreateAttempt />
     </Layout>
   )
 }
