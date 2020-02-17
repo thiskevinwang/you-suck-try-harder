@@ -37,3 +37,7 @@ From github.com:thiskevinwang/you-suck-try-harder
 Used https://github.com/codebushi/gatsby-theme-document/tree/master/gatsby-theme-document/src/components for inspiration when I got stuck and didn't know how to layout my site.
 
 - The leftsidebar code taught me alot
+
+### Typing `styled-components`
+
+https://stackoverflow.com/questions/47077210/using-styled-components-with-props-and-typescript/52045733#52045733
