@@ -34,6 +34,7 @@ export const SubmitButton = styled(animated.button)`
   border-radius: 0.25rem;
   color: ${color};
   width: 7rem;
+  height: 2rem;
   margin-bottom: 2rem;
   /* outline: none; */
   transition: background 150ms ease-in-out, border-color 150ms ease-in-out,

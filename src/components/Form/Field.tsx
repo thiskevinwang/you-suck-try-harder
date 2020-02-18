@@ -123,7 +123,7 @@ const FieldError = styled(animated.div)`
     light: "red",
     dark: "darkred",
   })};
-  transform: translateY(2.7rem);
+  transform: translateY(3.1rem);
 `
 
 interface FieldProps {

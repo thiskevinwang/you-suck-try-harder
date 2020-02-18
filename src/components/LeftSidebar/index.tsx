@@ -38,13 +38,18 @@ const LeftSidebar = () => {
           </Link>
         </StyledNavItem>
         <StyledNavItem>
-          <Link href="/">
-            <a>Explore</a>
+          <Link href="/auth/login">
+            <a>Login</a>
           </Link>
         </StyledNavItem>
         <StyledNavItem>
-          <Link href="/">
-            <a>Notifications</a>
+          <Link href="/auth/signup">
+            <a>Sign up</a>
+          </Link>
+        </StyledNavItem>
+        <StyledNavItem>
+          <Link href="/auth/forgot">
+            <a>Forgot</a>
           </Link>
         </StyledNavItem>
       </LeftSidebarNav>
