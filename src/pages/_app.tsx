@@ -15,7 +15,8 @@ import DARK_THEME from "theme/dark"
 import LIGHT_THEME from "theme/light"
 
 /**
- * Optional - close leftsidebar on route update
+ * Optional
+ * @see https://github.com/zeit/next.js/blob/canary/examples/with-loading/pages/_app.js
  */
 // Router.events.on("routeChangeComplete", url => {
 //   store.dispatch(setIsNavOpen(false))
