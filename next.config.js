@@ -19,5 +19,6 @@ module.exports = {
     CONNECTION_STRING: process.env.CONNECTION_STRING,
     DB_NAME: process.env.DB_NAME,
     COLLECTION_NAME: process.env.COLLECTION_NAME,
+    GATSBY_APP_SECRET: process.env.GATSBY_APP_SECRET,
   },
 }
