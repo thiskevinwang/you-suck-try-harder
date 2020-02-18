@@ -1,4 +1,6 @@
 import { useEffect } from "react"
+import App from "next/app"
+import Router from "next/router"
 import { useMediaQuery } from "@material-ui/core"
 import { ThemeProvider, createGlobalStyle, BaseProps } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
@@ -6,11 +8,37 @@ import _ from "lodash"
 import { ApolloProvider } from "@apollo/client"
 
 import { Colors } from "consts/Colors"
-import { store, setIsDarkMode, RootState } from "state"
+import { store, setIsDarkMode, RootState, setIsNavOpen } from "state"
 import { client } from "apolloClient"
 
 import DARK_THEME from "theme/dark"
 import LIGHT_THEME from "theme/light"
+
+/**
+ * Optional - close leftsidebar on route update
+ */
+// Router.events.on("routeChangeComplete", url => {
+//   store.dispatch(setIsNavOpen(false))
+// })
+
+/**
+ * Docs on `public` vs `static` directory
+ * @see https://nextjs.org/blog/next-9-1#public-directory-support
+ */
+const GlobalStyle = createGlobalStyle`
+  body {
+    font-family: Cereal, Arial, sans-serif;
+    /* max-width: 800px; */
+    /* padding-left: 1rem; */
+    /* padding-right: 1rem; */
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    margin: 0;
+  }
+  input {
+    font-size: 1rem;
+  }
+`
 
 const GlobalStyleLight = createGlobalStyle`
   body {
@@ -130,22 +158,26 @@ const ColorSchemeProvider = ({ children }) => {
 
   return (
     <ThemeProvider theme={theme}>
+      <GlobalStyle />
       {isDarkMode ? <GlobalStyleDark /> : <GlobalStyleLight />}
       {children}
     </ThemeProvider>
   )
 }
 
-function MyApp({ Component, pageProps }) {
-  return (
-    <ApolloProvider client={client}>
-      <Provider store={store}>
-        <ColorSchemeProvider>
-          <Component {...pageProps} />
-        </ColorSchemeProvider>
-      </Provider>
-    </ApolloProvider>
-  )
+export default class MyApp extends App {
+  render() {
+    const { Component, pageProps } = this.props
+    return (
+      <>
+        <ApolloProvider client={client}>
+          <Provider store={store}>
+            <ColorSchemeProvider>
+              <Component {...pageProps} />
+            </ColorSchemeProvider>
+          </Provider>
+        </ApolloProvider>
+      </>
+    )
+  }
 }
-
-export default MyApp
