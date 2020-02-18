@@ -101,7 +101,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     // dictionary, accessed by `baseDay`
     const heatmapData = _.map(masterList, ({ baseDay }, index) => {
       const attempts = attemptsGroupedByBaseDay[baseDay] ?? []
-      if (attempts.length < 1) console.log("empty day", index)
+      // if (attempts.length < 1) console.log("empty day", index)
       return {
         date: new Date(baseDay),
         attempts,

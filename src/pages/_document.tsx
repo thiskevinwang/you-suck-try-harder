@@ -1,40 +1,17 @@
-import Document, { Html, Head, Main, NextScript } from "next/document"
-import { ServerStyleSheet, createGlobalStyle } from "styled-components"
+import Document, { DocumentContext } from "next/document"
+import { ServerStyleSheet } from "styled-components"
 
-/**
- * Docs on `public` vs `static` directory
- * @see https://nextjs.org/blog/next-9-1#public-directory-support
- */
-const GlobalStyle = createGlobalStyle`
-  body {
-    font-family: Cereal, Arial, sans-serif;
-    max-width: 800px;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    margin-left: auto;
-    margin-right: auto;
-  }
-`
-
-class MyDocument extends Document {
-  static async getInitialProps(ctx) {
+export default class MyDocument extends Document {
+  static async getInitialProps(ctx: DocumentContext) {
     const sheet = new ServerStyleSheet()
     const originalRenderPage = ctx.renderPage
 
     try {
       ctx.renderPage = () =>
         originalRenderPage({
-          enhanceApp: App => props =>
-            sheet.collectStyles(
-              <>
-                <GlobalStyle />
-                <App {...props} />
-              </>
-            ),
+          enhanceApp: App => props => sheet.collectStyles(<App {...props} />),
         })
-      /**
-       * getInitialProps has to be called AFTER sheet.collectStyles()
-       */
+
       const initialProps = await Document.getInitialProps(ctx)
       return {
         ...initialProps,
@@ -45,24 +22,8 @@ class MyDocument extends Document {
           </>
         ),
       }
-    } catch (error) {
-      console.error(error)
     } finally {
       sheet.seal()
     }
   }
-
-  render() {
-    return (
-      <Html>
-        <Head />
-        <body>
-          <Main />
-          <NextScript />
-        </body>
-      </Html>
-    )
-  }
 }
-
-export default MyDocument

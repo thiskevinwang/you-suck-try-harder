@@ -8,6 +8,8 @@ const GET_ALL_USERS_QUERY = gql`
       id
       username
       avatar_url
+      first_name
+      last_name
     }
   }
 `

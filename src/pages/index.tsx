@@ -1,38 +1,22 @@
 import Link from "next/link"
 import useSWR from "swr"
 import { ApolloQueryResult } from "apollo-client"
-import styled from "styled-components"
 
-import { SEO } from "../components/SEO"
-import { Layout } from "../components/Layout"
+import { SEO } from "components/SEO"
+import { Layout } from "components/Layout"
+import { UserDetails } from "components/User/Details"
+import { UserDetailsLoader } from "components/Loaders/UserDetailsLoader"
 
 function fetcher(url: string) {
   return fetch(url).then(r => r.json())
 }
 
-const Img = styled.img`
-  height: 3rem;
-  width: 3rem;
-  border-radius: 50%;
-`
-
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-
-  ${Img} {
-    margin-right: 1rem;
-  }
-`
-const UserLink = ({ id, user }) => (
-  <Row>
-    <Img src={user.avatar_url} />
-
-    <Link href="/user/[id]" as={`/user/${id}`}>
-      <a>User: {id}</a>
-    </Link>
-  </Row>
+const UserDetailsLink = ({ id, user }) => (
+  <Link href="/user/[id]" as={`/user/${id}`}>
+    <a>
+      <UserDetails user={user} />
+    </a>
+  </Link>
 )
 interface Users {
   users: {
@@ -42,24 +26,24 @@ interface Users {
   }[]
 }
 
-function Home() {
+function Overview() {
   const { data, error } = useSWR<ApolloQueryResult<Users>>(
     `/api/users`,
     fetcher
   )
   return (
     <>
-      <SEO title="Home" />
+      <SEO title="Overview" />
       <Layout>
-        <h1>Home</h1>
+        <h1>Overview</h1>
         <ul>
           {data?.data?.users.map(user => (
-            <UserLink
+            <UserDetailsLink
               id={user.id}
               key={`${user.id}-${user.username}`}
               user={user}
             />
-          ))}
+          )) ?? <UserDetailsLoader />}
         </ul>
       </Layout>
     </>
@@ -71,4 +55,4 @@ function Home() {
 //   return { userAgent }
 // }
 
-export default Home
+export default Overview

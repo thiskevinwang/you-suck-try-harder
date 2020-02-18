@@ -23,11 +23,11 @@ export default async function GetUserById(
   const { id } = req.query
 
   try {
-    const foo = await client.query({
+    const response = await client.query({
       query: GET_USER_BY_ID_QUERY,
       variables: { id },
     })
-    res.status(200).json(foo)
+    res.status(200).json(response)
   } catch (error) {
     res.status(500).send(error)
   }

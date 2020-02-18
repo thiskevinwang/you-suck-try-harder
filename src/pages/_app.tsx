@@ -1,10 +1,45 @@
 import { useEffect } from "react"
+import App from "next/app"
+import Router from "next/router"
 import { useMediaQuery } from "@material-ui/core"
-import { ThemeProvider, createGlobalStyle } from "styled-components"
+import { ThemeProvider, createGlobalStyle, BaseProps } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
+import _ from "lodash"
+import { ApolloProvider } from "@apollo/client"
 
 import { Colors } from "consts/Colors"
-import { store, setIsDarkMode, RootState } from "state"
+import { store, setIsDarkMode, RootState, setIsNavOpen } from "state"
+import { client } from "apolloClient"
+
+import DARK_THEME from "theme/dark"
+import LIGHT_THEME from "theme/light"
+
+/**
+ * Optional
+ * @see https://github.com/zeit/next.js/blob/canary/examples/with-loading/pages/_app.js
+ */
+// Router.events.on("routeChangeComplete", url => {
+//   store.dispatch(setIsNavOpen(false))
+// })
+
+/**
+ * Docs on `public` vs `static` directory
+ * @see https://nextjs.org/blog/next-9-1#public-directory-support
+ */
+const GlobalStyle = createGlobalStyle`
+  body {
+    font-family: Cereal, Arial, sans-serif;
+    /* max-width: 800px; */
+    /* padding-left: 1rem; */
+    /* padding-right: 1rem; */
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    margin: 0;
+  }
+  input {
+    font-size: 1rem;
+  }
+`
 
 const GlobalStyleLight = createGlobalStyle`
   body {
@@ -70,6 +105,7 @@ const GlobalStyleDark = createGlobalStyle`
 const ColorSchemeProvider = ({ children }) => {
   const prefersDark = useMediaQuery("(prefers-color-scheme: dark)")
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
+  const isNavOpen = useSelector((state: RootState) => state.isNavOpen)
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(setIsDarkMode(prefersDark))
@@ -96,25 +132,53 @@ const ColorSchemeProvider = ({ children }) => {
   }, [setIsDarkMode, dispatch, isDarkMode])
 
   const theme = isDarkMode
-    ? { background: Colors.blackDarker }
-    : { background: Colors.silverLighter }
+    ? {
+        headerHeight: "50px",
+        isNavOpen,
+        isDarkMode,
+        background: Colors.blackDarker,
+        colors: {
+          borderColor: Colors.greyDarker,
+          leftSidebarNavBackground: Colors.blackDark,
+        },
+        mode: "dark",
+        ...DARK_THEME,
+      }
+    : {
+        headerHeight: "50px",
+        isNavOpen,
+        isDarkMode,
+        background: Colors.silverLighter,
+        colors: {
+          borderColor: Colors.greyLighter,
+          leftSidebarNavBackground: Colors.silver,
+        },
+        mode: "light",
+        ...LIGHT_THEME,
+      }
 
   return (
     <ThemeProvider theme={theme}>
+      <GlobalStyle />
       {isDarkMode ? <GlobalStyleDark /> : <GlobalStyleLight />}
       {children}
     </ThemeProvider>
   )
 }
 
-function MyApp({ Component, pageProps }) {
-  return (
-    <Provider store={store}>
-      <ColorSchemeProvider>
-        <Component {...pageProps} />
-      </ColorSchemeProvider>
-    </Provider>
-  )
+export default class MyApp extends App {
+  render() {
+    const { Component, pageProps } = this.props
+    return (
+      <>
+        <ApolloProvider client={client}>
+          <Provider store={store}>
+            <ColorSchemeProvider>
+              <Component {...pageProps} />
+            </ColorSchemeProvider>
+          </Provider>
+        </ApolloProvider>
+      </>
+    )
+  }
 }
-
-export default MyApp
