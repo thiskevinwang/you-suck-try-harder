@@ -16,6 +16,7 @@ module.exports = {
     return config
   },
   env: {
+    GRAPHQL_URI: process.env.GRAPHQL_URI,
     CONNECTION_STRING: process.env.CONNECTION_STRING,
     DB_NAME: process.env.DB_NAME,
     COLLECTION_NAME: process.env.COLLECTION_NAME,
