@@ -2,13 +2,15 @@ import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client"
 import { setContext } from "apollo-link-context"
 import fetch from "isomorphic-unfetch"
 
+import { Strings } from "consts/Strings"
+
 const __DEV__ = process.env.NODE_ENV === "development"
 
 // Instantiate required constructor fields
 const cache = new InMemoryCache()
 const authLink = setContext((_, { headers }) => {
   const token =
-    typeof localStorage !== "undefined" && localStorage.getItem("token")
+    typeof localStorage !== "undefined" && localStorage.getItem(Strings.token)
   return {
     headers: {
       Authorization: token ? `Bearer ${token}` : "",

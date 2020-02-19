@@ -10,8 +10,9 @@ import jwt from "jsonwebtoken"
 
 import { Layout } from "components/Layout"
 import { LoadingIndicator } from "components/Loaders"
-
 import { Field, SubmitButton } from "components/Form"
+
+import { Strings } from "consts/Strings"
 
 const Error = styled(animated.div)`
   border: 3px solid #ff7979;
@@ -47,7 +48,8 @@ const AuthLogin = () => {
   const [errorMessage, setErrorMessage] = useState("")
   const router = useRouter()
 
-  const token = typeof window !== "undefined" && localStorage.getItem("token")
+  const token =
+    typeof window !== "undefined" && localStorage.getItem(Strings.token)
   useEffect(() => {
     jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded: any) => {
       const userId = decoded?.userId
@@ -60,7 +62,7 @@ const AuthLogin = () => {
   const [login, { data, loading }] = useMutation(LOGIN, {
     onCompleted: data => {
       const { token } = data.login
-      localStorage.setItem("token", data.login.token)
+      localStorage.setItem(Strings.token, data.login.token)
 
       jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded: any) => {
         /**
