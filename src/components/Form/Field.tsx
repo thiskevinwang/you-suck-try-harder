@@ -134,6 +134,18 @@ interface FieldProps {
   placeholder: string
 }
 
+/**
+ * @usage
+ * ```ts
+ * <Field
+ *   id="email"
+ *   name="email"
+ *   type="email"
+ *   label="email"
+ *   placeholder="email"
+ * />
+ * ```
+ */
 export const Field = ({ label, ...props }: FieldProps) => {
   const [field, meta] = useField(props)
   return (
