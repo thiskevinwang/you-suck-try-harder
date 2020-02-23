@@ -18,7 +18,9 @@ export function useAuthentication(): { currentUserId: string } {
   useEffect(() => {
     jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded: any) => {
       const userId = decoded?.userId
-      if (userId) {
+      if (err) {
+        setCurrentUserId(null)
+      } else if (userId) {
         setCurrentUserId(`${userId}`)
       }
     })
