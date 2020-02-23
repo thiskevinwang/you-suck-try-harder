@@ -7,14 +7,16 @@ import { Layout } from "components/Layout"
 import { UserDetails } from "components/User/Details"
 import { UserDetailsLoader } from "components/Loaders/UserDetailsLoader"
 
+import { useAuthentication } from "hooks/useAuthentication"
+
 function fetcher(url: string) {
   return fetch(url).then(r => r.json())
 }
 
-const UserDetailsLink = ({ id, user }) => (
+const UserDetailsLink = ({ id, user, isActive }) => (
   <Link href="/user/[id]" as={`/user/${id}`}>
     <a>
-      <UserDetails user={user} />
+      <UserDetails user={user} isActive={isActive} />
     </a>
   </Link>
 )
@@ -31,6 +33,8 @@ function Overview() {
     `/api/users`,
     fetcher
   )
+  const { currentUserId } = useAuthentication()
+  console.log("---", typeof data?.data?.users?.[0]?.id, typeof currentUserId)
   return (
     <>
       <SEO title="Overview" />
@@ -42,6 +46,7 @@ function Overview() {
               id={user.id}
               key={`${user.id}-${user.username}`}
               user={user}
+              isActive={user.id === currentUserId}
             />
           )) ?? <UserDetailsLoader />}
         </ul>
