@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/router"
 import { Formik, FormikProps, FormikErrors } from "formik"
 import _ from "lodash"
 import { animated } from "react-spring"
@@ -8,7 +7,7 @@ import styled from "styled-components"
 import { useMutation, ApolloError, gql } from "@apollo/client"
 
 import { Layout } from "components/Layout"
-import { LoadingIndicator } from "components/Loaders"
+import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
 
 import { SubmitButton, Field } from "components/Form"
 
@@ -101,9 +100,13 @@ const AuthForgotPassword = () => {
             ) : (
               <SubmitButton
                 type="submit"
-                disabled={!props.isValid || props.isSubmitting}
+                disabled={!props.isValid || props.isSubmitting || loading}
               >
-                {loading ? <LoadingIndicator /> : "Submit"}
+                {props.isSubmitting || loading ? (
+                  <StyledCircularProgress size={"1.2rem"} />
+                ) : (
+                  "Submit"
+                )}
               </SubmitButton>
             )}
 

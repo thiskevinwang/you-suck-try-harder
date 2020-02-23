@@ -10,8 +10,8 @@ import { useMutation, gql, ApolloError } from "@apollo/client"
 import jwt from "jsonwebtoken"
 
 import { Layout } from "components/Layout"
-import { LoadingIndicator } from "components/Loaders"
 import { Field, SubmitButton } from "components/Form"
+import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
 
 const Error = styled(animated.div)`
   border: 3px solid #ff7979;
@@ -119,8 +119,15 @@ const AuthResetPassword = () => {
                 label="password"
                 placeholder="password"
               />
-              <SubmitButton type="submit">
-                {loading ? <LoadingIndicator /> : "Reset"}
+              <SubmitButton
+                type="submit"
+                disabled={!props.isValid || props.isSubmitting || loading}
+              >
+                {props.isSubmitting || loading ? (
+                  <StyledCircularProgress size={"1.2rem"} />
+                ) : (
+                  "Submit"
+                )}
               </SubmitButton>
               {errorMessage && <Error>{errorMessage}</Error>}
             </form>

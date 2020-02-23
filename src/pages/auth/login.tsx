@@ -9,10 +9,12 @@ import { useMutation, gql, ApolloError } from "@apollo/client"
 import jwt from "jsonwebtoken"
 
 import { Layout } from "components/Layout"
-import { LoadingIndicator } from "components/Loaders"
 import { Field, SubmitButton } from "components/Form"
 
+import { useAuthentication } from "hooks/useAuthentication"
+
 import { Strings } from "consts/Strings"
+import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
 
 const Error = styled(animated.div)`
   border: 3px solid #ff7979;
@@ -48,16 +50,12 @@ const AuthLogin = () => {
   const [errorMessage, setErrorMessage] = useState("")
   const router = useRouter()
 
-  const token =
-    typeof window !== "undefined" && localStorage.getItem(Strings.token)
+  const { currentUserId } = useAuthentication()
   useEffect(() => {
-    jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded: any) => {
-      const userId = decoded?.userId
-      if (userId) {
-        router.replace("/")
-      }
-    })
-  }, [])
+    if (currentUserId) {
+      router.replace("/")
+    }
+  }, [currentUserId])
 
   const [login, { data, loading }] = useMutation(LOGIN, {
     onCompleted: data => {
@@ -128,9 +126,13 @@ const AuthLogin = () => {
             />
             <SubmitButton
               type="submit"
-              disabled={!props.isValid || props.isSubmitting}
+              disabled={!props.isValid || props.isSubmitting || loading}
             >
-              {loading ? <LoadingIndicator /> : "Login"}
+              {props.isSubmitting || loading ? (
+                <StyledCircularProgress size={"1.2rem"} />
+              ) : (
+                "Submit"
+              )}
             </SubmitButton>
             {errorMessage && <Error>{errorMessage}</Error>}
           </form>
