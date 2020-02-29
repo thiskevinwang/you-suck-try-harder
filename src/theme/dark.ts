@@ -28,6 +28,8 @@ const darkTheme = {
   commentRenderer,
   background: Colors.blackDarker,
   colors: {
+    main: Colors.silverLighter,
+    contrast: Colors.blackDarker,
     borderColor: Colors.greyDarker,
     leftSidebarNavBackground: Colors.blackDark,
   },

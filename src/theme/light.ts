@@ -28,6 +28,8 @@ const lightTheme = {
   commentRenderer,
   background: Colors.silverLighter,
   colors: {
+    main: Colors.blackDarker,
+    contrast: Colors.silverLighter,
     borderColor: Colors.greyLighter,
     leftSidebarNavBackground: Colors.silver,
   },
