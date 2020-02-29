@@ -133,26 +133,14 @@ const ColorSchemeProvider = ({ children }) => {
 
   const theme = isDarkMode
     ? {
-        headerHeight: "50px",
         isNavOpen,
         isDarkMode,
-        background: Colors.blackDarker,
-        colors: {
-          borderColor: Colors.greyDarker,
-          leftSidebarNavBackground: Colors.blackDark,
-        },
         mode: "dark",
         ...DARK_THEME,
       }
     : {
-        headerHeight: "50px",
         isNavOpen,
         isDarkMode,
-        background: Colors.silverLighter,
-        colors: {
-          borderColor: Colors.greyLighter,
-          leftSidebarNavBackground: Colors.silver,
-        },
         mode: "light",
         ...LIGHT_THEME,
       }

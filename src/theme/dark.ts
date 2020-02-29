@@ -22,10 +22,15 @@ enum commentRenderer {
 }
 
 const darkTheme = {
+  headerHeight: "40px",
   formInput,
   formButton,
   commentRenderer,
   background: Colors.blackDarker,
+  colors: {
+    borderColor: Colors.greyDarker,
+    leftSidebarNavBackground: Colors.blackDark,
+  },
 }
 
 export default darkTheme
