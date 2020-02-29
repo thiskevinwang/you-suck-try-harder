@@ -14,11 +14,6 @@ export const Layout: React.FC = ({ children }) => {
   const lgUp = useMediaQuery(Breakpoints.lgUp)
   const props = useSpring({
     opacity: lgUp ? 1 : isNavOpen ? 0.3 : 1,
-    transform: lgUp
-      ? `translateX(0rem)`
-      : isNavOpen
-      ? `translateX(16rem)`
-      : `translateX(0rem)`,
   })
   return (
     <>
