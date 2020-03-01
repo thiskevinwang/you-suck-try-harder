@@ -1,15 +1,13 @@
 import { useEffect } from "react"
 import App from "next/app"
-import Router from "next/router"
 import { useMediaQuery } from "@material-ui/core"
 import { ThemeProvider, createGlobalStyle, BaseProps } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
 import _ from "lodash"
-import { ApolloProvider } from "@apollo/client"
 
 import { Colors } from "consts/Colors"
 import { store, setIsDarkMode, RootState, setIsNavOpen } from "state"
-import { client } from "apolloClient"
+import { withApollo } from "lib/withApollo"
 
 import DARK_THEME from "theme/dark"
 import LIGHT_THEME from "theme/light"
@@ -154,19 +152,19 @@ const ColorSchemeProvider = ({ children }) => {
   )
 }
 
-export default class MyApp extends App {
+class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props
     return (
       <>
-        <ApolloProvider client={client}>
-          <Provider store={store}>
-            <ColorSchemeProvider>
-              <Component {...pageProps} />
-            </ColorSchemeProvider>
-          </Provider>
-        </ApolloProvider>
+        <Provider store={store}>
+          <ColorSchemeProvider>
+            <Component {...pageProps} />
+          </ColorSchemeProvider>
+        </Provider>
       </>
     )
   }
 }
+
+export default withApollo({ ssr: true })(MyApp)
