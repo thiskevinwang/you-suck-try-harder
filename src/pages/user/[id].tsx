@@ -1,17 +1,28 @@
 import { NextPageContext } from "next"
-import useSWR from "swr"
-import { ApolloQueryResult } from "apollo-client"
+import { useQuery, gql } from "@apollo/client"
 
 import { Layout } from "components/Layout"
 import Heatmap from "components/Heatmap/V2"
 import { LoadingIndicator } from "components/Loaders"
 import { UserDetails } from "components/User/Details"
+import { CreateAttempt } from "components/CreateAttempt"
 
-async function fetcher(url: string) {
-  const r = await fetch(url)
-  return await r.json()
-}
+import { useAuthentication } from "hooks/useAuthentication"
+import useQueryHeatmap from "hooks/useQueryHeatmap"
 
+const GET_USER_BY_ID_QUERY = gql`
+  query GetUserById($id: ID!) {
+    user: getUserById(id: $id) {
+      id
+      username
+      first_name
+      last_name
+      created
+      updated
+      avatar_url
+    }
+  }
+`
 interface User {
   id: string
   username: string
@@ -23,35 +34,32 @@ interface User {
 }
 
 const UserPage = ({ id }) => {
-  const { data: uData, error: uError, isValidating: uIsValidating } = useSWR<
-    ApolloQueryResult<{ user: User }>
-  >(`/api/user/${id}`, fetcher)
-  const { data: hData, error: hError, isValidating: hIsValidating } = useSWR(
-    () => `/api/heatmap?count=365&userId=${id}`,
-    fetcher
-  )
+  const { data: uData } = useQuery(GET_USER_BY_ID_QUERY, { variables: { id } })
+  const { chunked: heatmapData } = useQueryHeatmap({ userId: id, count: 365 })
 
-  // if (!uData) return <Layout></Layout>
-  // if (uData.loading) return <Layout>"User Loading..."</Layout>
-  // if (uData.errors) return <Layout>"Query error"</Layout>
-  // if (uError) return <Layout>{`User error: ${uError}`}</Layout>
+  // const { data: uData, error: uError, isValidating: uIsValidating } = useSWR<
+  //   ApolloQueryResult<{ user: User }>
+  // >(`/api/user/${id}`, fetcher)
+  // const {
+  //   data: hData,
+  //   error: hError,
+  //   isValidating: hIsValidating,
+  //   revalidate,
+  // } = useSWR(() => `/api/heatmap?count=365&userId=${id}`, fetcher)
 
-  // if (!hData)
-  //   return (
-  //     <Layout>
+  const { currentUserId } = useAuthentication()
+  const isCurrentUser = id === currentUserId
 
-  //     </Layout>
-  //   )
-  // if (hData.loading) return <Layout>"Heatmap Loading..."</Layout>
-  // if (hError) return <Layout>{`Heatmap error: ${hError}`}</Layout>
-
-  // if (!id) return <Layout>"router loading"</Layout>
-  // const user = uData?.data?.user
-  // const heatmapData = hData?.heatmapData
   return (
     <Layout>
-      <UserDetails user={uData?.data?.user}></UserDetails>
-      <HeatmapLoadingWrapper data={hData?.heatmapData}></HeatmapLoadingWrapper>
+      <UserDetails user={uData?.user}></UserDetails>
+      <HeatmapLoadingWrapper data={heatmapData}></HeatmapLoadingWrapper>
+      {isCurrentUser && (
+        <>
+          <h3>Log Attempt(s)</h3>
+          <CreateAttempt currentUserId={currentUserId} />
+        </>
+      )}
     </Layout>
   )
 }
