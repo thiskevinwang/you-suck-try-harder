@@ -50,10 +50,10 @@ const YesNoSelect = ({ name, label = "Label", ...props }) => {
     >
       {label}
       <div>
-        <Button {...field} onClick={setTrue}>
+        <Button {...field} type="button" onClick={setTrue}>
           {field.value ? <CheckInCircleFill /> : <CheckInCircle />}
         </Button>
-        <Button {...field} onClick={setFalse}>
+        <Button {...field} type="button" onClick={setFalse}>
           {!field.value ? <XCircleFill /> : <XCircle />}
         </Button>
       </div>
