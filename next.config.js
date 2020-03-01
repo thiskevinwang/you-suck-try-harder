@@ -6,6 +6,7 @@ module.exports = {
     config.resolve.alias["src"] = path.join(__dirname, "src")
     config.resolve.alias["components"] = path.join(__dirname, "src/components")
     config.resolve.alias["icons"] = path.join(__dirname, "src/icons")
+    config.resolve.alias["lib"] = path.join(__dirname, "src/lib")
     config.resolve.alias["consts"] = path.join(__dirname, "src/consts")
     config.resolve.alias["state"] = path.join(__dirname, "src/state")
     config.resolve.alias["hooks"] = path.join(__dirname, "src/hooks")
