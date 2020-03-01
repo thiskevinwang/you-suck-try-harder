@@ -8,7 +8,7 @@ import { UserDetails } from "components/User/Details"
 import { CreateAttempt } from "components/CreateAttempt"
 
 import { useAuthentication } from "hooks/useAuthentication"
-import useQueryHeatmap from "hooks/useQueryHeatmap"
+import { useQueryHeatmap } from "hooks/useQueryHeatmap"
 
 const GET_USER_BY_ID_QUERY = gql`
   query GetUserById($id: ID!) {
