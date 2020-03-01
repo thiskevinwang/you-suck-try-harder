@@ -26,22 +26,25 @@ const httpLink = new HttpLink({
   fetch: !isBrowser && fetch,
 })
 
-// export const client = new ApolloClient({
-//   connectToDevTools: isBrowser,
-//   ssrMode: !isBrowser, // Disables forceFetch on the server (so queries are only run once)
-//   // Provide required constructor fields
-//   cache: cache,
-//   link: authLink.concat(httpLink as any) as any,
-//   // Provide some optional constructor fields
-//   name: "you suck try harder",
-//   version: "0.0.0.alpha-1",
-//   queryDeduplication: false,
-//   defaultOptions: {
-//     watchQuery: {
-//       fetchPolicy: "cache-and-network",
-//     },
-//   },
-// })
+/**
+ * export this 'extra client' to keep API routes functional
+ */
+export const client = new ApolloClient({
+  connectToDevTools: isBrowser,
+  ssrMode: !isBrowser, // Disables forceFetch on the server (so queries are only run once)
+  // Provide required constructor fields
+  cache: cache,
+  link: authLink.concat(httpLink as any) as any,
+  // Provide some optional constructor fields
+  name: "you suck try harder",
+  version: "0.0.0.alpha-1",
+  queryDeduplication: false,
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: "cache-and-network",
+    },
+  },
+})
 
 export default function createApolloClient(initialState, ctx) {
   // The `ctx` (NextPageContext) will only be present on the server.
