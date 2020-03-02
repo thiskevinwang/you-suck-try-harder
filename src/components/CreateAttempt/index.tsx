@@ -41,6 +41,7 @@ const YesNoSelect = ({ name, label = "Label", ...props }) => {
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
         justifyContent: "space-between",
         alignItems: "center",
         alignSelf: "center",
@@ -50,21 +51,31 @@ const YesNoSelect = ({ name, label = "Label", ...props }) => {
     >
       {label}
       <div>
-        <Button {...field} type="button" onClick={setTrue}>
-          {field.value ? <CheckInCircleFill /> : <CheckInCircle />}
+        <Button
+          {...field}
+          type="button"
+          onClick={setTrue}
+          hasError={((meta.touched && meta.error) as unknown) as boolean}
+        >
+          {field.value === true ? <CheckInCircleFill /> : <CheckInCircle />}
         </Button>
-        <Button {...field} type="button" onClick={setFalse}>
-          {!field.value ? <XCircleFill /> : <XCircle />}
+        <Button
+          {...field}
+          type="button"
+          onClick={setFalse}
+          hasError={((meta.touched && meta.error) as unknown) as boolean}
+        >
+          {field.value === false ? <XCircleFill /> : <XCircle />}
         </Button>
       </div>
     </div>
   )
 }
 
-const DEFAULT_VALUES = {
+const DEFAULT_ATTEMPT = {
   grade: undefined,
-  send: false,
-  flash: false,
+  send: undefined,
+  flash: undefined,
 }
 export const CreateAttempt = ({ currentUserId }) => {
   const [createAttempt, { data, loading }] = useMutation(
@@ -110,7 +121,7 @@ export const CreateAttempt = ({ currentUserId }) => {
     <Formik
       validationSchema={ValidationSchema}
       initialValues={{
-        attempts: [DEFAULT_VALUES],
+        attempts: [DEFAULT_ATTEMPT],
       }}
       onSubmit={async ({ attempts }, { resetForm, setStatus }) => {
         try {
@@ -175,9 +186,17 @@ export const CreateAttempt = ({ currentUserId }) => {
                 })}
 
                 <div>
-                  <AddAnother onClick={() => arrayHelpers.push(DEFAULT_VALUES)}>
-                    Add another attempt
-                  </AddAnother>
+                  {attempts.length < 5 ? (
+                    <AddAnother
+                      onClick={() => arrayHelpers.push(DEFAULT_ATTEMPT)}
+                    >
+                      Add another attempt
+                    </AddAnother>
+                  ) : (
+                    <AddAnother className="disabled">
+                      Maximum of 5 for now
+                    </AddAnother>
+                  )}
                 </div>
                 <SubmitButton
                   type="submit"
@@ -204,10 +223,13 @@ const AddAnother = styled.small`
   padding-bottom: 2px;
   margin-bottom: 1rem;
   cursor: pointer;
+  &.disabled {
+    cursor: not-allowed !important;
+  }
 
   color: ${(p: BaseProps) => p.theme.colors.borderColor};
   border-bottom: 1px solid ${(p: BaseProps) => p.theme.colors.borderColor};
-  :hover {
+  :hover:not(.disabled) {
     color: ${(p: BaseProps) => p.theme.colors.main};
     border-bottom: 1px solid ${(p: BaseProps) => p.theme.colors.main};
   }
@@ -215,9 +237,13 @@ const AddAnother = styled.small`
   transition: color 200ms ease-in-out, border-bottom 200ms ease-in-out;
 `
 
-const Button = styled.button`
+interface ButtonProps {
+  hasError?: boolean
+}
+const Button = styled.button<ButtonProps>`
   svg:not(.filled) {
-    stroke: ${(p: BaseProps) => p.theme.colors.borderColor};
+    stroke: ${(p: BaseProps & ButtonProps) =>
+      p.hasError ? p.theme.colors.error : p.theme.colors.borderColor};
   }
   :hover,
   :focus {
