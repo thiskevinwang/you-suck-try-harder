@@ -13,13 +13,7 @@ import { Breakpoints } from "consts/Breakpoints"
 import { Strings } from "consts/Strings"
 import { Hamburger } from "components/Hamburger"
 
-const StyledNavItem = styled.li`
-  position: relative;
-  display: block;
-  padding: 0;
-  margin: 0.2rem 0 0 1rem;
-  list-style: none;
-`
+import { LogOut, LogIn, Home, UserPlus } from "icons"
 
 const LeftSidebar = () => {
   const dispatch = useDispatch()
@@ -49,14 +43,22 @@ const LeftSidebar = () => {
         </LeftSidebarHeader>
         <StyledNavItem>
           <Link href="/">
-            <a>Home</a>
+            <a>
+              <StyledNavItemInner>
+                <Home /> Home
+              </StyledNavItemInner>
+            </a>
           </Link>
         </StyledNavItem>
         {currentUserId ? (
           <>
             <StyledNavItem>
               <Link href={""}>
-                <a onClick={handleLogout}>Logout</a>
+                <a onClick={handleLogout}>
+                  <StyledNavItemInner>
+                    <LogOut /> Logout
+                  </StyledNavItemInner>
+                </a>
               </Link>
             </StyledNavItem>
           </>
@@ -64,17 +66,21 @@ const LeftSidebar = () => {
           <>
             <StyledNavItem>
               <Link href="/auth/login">
-                <a>Login</a>
+                <a>
+                  <StyledNavItemInner>
+                    <LogIn /> Login
+                  </StyledNavItemInner>
+                </a>
               </Link>
             </StyledNavItem>
             <StyledNavItem>
               <Link href="/auth/signup">
-                <a>Sign up</a>
-              </Link>
-            </StyledNavItem>
-            <StyledNavItem>
-              <Link href="/auth/forgot">
-                <a>Forgot</a>
+                <a>
+                  <StyledNavItemInner>
+                    <UserPlus />
+                    Sign up
+                  </StyledNavItemInner>
+                </a>
               </Link>
             </StyledNavItem>
           </>
@@ -83,6 +89,41 @@ const LeftSidebar = () => {
     </LeftSidebarWrapper>
   )
 }
+
+const StyledNavItemInner = styled.div`
+  display: flex;
+  align-items: center;
+  svg {
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+
+  /* color: ${(p: BaseProps) => p.theme.colors.borderColor}; */
+  svg:not(.filled) {
+    /* stroke: ${(p: BaseProps) => p.theme.colors.borderColor}; */
+  }
+  :hover,
+  :focus {
+    /* color: ${(p: BaseProps) => p.theme.colors.main}; */
+    svg:not(.filled) {
+      /* stroke: ${(p: BaseProps) => p.theme.colors.main}; */
+    }
+  }
+`
+
+const StyledNavItem = styled.li`
+  position: relative;
+  display: block;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  list-style: none;
+
+  transition: background-color 200ms ease-in-out;
+  :hover,
+  :focus {
+    background-color: ${(p: BaseProps) => p.theme.colors.borderColor};
+  }
+`
 
 const LeftSidebarHeader = styled.header`
   height: ${(p: BaseProps) => p.theme.headerHeight};
