@@ -2,10 +2,12 @@
   "version": 2,
   "build": {
     "env": {
-      "GRAPHQL_URI": "@graphql_uri"
+      "GRAPHQL_URI": "@graphql_uri",
+      "GATSBY_APP_SECRET": "@gatsby_app_secret"
     }
   },
   "env": {
-    "GRAPHQL_URI": "@graphql_uri"
+    "GRAPHQL_URI": "@graphql_uri",
+    "GATSBY_APP_SECRET": "@gatsby_app_secret"
   }
 }
