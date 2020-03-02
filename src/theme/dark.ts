@@ -30,6 +30,7 @@ const darkTheme = {
   colors: {
     main: Colors.silverLighter,
     contrast: Colors.blackDarker,
+    error: Colors.errorDark,
     borderColor: Colors.greyDarker,
     leftSidebarNavBackground: Colors.blackDark,
   },
