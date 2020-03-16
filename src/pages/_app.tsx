@@ -40,6 +40,9 @@ const GlobalStyle = createGlobalStyle`
 `
 
 const GlobalStyleLight = createGlobalStyle`
+  text {
+    fill: black;
+  }
   body {
     background-color: ${Colors.silverLighter};
     transition: background-color 200ms ease-in-out;
@@ -70,6 +73,9 @@ const GlobalStyleLight = createGlobalStyle`
   }
 `
 const GlobalStyleDark = createGlobalStyle`
+  text {
+    fill: white;
+  }
   body {
     background-color: ${Colors.blackDarker};
     transition: background-color 200ms ease-in-out;
