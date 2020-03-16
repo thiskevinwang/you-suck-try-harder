@@ -6,8 +6,8 @@ import { animated, useSprings } from "react-spring"
 import { useSelector } from "react-redux"
 import { html } from "common-tags"
 
-import { RootState } from "../../state"
-import { Colors } from "../../consts/Colors"
+import { RootState } from "state"
+import { Colors } from "consts/Colors"
 
 export interface Attempt {
   id: string
@@ -29,10 +29,22 @@ export interface Props {
   data?: Week[]
 }
 
+/**
+ * util func
+ * @see https://observablehq.com/@d3/calendar-view
+ *
+ * @param d u
+ */
+const formatDay = (d: Date) =>
+  ["", "Mon", "", "Wed", "", "Fri", ""][d.getUTCDay()]
+
+const countDay = d => (d.getUTCDay() + 6) % 7
+
 const HEIGHT = 10
 const MARGIN = 3
 const STROKE_MARGIN = 1
 const ROWS = 8
+const OFFSET_LEFT = 2
 
 const Total = styled(animated.div)`
   display: flex;
@@ -87,10 +99,10 @@ const Svg = styled(animated.svg)`
   /* margin-right: auto; */
 
   /* TODO */
-  width: 690px;
+  width: 100%;
 `
-const BASE_LIGHT = Colors.silverLighter
-const BASE_DARK = Colors.blackDarker
+const BASE_LIGHT = Colors.silver
+const BASE_DARK = Colors.black
 const LIGHT = Colors.geistCyan
 const DARK = Colors.geistPurple
 
@@ -222,6 +234,27 @@ export default function Heatmap({ data }: Props) {
         /** create an empty sub-selection */
         .select(d3Container.current)
 
+      /**
+       * Mon Wed Fri labels
+       */
+      svg
+        .append("g")
+        .attr("text-anchor", "end")
+        .selectAll("text")
+        .data(d3.range(7).map(i => new Date(1995, 0, i + 1)))
+        .join("text")
+        .attr("fill", isDarkMode ? "white" : "black")
+        .attr("class", "wday")
+        .attr("x", -5)
+        // .attr("y", d => (countDay(d) + 0.5) * 17)
+        .attr("y", (d, i) => {
+          return (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN
+        })
+        .attr("dy", HEIGHT)
+        // .attr("dx", -10)
+        .attr("font-size", HEIGHT)
+        .text(formatDay)
+
       const columns = svg
         .selectAll("g")
         .data(data)
@@ -234,7 +267,9 @@ export default function Heatmap({ data }: Props) {
         .attr(
           "transform",
           (d: Week, i) =>
-            `translate(${i * (HEIGHT + MARGIN) + STROKE_MARGIN},0)`
+            /* (i + 1): offset the first column */
+            `translate(${(i + OFFSET_LEFT) * (HEIGHT + MARGIN) +
+              STROKE_MARGIN},0)`
         )
 
       /** Create the Month labels */
@@ -246,6 +281,7 @@ export default function Heatmap({ data }: Props) {
           update => update,
           exit => exit.remove()
         )
+        .attr("class", "month")
         .text((currWeek: Week, i) => {
           const currDay = _.first(currWeek)
           const currDateString = currDay.date
@@ -295,22 +331,20 @@ export default function Heatmap({ data }: Props) {
             case 9: return "Oct"
             case 10: return "Nov"
             case 11: return "Dec"
-            default: return ""
+            default: return
           }
         })
         .attr("fill", isDarkMode ? "white" : "black")
         .attr("font-size", HEIGHT)
         .attr("y", HEIGHT)
         .attr("x", (d, i) => {
-          return i * (HEIGHT + MARGIN) + STROKE_MARGIN
+          return (i + OFFSET_LEFT) * (HEIGHT + MARGIN) + STROKE_MARGIN
         })
 
       const squares = columns
         .selectAll("rect")
         /** past nested data to <rect> children */
-        .data(function(d: Week, i) {
-          return d
-        })
+        .data((d: Week) => d)
         .join(
           enter => enter.append("rect"),
           update => update,
@@ -332,9 +366,7 @@ export default function Heatmap({ data }: Props) {
         // .attr("tabindex", "0")
         // .on("focus", mousemove)
         // .on("blur", mouseleave)
-        .on("mouseover", function(e) {
-          mouseover(e)
-        })
+        .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
     }
