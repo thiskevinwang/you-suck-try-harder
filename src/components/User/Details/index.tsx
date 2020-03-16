@@ -13,10 +13,15 @@ interface User {
   avatar_url: string
 }
 
-export const UserDetails: React.FC<{ user: User }> = ({ user }) => {
+interface Props {
+  user: User
+  isActive?: boolean
+}
+
+export const UserDetails: React.FC<Props> = ({ user, isActive }) => {
   if (!user) return <UserDetailsLoader />
   return (
-    <StyledUserDetails>
+    <StyledUserDetails isActive={isActive}>
       <img src={user.avatar_url} />
 
       <div>
@@ -31,7 +36,7 @@ export const UserDetails: React.FC<{ user: User }> = ({ user }) => {
   )
 }
 
-const StyledUserDetails = styled.div`
+const StyledUserDetails = styled.div<Pick<Props, "isActive">>`
   margin-top: 1rem;
   margin-bottom: 1rem;
   display: flex;
@@ -45,6 +50,12 @@ const StyledUserDetails = styled.div`
   }
   div > h3 {
     margin: 0px;
+    color: ${p =>
+      p.isActive
+        ? p.theme.isDarkMode
+          ? Colors.geistPurple
+          : Colors.geistCyan
+        : "inherit"};
   }
   div > p {
     color: ${p => (p.theme.isDarkMode ? Colors.greyLight : Colors.greyDark)};

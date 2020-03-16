@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import Link from "next/link"
-import styled, { css } from "styled-components"
+import styled from "styled-components"
 import { useSelector, useDispatch } from "react-redux"
 import { animated, useSpring } from "react-spring"
 import { useMediaQuery } from "@material-ui/core"
@@ -24,13 +24,7 @@ export const Header = () => {
     if (lgUp) dispatch(setIsNavOpen(false))
   }, [lgUp])
 
-  const props = useSpring({
-    transform: lgUp
-      ? `translateX(0rem)`
-      : isNavOpen
-      ? `translateX(16rem)`
-      : `translateX(0rem)`,
-  })
+  const props = useSpring({})
   return (
     <StyledHeader style={props}>
       <HeaderSection>
@@ -60,6 +54,7 @@ const A = styled.a`
   margin-right: 0.5rem;
 `
 const StyledHeader = styled(animated.header)`
+  height: ${p => p.theme.headerHeight};
   display: flex;
   justify-content: space-between;
   align-items: center;

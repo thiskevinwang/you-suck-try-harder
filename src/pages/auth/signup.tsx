@@ -9,8 +9,10 @@ import { gql, ApolloError, useMutation } from "@apollo/client"
 import jwt from "jsonwebtoken"
 
 import { Layout } from "components/Layout"
-import { LoadingIndicator } from "components/Loaders"
 import { Field, SubmitButton } from "components/Form"
+
+import { Strings } from "consts/Strings"
+import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
 
 const Error = styled(animated.div)`
   border: 3px solid #ff7979;
@@ -57,11 +59,19 @@ type Values = {
   firstName: string
   lastName: string
 }
+const initialValues: Values = {
+  email: "",
+  password: "",
+  username: "",
+  firstName: "",
+  lastName: "",
+}
 const AuthLogin = () => {
   const [errorMessage, setErrorMessage] = useState("")
   const router = useRouter()
 
-  const token = typeof window !== "undefined" && localStorage.getItem("token")
+  const token =
+    typeof window !== "undefined" && localStorage.getItem(Strings.token)
   useEffect(() => {
     jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded: any) => {
       const userId = decoded?.userId
@@ -74,7 +84,6 @@ const AuthLogin = () => {
   const [signup, { data, loading }] = useMutation(SIGN_UP, {
     onCompleted: data => {
       const { token } = data.signup
-      localStorage.setItem("token", data.signup.token)
 
       jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded: any) => {
         /**
@@ -84,6 +93,7 @@ const AuthLogin = () => {
          */
         const userId = decoded?.userId
         if (userId) {
+          localStorage.setItem(Strings.token, token)
           router.replace("/auth/login/")
         }
       })
@@ -97,13 +107,7 @@ const AuthLogin = () => {
     <Layout>
       <h1>Sign up</h1>
       <Formik<Values>
-        initialValues={{
-          email: "",
-          password: "",
-          username: "",
-          firstName: "",
-          lastName: "",
-        }}
+        initialValues={initialValues}
         validateOnMount={false}
         validate={values => {
           const errors: FormikErrors<Values> = {}
@@ -185,9 +189,13 @@ const AuthLogin = () => {
             />
             <SubmitButton
               type="submit"
-              disabled={!props.isValid || props.isSubmitting}
+              disabled={!props.isValid || props.isSubmitting || loading}
             >
-              {loading ? <LoadingIndicator /> : "Submit"}
+              {props.isSubmitting || loading ? (
+                <StyledCircularProgress size={"1.2rem"} />
+              ) : (
+                "Submit"
+              )}
             </SubmitButton>
             {errorMessage && <Error>{errorMessage}</Error>}
           </form>

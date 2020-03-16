@@ -22,10 +22,18 @@ enum commentRenderer {
 }
 
 const lightTheme = {
+  headerHeight: "40px",
   formInput,
   formButton,
   commentRenderer,
   background: Colors.silverLighter,
+  colors: {
+    main: Colors.blackDarker,
+    contrast: Colors.silverLighter,
+    error: Colors.errorLight,
+    borderColor: Colors.greyLighter,
+    leftSidebarNavBackground: Colors.silver,
+  },
 }
 
 export default lightTheme

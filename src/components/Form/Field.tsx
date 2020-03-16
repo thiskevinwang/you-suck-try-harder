@@ -134,13 +134,33 @@ interface FieldProps {
   placeholder: string
 }
 
+/**
+ * @usage
+ * ```ts
+ * <Field
+ *   id="email"
+ *   name="email"
+ *   type="email"
+ *   label="email"
+ *   placeholder="email"
+ * />
+ * ```
+ */
 export const Field = ({ label, ...props }: FieldProps) => {
+  /**
+   * ⚠️if field.value is `undefined` (ex. after Formik's `resetForm({})`),
+   * it will no longer 'control' the associated input field.
+   *
+   * This can be fixed with the null-check below:
+   * value={field.value ?? ""}
+   *
+   */
   const [field, meta] = useField(props)
   return (
     <FieldRenderer
       hasError={((meta.touched && meta.error) as unknown) as boolean}
     >
-      <input {...field} {...props} />
+      <input {...field} {...props} value={field.value ?? ""} />
       <label htmlFor={props.id ?? props.name}>{label}</label>
       {meta.touched && meta.error ? (
         <FieldError>{meta.error}</FieldError>

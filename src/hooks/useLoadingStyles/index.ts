@@ -8,7 +8,17 @@ const DELAY = 200
 export const useLoadingStyles = () => {
   const [visibility, setVisibility] = useState<"hidden" | "visible">("hidden")
   useEffect(() => {
-    setTimeout(() => setVisibility("visible"), DELAY)
+    const timer = setTimeout(() => setVisibility("visible"), DELAY)
+    /**
+     * Remember to clear timeouts!
+     *
+     * Warning: Can't perform a React state update on an unmounted component.
+     * This is a no-op, but it indicates a memory leak in your application.
+     * To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
+     */
+    return () => {
+      clearTimeout(timer)
+    }
   }, [])
   const props = useSpring({
     from: {
