@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import App from "next/app"
+import { AppProps } from "next/app"
 import { useMediaQuery } from "@material-ui/core"
 import { ThemeProvider, createGlobalStyle, BaseProps } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
@@ -7,7 +7,7 @@ import _ from "lodash"
 import "react-datepicker/dist/react-datepicker.css"
 
 import { Colors } from "consts/Colors"
-import { store, setIsDarkMode, RootState, setIsNavOpen } from "state"
+import { store, setIsDarkMode, RootState, setMounted } from "state"
 import { withApollo } from "lib/withApollo"
 
 import DARK_THEME from "theme/dark"
@@ -108,12 +108,17 @@ const GlobalStyleDark = createGlobalStyle`
 `
 
 const ColorSchemeProvider = ({ children }) => {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(setMounted())
+  }, [])
+
   const prefersDark = useMediaQuery("(prefers-color-scheme: dark)", {
     noSsr: true,
   })
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
   const isNavOpen = useSelector((state: RootState) => state.isNavOpen)
-  const dispatch = useDispatch()
+
   useEffect(() => {
     dispatch(setIsDarkMode(prefersDark))
   }, [prefersDark, dispatch])
@@ -161,19 +166,16 @@ const ColorSchemeProvider = ({ children }) => {
   )
 }
 
-class MyApp extends App {
-  render() {
-    const { Component, pageProps } = this.props
-    return (
-      <>
-        <Provider store={store}>
-          <ColorSchemeProvider>
-            <Component {...pageProps} />
-          </ColorSchemeProvider>
-        </Provider>
-      </>
-    )
-  }
+const MyApp = ({ Component, pageProps }: AppProps) => {
+  return (
+    <>
+      <Provider store={store}>
+        <ColorSchemeProvider>
+          <Component {...pageProps} />
+        </ColorSchemeProvider>
+      </Provider>
+    </>
+  )
 }
 
 export default withApollo({ ssr: true })(MyApp)
