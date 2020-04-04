@@ -10,6 +10,7 @@ import jwt from "jsonwebtoken"
 
 import { Layout } from "components/Layout"
 import { Field, SubmitButton } from "components/Form"
+import { Spacer } from "components/Spacer"
 
 import { Strings } from "consts/Strings"
 import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
@@ -159,6 +160,7 @@ const AuthLogin = () => {
               label="email"
               placeholder="email"
             />
+            <Spacer y={25} />
             <Field
               id="password"
               name="password"
@@ -166,6 +168,7 @@ const AuthLogin = () => {
               label="password"
               placeholder="password"
             />
+            <Spacer y={25} />
             <Field
               id="username"
               name="username"
@@ -173,6 +176,7 @@ const AuthLogin = () => {
               label="username"
               placeholder="username"
             />
+            <Spacer y={25} />
             <Field
               id="firstName"
               name="firstName"
@@ -180,6 +184,7 @@ const AuthLogin = () => {
               label="first name"
               placeholder="first name"
             />
+            <Spacer y={25} />
             <Field
               id="lastName"
               name="lastName"
@@ -187,6 +192,7 @@ const AuthLogin = () => {
               label="last name"
               placeholder="last name"
             />
+            <Spacer y={25} />
             <SubmitButton
               type="submit"
               disabled={!props.isValid || props.isSubmitting || loading}

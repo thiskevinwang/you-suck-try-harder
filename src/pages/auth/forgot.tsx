@@ -8,7 +8,7 @@ import { useMutation, ApolloError, gql } from "@apollo/client"
 
 import { Layout } from "components/Layout"
 import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
-
+import { Spacer } from "components/Spacer"
 import { SubmitButton, Field } from "components/Form"
 
 const Error = styled(animated.div)`
@@ -95,6 +95,7 @@ const AuthForgotPassword = () => {
               label="email"
               placeholder="email"
             />
+            <Spacer y={25} />
             {successMessage ? (
               <Success>{successMessage}</Success>
             ) : (

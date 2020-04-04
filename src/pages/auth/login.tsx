@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken"
 
 import { Layout } from "components/Layout"
 import { Field, SubmitButton } from "components/Form"
-
+import { Spacer } from "components/Spacer"
 import { useAuthentication } from "hooks/useAuthentication"
 
 import { Strings } from "consts/Strings"
@@ -117,6 +117,7 @@ const AuthLogin = () => {
               label="email"
               placeholder="email"
             />
+            <Spacer y={25} />
             <Field
               id="password"
               name="password"
@@ -124,6 +125,7 @@ const AuthLogin = () => {
               label="password"
               placeholder="password"
             />
+            <Spacer y={25} />
             <SubmitButton
               type="submit"
               disabled={!props.isValid || props.isSubmitting || loading}

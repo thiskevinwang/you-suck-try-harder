@@ -12,6 +12,7 @@ import jwt from "jsonwebtoken"
 import { Layout } from "components/Layout"
 import { Field, SubmitButton } from "components/Form"
 import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
+import { Spacer } from "components/Spacer"
 
 const Error = styled(animated.div)`
   border: 3px solid #ff7979;
@@ -119,6 +120,7 @@ const AuthResetPassword = () => {
                 label="password"
                 placeholder="password"
               />
+              <Spacer y={25} />
               <SubmitButton
                 type="submit"
                 disabled={!props.isValid || props.isSubmitting || loading}
