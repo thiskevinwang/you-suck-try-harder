@@ -108,7 +108,9 @@ const GlobalStyleDark = createGlobalStyle`
 `
 
 const ColorSchemeProvider = ({ children }) => {
-  const prefersDark = useMediaQuery("(prefers-color-scheme: dark)")
+  const prefersDark = useMediaQuery("(prefers-color-scheme: dark)", {
+    noSsr: true,
+  })
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
   const isNavOpen = useSelector((state: RootState) => state.isNavOpen)
   const dispatch = useDispatch()

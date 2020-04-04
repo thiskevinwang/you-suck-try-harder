@@ -17,7 +17,7 @@ export const Header = () => {
   const dispatch = useDispatch()
   const toggleIsNavOpen = () => dispatch(setIsNavOpen(!isNavOpen))
 
-  const lgUp = useMediaQuery(Breakpoints.lgUp)
+  const lgUp = useMediaQuery(Breakpoints.lgUp, { noSsr: true })
 
   // reset navbar state when expanding the browser
   useEffect(() => {

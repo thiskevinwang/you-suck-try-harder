@@ -11,7 +11,7 @@ import { Breakpoints } from "consts/Breakpoints"
 
 export const Layout: React.FC = ({ children }) => {
   const isNavOpen = useSelector((s: RootState) => s.isNavOpen)
-  const lgUp = useMediaQuery(Breakpoints.lgUp)
+  const lgUp = useMediaQuery(Breakpoints.lgUp, { noSsr: true })
   const props = useSpring({
     opacity: lgUp ? 1 : isNavOpen ? 0.3 : 1,
   })
@@ -23,7 +23,6 @@ export const Layout: React.FC = ({ children }) => {
         <SiteContentWrapper>
           <SiteContent style={props}>{children}</SiteContent>
         </SiteContentWrapper>
-        <aside>Right side bar</aside>
       </SiteWrapper>
     </>
   )
