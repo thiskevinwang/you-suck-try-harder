@@ -10,9 +10,8 @@ import darkTheme from "./theme/dark"
 import lightTheme from "./theme/light"
 
 // extend the module declarations using custom theme type
-type Theme = typeof darkTheme & typeof lightTheme
+type Theme = typeof darkTheme & typeof lightTheme & { isDarkMode: boolean }
 type Props = { theme: Theme }
-
 /**
  * * Added `BaseProps`
  * @usage
