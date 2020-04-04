@@ -22,7 +22,8 @@ enum commentRenderer {
 }
 
 const lightTheme = {
-  headerHeight: "40px",
+  topAsideHeight: "2.5rem",
+  headerHeight: "4rem",
   formInput,
   formButton,
   commentRenderer,
