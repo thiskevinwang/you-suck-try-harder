@@ -112,6 +112,7 @@ const ColorSchemeProvider = ({ children }) => {
   useEffect(() => {
     dispatch(setMounted())
   }, [])
+  const isMounted = useSelector((state: RootState) => state.isMounted)
 
   const prefersDark = useMediaQuery("(prefers-color-scheme: dark)", {
     noSsr: true,
@@ -161,7 +162,7 @@ const ColorSchemeProvider = ({ children }) => {
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       {isDarkMode ? <GlobalStyleDark /> : <GlobalStyleLight />}
-      {children}
+      {isMounted && children}
     </ThemeProvider>
   )
 }
