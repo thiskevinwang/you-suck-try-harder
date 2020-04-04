@@ -49,7 +49,7 @@ const AuthForgotPassword = () => {
   const [requestPasswordResetLink, { data, loading }] = useMutation(
     REQUEST_PASSWORD_RESET_LINK,
     {
-      onCompleted: data => {
+      onCompleted: (data) => {
         const { message } = data.requestPasswordResetLink
         setSuccessMessage(message)
       },
@@ -65,7 +65,7 @@ const AuthForgotPassword = () => {
       <Formik<Values>
         initialValues={{ email: "" }}
         validateOnMount={false}
-        validate={values => {
+        validate={(values) => {
           const errors: FormikErrors<Values> = {}
           if (!values.email) {
             errors.email = "Required"
@@ -83,7 +83,7 @@ const AuthForgotPassword = () => {
       >
         {(props: FormikProps<Values>) => (
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault()
               props.handleSubmit(e)
             }}

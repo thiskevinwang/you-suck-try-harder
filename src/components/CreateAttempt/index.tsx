@@ -149,7 +149,7 @@ export const CreateAttempt = ({ currentUserId }) => {
         <Form>
           <FieldArray
             name="attempts"
-            render={arrayHelpers => (
+            render={(arrayHelpers) => (
               <>
                 {attempts.map((attempt, index) => {
                   const handleRemove = () => arrayHelpers.remove(index)

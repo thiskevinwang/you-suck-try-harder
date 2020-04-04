@@ -58,7 +58,7 @@ const AuthLogin = () => {
   }, [currentUserId])
 
   const [login, { data, loading }] = useMutation(LOGIN, {
-    onCompleted: data => {
+    onCompleted: (data) => {
       const { token } = data.login
       localStorage.setItem(Strings.token, data.login.token)
 
@@ -85,7 +85,7 @@ const AuthLogin = () => {
       <Formik<Values>
         initialValues={{ email: "", password: "" }}
         validateOnMount={false}
-        validate={values => {
+        validate={(values) => {
           const errors: FormikErrors<Values> = {}
           if (!values.email) {
             errors.email = "Required"
@@ -105,7 +105,7 @@ const AuthLogin = () => {
       >
         {(props: FormikProps<Values>) => (
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault()
               props.handleSubmit(e)
             }}

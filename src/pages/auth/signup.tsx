@@ -83,7 +83,7 @@ const AuthLogin = () => {
   }, [])
 
   const [signup, { data, loading }] = useMutation(SIGN_UP, {
-    onCompleted: data => {
+    onCompleted: (data) => {
       const { token } = data.signup
 
       jwt.verify(token, process.env.GATSBY_APP_SECRET, (err, decoded: any) => {
@@ -110,7 +110,7 @@ const AuthLogin = () => {
       <Formik<Values>
         initialValues={initialValues}
         validateOnMount={false}
-        validate={values => {
+        validate={(values) => {
           const errors: FormikErrors<Values> = {}
 
           if (!values.email) {
@@ -148,7 +148,7 @@ const AuthLogin = () => {
       >
         {(props: FormikProps<Values>) => (
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault()
               props.handleSubmit(e)
             }}

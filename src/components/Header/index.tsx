@@ -54,15 +54,15 @@ const A = styled.a`
   margin-right: 0.5rem;
 `
 const StyledHeader = styled(animated.header)`
-  height: ${p => p.theme.headerHeight};
+  height: ${(p) => p.theme.headerHeight};
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1rem;
   z-index: 5;
-  border-bottom: 1px solid ${p => p.theme.colors.borderColor};
+  border-bottom: 1px solid ${(p) => p.theme.colors.borderColor};
 
-  background-color: ${props => props.theme.background};
+  background-color: ${(props) => props.theme.background};
   transition: background-color 200ms ease-in-out;
 
   @media ${Breakpoints.lgUp} {

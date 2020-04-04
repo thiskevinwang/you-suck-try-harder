@@ -103,10 +103,10 @@ export default function Heatmap({ data }: Props) {
         .style("opacity", 0)
         .attr("class", "tooltip")
 
-      const mouseover = function(d: Bin) {
+      const mouseover = function (d: Bin) {
         tooltip.style("opacity", 1)
       }
-      const mousemove = function(d: Bin) {
+      const mousemove = function (d: Bin) {
         tooltip.html(
           `<b>${d.date}</b><br/>` +
             "Number of attempts: " +
@@ -119,7 +119,7 @@ export default function Heatmap({ data }: Props) {
         // .style("left", d3.mouse(this)[0] + 70 + "px")
         // .style("top", d3.mouse(this)[1] + "px")
       }
-      const mouseleave = function(d: Bin) {
+      const mouseleave = function (d: Bin) {
         tooltip.style("opacity", 0.2)
       }
 
@@ -131,9 +131,9 @@ export default function Heatmap({ data }: Props) {
         .selectAll("g")
         .data(data)
         .join(
-          enter => enter.append("g"),
-          update => update,
-          exit => exit.remove()
+          (enter) => enter.append("g"),
+          (update) => update,
+          (exit) => exit.remove()
         )
         /** translate X of the columns, based on the week */
         .attr(
@@ -145,15 +145,15 @@ export default function Heatmap({ data }: Props) {
       const rects = g
         .selectAll("rect")
         /** past nested data to <rect> children */
-        .data(function(d: Week, i) {
+        .data(function (d: Week, i) {
           return d
         })
 
       rects
         .join(
-          enter => enter.append("rect"),
-          update => update,
-          exit => exit.remove()
+          (enter) => enter.append("rect"),
+          (update) => update,
+          (exit) => exit.remove()
         )
         .attr("width", HEIGHT)
         .attr("height", HEIGHT)
@@ -161,12 +161,12 @@ export default function Heatmap({ data }: Props) {
         .attr("y", (d, i) => {
           return i * (HEIGHT + MARGIN) + STROKE_MARGIN
         })
-        .attr("data-count", d => d.value)
-        .attr("data-date", d => d.date)
-        .attr("fill", d =>
+        .attr("data-count", (d) => d.value)
+        .attr("data-date", (d) => d.date)
+        .attr("fill", (d) =>
           isDarkMode ? myDarkColor(d.value) : myColor(d.value)
         )
-        .on("mouseover", function(e) {
+        .on("mouseover", function (e) {
           mouseover(e)
         })
         .on("mousemove", mousemove)

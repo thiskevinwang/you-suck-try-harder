@@ -55,8 +55,8 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
     height: 2.8rem;
     background: ${background};
     border-color: ${theme("mode", {
-      light: props => (props.hasError ? "red" : borderColorBase),
-      dark: props => (props.hasError ? "darkred" : borderColorBase),
+      light: (props) => (props.hasError ? "red" : borderColorBase),
+      dark: (props) => (props.hasError ? "darkred" : borderColorBase),
     })};
     border-width: 1px;
     border-style: solid;
@@ -78,8 +78,8 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
 
   input:focus {
     border-color: ${theme("mode", {
-      light: props => (props.hasError ? "red" : borderColorFocus),
-      dark: props => (props.hasError ? "darkred" : borderColorFocus),
+      light: (props) => (props.hasError ? "red" : borderColorFocus),
+      dark: (props) => (props.hasError ? "darkred" : borderColorFocus),
     })};
   }
 
@@ -109,8 +109,8 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
     text-transform: uppercase;
 
     color: ${theme("mode", {
-      light: props => (props.hasError ? "red" : color),
-      dark: props => (props.hasError ? "darkred" : color),
+      light: (props) => (props.hasError ? "red" : color),
+      dark: (props) => (props.hasError ? "darkred" : color),
     })};
   }
 `

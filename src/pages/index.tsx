@@ -43,7 +43,7 @@ function Overview() {
       <Layout>
         <h1>Overview</h1>
         <ul>
-          {data?.users.map(user => (
+          {data?.users.map((user) => (
             <UserDetailsLink
               id={user.id}
               key={`${user.id}-${user.username}`}

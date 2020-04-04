@@ -66,7 +66,7 @@ const AuthResetPassword = () => {
         Authorization: token ? `Bearer ${token}` : "",
       },
     },
-    onCompleted: data => {
+    onCompleted: (data) => {
       const { id } = data.resetPassword
 
       if (id) {
@@ -95,7 +95,7 @@ const AuthResetPassword = () => {
         <Formik<Values>
           initialValues={{ password: "" }}
           validateOnMount={false}
-          validate={values => {
+          validate={(values) => {
             const errors: FormikErrors<Values> = {}
             if (!values.password) {
               errors.password = "Required"
@@ -108,7 +108,7 @@ const AuthResetPassword = () => {
         >
           {(props: FormikProps<Values>) => (
             <form
-              onSubmit={e => {
+              onSubmit={(e) => {
                 e.preventDefault()
                 props.handleSubmit(e)
               }}
