@@ -79,7 +79,6 @@ const SiteContentWrapper = styled.div`
 `
 
 const SiteContent = styled(animated.main)`
-  border: 3px dotted cyan;
   padding-top: calc(
     ${(p: BaseProps) => p.theme.headerHeight} +
       ${(p: BaseProps) => p.theme.topAsideHeight}
