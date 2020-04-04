@@ -4,6 +4,7 @@ import { useMediaQuery } from "@material-ui/core"
 import { ThemeProvider, createGlobalStyle, BaseProps } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
 import _ from "lodash"
+import "react-datepicker/dist/react-datepicker.css"
 
 import { Colors } from "consts/Colors"
 import { store, setIsDarkMode, RootState, setIsNavOpen } from "state"
