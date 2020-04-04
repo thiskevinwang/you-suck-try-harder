@@ -1,7 +1,9 @@
+import * as React from "react"
 import styled, { BaseProps } from "styled-components"
 import { Formik, Form, FieldArray, useField } from "formik"
 import { gql, useMutation, DataProxy, FetchResult } from "@apollo/client"
 
+import { Spacer } from "components/Spacer"
 import { SubmitButton, Field, DatePickerField } from "components/Form"
 import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
 import { GET_ATTEMPTS_BY_USER_ID } from "hooks/useQueryHeatmap"
@@ -152,37 +154,39 @@ export const CreateAttempt = ({ currentUserId }) => {
                 {attempts.map((attempt, index) => {
                   const handleRemove = () => arrayHelpers.remove(index)
                   return (
-                    <div style={{ display: "flex" }} key={index}>
-                      <Button type="button" onClick={handleRemove}>
-                        <MinusSquare />
-                      </Button>
+                    <React.Fragment key={index}>
+                      <div style={{ display: "flex" }}>
+                        <Button type="button" onClick={handleRemove}>
+                          <MinusSquare />
+                        </Button>
 
-                      <Field
-                        type={"text"}
-                        name={`attempts[${index}].grade`}
-                        id={`attempts[${index}].grade`}
-                        label={`V Grade`}
-                        placeholder={`V Grade`}
-                      />
+                        <Field
+                          type={"text"}
+                          name={`attempts[${index}].grade`}
+                          id={`attempts[${index}].grade`}
+                          label={`V Grade`}
+                          placeholder={`V Grade`}
+                        />
 
-                      <YesNoSelect
-                        name={`attempts[${index}].send`}
-                        label={"Send"}
-                      />
-                      <YesNoSelect
-                        name={`attempts[${index}].flash`}
-                        label={"Flash"}
-                      />
-                      <DatePickerField
-                        type={"text"}
-                        name={`attempts[${index}].date`}
-                        label={"Date"}
-                        placeholder={"MM/DD/YYYY"}
-                      ></DatePickerField>
-                    </div>
+                        <YesNoSelect
+                          name={`attempts[${index}].send`}
+                          label={"Send"}
+                        />
+                        <YesNoSelect
+                          name={`attempts[${index}].flash`}
+                          label={"Flash"}
+                        />
+                        <DatePickerField
+                          type={"text"}
+                          name={`attempts[${index}].date`}
+                          label={"Date"}
+                          placeholder={"MM/DD/YYYY"}
+                        />
+                      </div>
+                      <Spacer y={20} />
+                    </React.Fragment>
                   )
                 })}
-
                 <div>
                   {attempts.length < 5 ? (
                     <AddAnother
