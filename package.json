@@ -54,7 +54,7 @@
     "babel-plugin-styled-components": "^1.10.7",
     "husky": "^4.2.3",
     "lint-staged": "^10.0.8",
-    "prettier": "^1.19.1",
+    "prettier": "^2.0.2",
     "typescript": "^3.9.0-dev.20200215"
   },
   "scripts": {
