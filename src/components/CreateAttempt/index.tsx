@@ -2,7 +2,7 @@ import styled, { BaseProps } from "styled-components"
 import { Formik, Form, FieldArray, useField } from "formik"
 import { gql, useMutation, DataProxy, FetchResult } from "@apollo/client"
 
-import { SubmitButton, Field } from "components/Form"
+import { SubmitButton, Field, DatePickerField } from "components/Form"
 import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
 import { GET_ATTEMPTS_BY_USER_ID } from "hooks/useQueryHeatmap"
 
@@ -76,6 +76,7 @@ const DEFAULT_ATTEMPT = {
   grade: undefined,
   send: undefined,
   flash: undefined,
+  date: undefined,
 }
 export const CreateAttempt = ({ currentUserId }) => {
   const [createAttempt, { data, loading }] = useMutation(
@@ -126,13 +127,14 @@ export const CreateAttempt = ({ currentUserId }) => {
       onSubmit={async ({ attempts }, { resetForm, setStatus }) => {
         try {
           await Promise.all([
-            attempts.map(async ({ grade, send, flash }) => {
+            attempts.map(async ({ grade, send, flash, date }) => {
               const created = await createAttempt({
                 variables: {
                   userId: currentUserId,
                   grade: parseInt(grade),
                   send,
                   flash,
+                  date,
                 },
               })
             }),
@@ -143,7 +145,7 @@ export const CreateAttempt = ({ currentUserId }) => {
         }
       }}
     >
-      {({ values: { attempts }, isValid, isSubmitting }) => (
+      {({ values: { attempts }, isValid, isSubmitting, setFieldValue }) => (
         <Form>
           <FieldArray
             name="attempts"
@@ -181,6 +183,12 @@ export const CreateAttempt = ({ currentUserId }) => {
                         name={`attempts[${index}].flash`}
                         label={"Flash"}
                       />
+                      <DatePickerField
+                        type={"text"}
+                        name={`attempts[${index}].date`}
+                        label={"Date"}
+                        placeholder={"MM/DD/YYYY"}
+                      ></DatePickerField>
                     </div>
                   )
                 })}
