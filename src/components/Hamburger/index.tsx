@@ -18,6 +18,7 @@ export const LineContainer = styled(animated.div)`
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   background: transparent;
+  cursor: pointer;
 `
 const Inner = styled(animated.div)`
   display: flex;
