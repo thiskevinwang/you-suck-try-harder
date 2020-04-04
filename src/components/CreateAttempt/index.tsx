@@ -45,8 +45,6 @@ const YesNoSelect = ({ name, label = "Label", ...props }) => {
         justifyContent: "space-between",
         alignItems: "center",
         alignSelf: "center",
-        marginBottom: "2.5rem",
-        marginLeft: "1rem",
       }}
     >
       {label}
@@ -155,17 +153,9 @@ export const CreateAttempt = ({ currentUserId }) => {
                   const handleRemove = () => arrayHelpers.remove(index)
                   return (
                     <div style={{ display: "flex" }} key={index}>
-                      <div
-                        style={{
-                          marginBottom: `2.5rem`,
-                          marginRight: `1rem`,
-                          alignSelf: "center",
-                        }}
-                      >
-                        <Button type="button" onClick={handleRemove}>
-                          <MinusSquare />
-                        </Button>
-                      </div>
+                      <Button type="button" onClick={handleRemove}>
+                        <MinusSquare />
+                      </Button>
 
                       <Field
                         type={"text"}

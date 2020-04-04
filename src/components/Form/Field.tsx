@@ -31,7 +31,6 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
   display: flex;
   flex-direction: column;
   max-width: 15rem;
-  margin-bottom: 2.5rem;
   position: relative;
 
   > input {
