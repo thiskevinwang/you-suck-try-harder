@@ -13,6 +13,8 @@ import { withApollo } from "lib/withApollo"
 import DARK_THEME from "theme/dark"
 import LIGHT_THEME from "theme/light"
 
+import "../../_fonts.css"
+
 /**
  * Optional
  * @see https://github.com/zeit/next.js/blob/canary/examples/with-loading/pages/_app.js
