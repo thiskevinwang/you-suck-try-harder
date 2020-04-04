@@ -67,11 +67,20 @@ const Tooltip = styled(animated.div)`
   margin-right: auto;
 `
 const HeatmapContainer = styled(animated.div)`
+  /* from github */
+  padding-top: 4px;
+  margin-right: 16px;
+  margin-left: 16px;
   display: flex;
-  width: 100%;
-  height: ${(HEIGHT + STROKE_MARGIN) * 2 + ROWS * 13}px;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  align-items: flex-end;
   overflow-x: hidden;
+
+  /* display: flex; */
+  /* width: 100%; */
+  height: ${(HEIGHT + STROKE_MARGIN) * 2 + ROWS * 13}px;
+  /* margin-bottom: 1rem; */
+  /* overflow-x: hidden; */
 
   @media (min-width: 768px) {
   }
@@ -83,23 +92,25 @@ const HeatmapContainer = styled(animated.div)`
   }
   /* Small devices (landscape phones, less than 768px) */
   @media (max-width: 767.98px) {
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: flex-end;
+    /* flex-direction: column; */
+    /* align-items: flex-end; */
+    /* justify-content: flex-end; */
   }
   /* Extra small devices (portrait phones, less than 576px) */
   @media (max-width: 575.98px) {
   }
 `
 const Svg = styled(animated.svg)`
-  padding: 10px;
-  border: 1px solid lightgrey;
-  border-radius: 0.2rem;
+  width: 722px;
+  height: 112px;
+  /* padding: 10px; */
+  /* border: 1px solid lightgrey; */
+  /* border-radius: 0.2rem; */
   /* margin-left: auto; */
   /* margin-right: auto; */
 
   /* TODO */
-  width: 100%;
+  /* width: 100%; */
 `
 const BASE_LIGHT = Colors.silver
 const BASE_DARK = Colors.black
