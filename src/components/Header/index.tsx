@@ -36,7 +36,7 @@ export const Header = () => {
           <Link href="/about">
             <A>About</A>
           </Link>
-          <Link href="">
+          <Link href="/settings">
             <A>Settings</A>
           </Link>
         </NavLinks>
