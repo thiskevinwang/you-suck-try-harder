@@ -34,6 +34,10 @@ const lightTheme = {
     error: Colors.errorLight,
     borderColor: Colors.greyLighter,
     leftSidebarNavBackground: Colors.silver,
+    /**
+     * - geistCyan for Light
+     */
+    highlight: Colors.geistCyan,
   },
 }
 

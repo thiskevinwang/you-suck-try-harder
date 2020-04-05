@@ -34,6 +34,10 @@ const darkTheme = {
     error: Colors.errorDark,
     borderColor: Colors.greyDarker,
     leftSidebarNavBackground: Colors.blackDark,
+    /**
+     * - geistPurple for Dark
+     */
+    highlight: Colors.geistPurple,
   },
 }
 
