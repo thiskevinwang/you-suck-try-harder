@@ -5,43 +5,10 @@ import { useMediaQuery } from "@material-ui/core"
 
 import { Header } from "components/Header"
 import LeftSidebar from "components/LeftSidebar"
+import TopAside from "components/TopAside"
 import { RootState, setIsNavOpen } from "state"
-import { getContrast } from "utils"
-import { Colors } from "consts/Colors"
 
 import { Breakpoints } from "consts/Breakpoints"
-
-const Aside = styled.aside`
-  background-color: ${(p: BaseProps) =>
-    p.theme.isDarkMode ? Colors.geistPurple : Colors.geistCyan};
-  filter: saturate(50%);
-  :hover {
-    filter: saturate(100%);
-  }
-  transition: background-color 200ms ease-in-out, filter 200ms ease-in-out;
-  height: 2.5rem;
-  position: fixed;
-  width: 100%;
-  z-index: 10;
-  span {
-    color: ${(p) =>
-      p.theme.isDarkMode
-        ? getContrast(Colors.geistPurple)
-        : getContrast(Colors.geistCyan)};
-  }
-`
-const AsideInner = styled.div`
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  margin: 0 auto;
-  font-weight: 100;
-  @media (max-width: 575.98px) {
-    /* display: none; */
-  }
-`
 
 export const Layout: React.FC = ({ children }) => {
   const isNavOpen = useSelector((s: RootState) => s.isNavOpen)
@@ -53,9 +20,7 @@ export const Layout: React.FC = ({ children }) => {
   })
   return (
     <>
-      <Aside>
-        <AsideInner></AsideInner>
-      </Aside>
+      <TopAside />
       <Header />
       <SiteWrapper>
         {!lgUp && isNavOpen && (
