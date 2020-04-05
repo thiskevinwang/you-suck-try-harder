@@ -5,6 +5,8 @@ import { animated } from "react-spring"
 import { useLoadingStyles } from "hooks/useLoadingStyles"
 
 const Loader = styled(animated.div)`
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   display: flex;
   align-items: center;
   .img {

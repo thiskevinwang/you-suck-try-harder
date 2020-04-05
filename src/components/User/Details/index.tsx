@@ -37,8 +37,8 @@ export const UserDetails: React.FC<Props> = ({ user, isActive }) => {
 }
 
 const StyledUserDetails = styled.div<Pick<Props, "isActive">>`
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   display: flex;
   align-items: center;
   img {
