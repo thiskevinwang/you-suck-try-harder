@@ -1,24 +1,24 @@
 import { Colors } from "consts/Colors"
 
-enum formInput {
-  background = Colors.silverLighter,
-  borderColorBase = Colors.greyLighter,
-  borderColorFocus = Colors.blackDarker,
-  borderColorError = Colors.errorLight,
-  color = Colors.blackDarker,
+const formInput = {
+  background: Colors.silverLighter,
+  borderColorBase: Colors.greyLighter,
+  borderColorFocus: Colors.blackDarker,
+  borderColorError: Colors.errorLight,
+  color: Colors.blackDarker,
 }
 
-enum formButton {
-  background = Colors.blackDarker,
-  backgroundDisabled = Colors.silverLighter,
-  backgroundHover = Colors.silverLighter,
-  borderColorDisabled = Colors.greyLighter,
-  color = Colors.silverLighter,
-  colorHover = Colors.blackDarker,
+const formButton = {
+  background: Colors.blackDarker,
+  backgroundDisabled: Colors.silverLighter,
+  backgroundHover: Colors.silverLighter,
+  borderColorDisabled: Colors.greyLighter,
+  color: Colors.silverLighter,
+  colorHover: Colors.blackDarker,
 }
 
-enum commentRenderer {
-  borderColor = Colors.greyLighter,
+const commentRenderer = {
+  borderColor: Colors.greyLighter,
 }
 
 const lightTheme = {
