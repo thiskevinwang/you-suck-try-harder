@@ -11,9 +11,12 @@ export const ValidationSchema = Yup.object().shape({
         grade: Yup.number()
           /** https://github.com/jquense/yup/issues/211 */
           .typeError("you must specify a number")
-          .required("required"),
+          .required("Grade is required"),
         send: Yup.boolean().required(),
         flash: Yup.boolean().required(),
+        date: Yup.date()
+          .required("Date is required")
+          .max(new Date(), "cannot enter a date in the future!"),
       })
     )
     .min(1, "Please log at least one")

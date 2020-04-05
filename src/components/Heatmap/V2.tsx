@@ -38,7 +38,7 @@ export interface Props {
 const formatDay = (d: Date) =>
   ["", "Mon", "", "Wed", "", "Fri", ""][d.getUTCDay()]
 
-const countDay = d => (d.getUTCDay() + 6) % 7
+const countDay = (d) => (d.getUTCDay() + 6) % 7
 
 const HEIGHT = 10
 const MARGIN = 3
@@ -67,11 +67,20 @@ const Tooltip = styled(animated.div)`
   margin-right: auto;
 `
 const HeatmapContainer = styled(animated.div)`
+  /* from github */
+  padding-top: 4px;
+  margin-right: 16px;
+  margin-left: 16px;
   display: flex;
-  width: 100%;
-  height: ${(HEIGHT + STROKE_MARGIN) * 2 + ROWS * 13}px;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  align-items: flex-end;
   overflow-x: hidden;
+
+  /* display: flex; */
+  /* width: 100%; */
+  height: ${(HEIGHT + STROKE_MARGIN) * 2 + ROWS * 13}px;
+  /* margin-bottom: 1rem; */
+  /* overflow-x: hidden; */
 
   @media (min-width: 768px) {
   }
@@ -83,23 +92,25 @@ const HeatmapContainer = styled(animated.div)`
   }
   /* Small devices (landscape phones, less than 768px) */
   @media (max-width: 767.98px) {
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: flex-end;
+    /* flex-direction: column; */
+    /* align-items: flex-end; */
+    /* justify-content: flex-end; */
   }
   /* Extra small devices (portrait phones, less than 576px) */
   @media (max-width: 575.98px) {
   }
 `
 const Svg = styled(animated.svg)`
-  padding: 10px;
-  border: 1px solid lightgrey;
-  border-radius: 0.2rem;
+  width: 722px;
+  height: 112px;
+  /* padding: 10px; */
+  /* border: 1px solid lightgrey; */
+  /* border-radius: 0.2rem; */
   /* margin-left: auto; */
   /* margin-right: auto; */
 
   /* TODO */
-  width: 100%;
+  /* width: 100%; */
 `
 const BASE_LIGHT = Colors.silver
 const BASE_DARK = Colors.black
@@ -133,7 +144,7 @@ export default function Heatmap({ data }: Props) {
     .map((e, i) => useRef<HTMLDivElement>(null))
 
   const maxAttempts = useRef(0)
-  const [springs, set] = useSprings(refs.length, index => ({
+  const [springs, set] = useSprings(refs.length, (index) => ({
     opacity: 0.2,
     backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
     sendWidth: `0%`,
@@ -142,16 +153,16 @@ export default function Heatmap({ data }: Props) {
 
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
 
-  const mouseover = function(d: Bin) {
-    const attemptMap = _.groupBy(d.attempts, o => o.grade)
+  const mouseover = function (d: Bin) {
+    const attemptMap = _.groupBy(d.attempts, (o) => o.grade)
     const grades = _.keys(attemptMap)
-    set(i => grades.includes(`${i}`) && { opacity: 1 })
+    set((i) => grades.includes(`${i}`) && { opacity: 1 })
   }
-  const mouseleave = function(d: Bin) {
-    const attemptMap = _.groupBy(d.attempts, o => o.grade)
+  const mouseleave = function (d: Bin) {
+    const attemptMap = _.groupBy(d.attempts, (o) => o.grade)
     const grades = _.keys(attemptMap)
     set(
-      i =>
+      (i) =>
         grades.includes(`${i}`) && {
           opacity: 0,
           sendWidth: `0%`,
@@ -160,7 +171,7 @@ export default function Heatmap({ data }: Props) {
     )
     maxAttempts.current = 0
   }
-  const mousemove = function(d: Bin) {
+  const mousemove = function (d: Bin) {
     const tooltip = tooltipRef.current
 
     const timestamp = new Date(d.date)
@@ -168,16 +179,14 @@ export default function Heatmap({ data }: Props) {
     const month = timestamp.getMonth() + 1
     const date = timestamp.getDate()
     const display = `${month}-${date}-${year}`
-    tooltip.innerHTML = html`
-      <div>${display}</div>
-    `
+    tooltip.innerHTML = html` <div>${display}</div> `
 
     /**
      * group together based on grade (0-10)
      */
     const attemptMap: _.Dictionary<Attempt[]> = _.groupBy(
       d.attempts,
-      o => o.grade
+      (o) => o.grade
     )
     /**
      * array of attemptMap keys to access the value pairs
@@ -185,7 +194,7 @@ export default function Heatmap({ data }: Props) {
      */
     const grades = _.keys(attemptMap)
     set(
-      i =>
+      (i) =>
         grades.includes(`${i}`) && {
           opacity: 1,
           // width: `100%`,
@@ -196,7 +205,7 @@ export default function Heatmap({ data }: Props) {
     grades
       .slice()
       .reverse()
-      .map(grade => {
+      .map((grade) => {
         // [10...0]
 
         const attemptsGradedAndGroupedBySend = _.partition(
@@ -212,7 +221,7 @@ export default function Heatmap({ data }: Props) {
         const percent = (sends / (sends + fails)) * 100
 
         set(
-          i =>
+          (i) =>
             `${i}` === grade && {
               sendWidth: `${percent}%`,
               totalWidth: `${(total / maxAttempts.current) * 100}%`,
@@ -241,7 +250,7 @@ export default function Heatmap({ data }: Props) {
         .append("g")
         .attr("text-anchor", "end")
         .selectAll("text")
-        .data(d3.range(7).map(i => new Date(1995, 0, i + 1)))
+        .data(d3.range(7).map((i) => new Date(1995, 0, i + 1)))
         .join("text")
         .attr("fill", isDarkMode ? "white" : "black")
         .attr("class", "wday")
@@ -259,17 +268,18 @@ export default function Heatmap({ data }: Props) {
         .selectAll("g")
         .data(data)
         .join(
-          enter => enter.append("g"),
-          update => update,
-          exit => exit.remove()
+          (enter) => enter.append("g"),
+          (update) => update,
+          (exit) => exit.remove()
         )
         /** translate X of the columns, based on the week */
         .attr(
           "transform",
           (d: Week, i) =>
             /* (i + 1): offset the first column */
-            `translate(${(i + OFFSET_LEFT) * (HEIGHT + MARGIN) +
-              STROKE_MARGIN},0)`
+            `translate(${
+              (i + OFFSET_LEFT) * (HEIGHT + MARGIN) + STROKE_MARGIN
+            },0)`
         )
 
       /** Create the Month labels */
@@ -277,9 +287,9 @@ export default function Heatmap({ data }: Props) {
         .selectAll(".columnLabel")
         .data(data)
         .join(
-          enter => enter.append("text"),
-          update => update,
-          exit => exit.remove()
+          (enter) => enter.append("text"),
+          (update) => update,
+          (exit) => exit.remove()
         )
         .attr("class", "month")
         .text((currWeek: Week, i) => {
@@ -346,9 +356,9 @@ export default function Heatmap({ data }: Props) {
         /** past nested data to <rect> children */
         .data((d: Week) => d)
         .join(
-          enter => enter.append("rect"),
-          update => update,
-          exit => exit.remove()
+          (enter) => enter.append("rect"),
+          (update) => update,
+          (exit) => exit.remove()
         )
         .attr("width", HEIGHT)
         .attr("height", HEIGHT)
@@ -356,9 +366,9 @@ export default function Heatmap({ data }: Props) {
         .attr("y", (d, i) => {
           return (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN
         })
-        .attr("data-count", d => d.attempts?.length ?? 0)
-        .attr("data-date", d => d.date)
-        .attr("fill", d => {
+        .attr("data-count", (d) => d.attempts?.length ?? 0)
+        .attr("data-date", (d) => d.date)
+        .attr("fill", (d) => {
           const value = d.attempts?.length ?? 0
           return isDarkMode ? myDarkColor(value) : myColor(value)
         })

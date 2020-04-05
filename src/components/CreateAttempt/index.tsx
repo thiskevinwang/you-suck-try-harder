@@ -1,8 +1,10 @@
+import * as React from "react"
 import styled, { BaseProps } from "styled-components"
 import { Formik, Form, FieldArray, useField } from "formik"
 import { gql, useMutation, DataProxy, FetchResult } from "@apollo/client"
 
-import { SubmitButton, Field } from "components/Form"
+import { Spacer } from "components/Spacer"
+import { SubmitButton, Field, DatePickerField } from "components/Form"
 import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
 import { GET_ATTEMPTS_BY_USER_ID } from "hooks/useQueryHeatmap"
 
@@ -45,8 +47,6 @@ const YesNoSelect = ({ name, label = "Label", ...props }) => {
         justifyContent: "space-between",
         alignItems: "center",
         alignSelf: "center",
-        marginBottom: "2.5rem",
-        marginLeft: "1rem",
       }}
     >
       {label}
@@ -76,6 +76,7 @@ const DEFAULT_ATTEMPT = {
   grade: undefined,
   send: undefined,
   flash: undefined,
+  date: undefined,
 }
 export const CreateAttempt = ({ currentUserId }) => {
   const [createAttempt, { data, loading }] = useMutation(
@@ -126,13 +127,14 @@ export const CreateAttempt = ({ currentUserId }) => {
       onSubmit={async ({ attempts }, { resetForm, setStatus }) => {
         try {
           await Promise.all([
-            attempts.map(async ({ grade, send, flash }) => {
+            attempts.map(async ({ grade, send, flash, date }) => {
               const created = await createAttempt({
                 variables: {
                   userId: currentUserId,
                   grade: parseInt(grade),
                   send,
                   flash,
+                  date,
                 },
               })
             }),
@@ -143,48 +145,48 @@ export const CreateAttempt = ({ currentUserId }) => {
         }
       }}
     >
-      {({ values: { attempts }, isValid, isSubmitting }) => (
+      {({ values: { attempts }, isValid, isSubmitting, setFieldValue }) => (
         <Form>
           <FieldArray
             name="attempts"
-            render={arrayHelpers => (
+            render={(arrayHelpers) => (
               <>
                 {attempts.map((attempt, index) => {
                   const handleRemove = () => arrayHelpers.remove(index)
                   return (
-                    <div style={{ display: "flex" }} key={index}>
-                      <div
-                        style={{
-                          marginBottom: `2.5rem`,
-                          marginRight: `1rem`,
-                          alignSelf: "center",
-                        }}
-                      >
+                    <React.Fragment key={index}>
+                      <div style={{ display: "flex" }}>
                         <Button type="button" onClick={handleRemove}>
                           <MinusSquare />
                         </Button>
+
+                        <Field
+                          type={"text"}
+                          name={`attempts[${index}].grade`}
+                          id={`attempts[${index}].grade`}
+                          label={`V Grade`}
+                          placeholder={`V Grade`}
+                        />
+
+                        <YesNoSelect
+                          name={`attempts[${index}].send`}
+                          label={"Send"}
+                        />
+                        <YesNoSelect
+                          name={`attempts[${index}].flash`}
+                          label={"Flash"}
+                        />
+                        <DatePickerField
+                          type={"text"}
+                          name={`attempts[${index}].date`}
+                          label={"Date"}
+                          placeholder={"MM/DD/YYYY"}
+                        />
                       </div>
-
-                      <Field
-                        type={"text"}
-                        name={`attempts[${index}].grade`}
-                        id={`attempts[${index}].grade`}
-                        label={`V Grade`}
-                        placeholder={`V Grade`}
-                      />
-
-                      <YesNoSelect
-                        name={`attempts[${index}].send`}
-                        label={"Send"}
-                      />
-                      <YesNoSelect
-                        name={`attempts[${index}].flash`}
-                        label={"Flash"}
-                      />
-                    </div>
+                      <Spacer y={20} />
+                    </React.Fragment>
                   )
                 })}
-
                 <div>
                   {attempts.length < 5 ? (
                     <AddAnother

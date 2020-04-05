@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken"
 
 import { Layout } from "components/Layout"
 import { Field, SubmitButton } from "components/Form"
-
+import { Spacer } from "components/Spacer"
 import { useAuthentication } from "hooks/useAuthentication"
 
 import { Strings } from "consts/Strings"
@@ -58,7 +58,7 @@ const AuthLogin = () => {
   }, [currentUserId])
 
   const [login, { data, loading }] = useMutation(LOGIN, {
-    onCompleted: data => {
+    onCompleted: (data) => {
       const { token } = data.login
       localStorage.setItem(Strings.token, data.login.token)
 
@@ -85,7 +85,7 @@ const AuthLogin = () => {
       <Formik<Values>
         initialValues={{ email: "", password: "" }}
         validateOnMount={false}
-        validate={values => {
+        validate={(values) => {
           const errors: FormikErrors<Values> = {}
           if (!values.email) {
             errors.email = "Required"
@@ -105,7 +105,7 @@ const AuthLogin = () => {
       >
         {(props: FormikProps<Values>) => (
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault()
               props.handleSubmit(e)
             }}
@@ -117,6 +117,7 @@ const AuthLogin = () => {
               label="email"
               placeholder="email"
             />
+            <Spacer y={25} />
             <Field
               id="password"
               name="password"
@@ -124,6 +125,7 @@ const AuthLogin = () => {
               label="password"
               placeholder="password"
             />
+            <Spacer y={25} />
             <SubmitButton
               type="submit"
               disabled={!props.isValid || props.isSubmitting || loading}

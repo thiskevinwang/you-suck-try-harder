@@ -50,7 +50,7 @@ const StyledUserDetails = styled.div<Pick<Props, "isActive">>`
   }
   div > h3 {
     margin: 0px;
-    color: ${p =>
+    color: ${(p) =>
       p.isActive
         ? p.theme.isDarkMode
           ? Colors.geistPurple
@@ -58,7 +58,7 @@ const StyledUserDetails = styled.div<Pick<Props, "isActive">>`
         : "inherit"};
   }
   div > p {
-    color: ${p => (p.theme.isDarkMode ? Colors.greyLight : Colors.greyDark)};
+    color: ${(p) => (p.theme.isDarkMode ? Colors.greyLight : Colors.greyDark)};
     margin: 0px;
   }
 `

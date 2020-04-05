@@ -18,6 +18,7 @@ export const LineContainer = styled(animated.div)`
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   background: transparent;
+  cursor: pointer;
 `
 const Inner = styled(animated.div)`
   display: flex;
@@ -34,7 +35,7 @@ const Inner = styled(animated.div)`
 const Line = styled(animated.div)`
   height: 1px;
   width: 22px;
-  background-color: ${props =>
+  background-color: ${(props) =>
     props.theme.isDarkMode ? Colors.silverDarker : Colors.blackLighter};
   transition: background-color 200ms ease-in-out;
 `
@@ -60,8 +61,8 @@ export const Hamburger: React.FC<HamburgerProps> = ({
   return (
     <LineContainer onClick={clickHandler}>
       <Inner>
-        <Line style={{ transform: topTransform }}></Line>
-        <Line style={{ transform: bottomTransform }}></Line>
+        <Line style={{ transform: topTransform }} />
+        <Line style={{ transform: bottomTransform }} />
       </Inner>
     </LineContainer>
   )

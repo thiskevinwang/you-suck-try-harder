@@ -9,6 +9,9 @@ declare global {
 /**
  * action
  */
+export const setMounted = () => {
+  return { type: MOUNT }
+}
 export const setIsDarkMode = (isDarkMode: boolean) => {
   return {
     type: TOGGLE_DARKMODE,
@@ -25,10 +28,12 @@ export const setIsNavOpen = (isNavOpen: boolean) => {
 /**
  * actionTypes
  */
+const MOUNT = "MOUNT"
 const TOGGLE_DARKMODE = "TOGGLE_DARKMODE"
 const TOGGLE_NAV_OPEN = "TOGGLE_NAV_OPEN"
 
 export interface RootState {
+  isMounted: boolean
   isDarkMode: boolean
   isNavOpen: boolean
 }
@@ -36,6 +41,7 @@ export interface RootState {
  * initialState
  */
 const initialState: RootState = {
+  isMounted: false,
   isDarkMode: false,
   isNavOpen: false,
 }
@@ -45,6 +51,8 @@ const initialState: RootState = {
  */
 const reducer = (state = initialState, action: any) => {
   switch (action.type) {
+    case MOUNT:
+      return { ...state, isMounted: true }
     case TOGGLE_DARKMODE:
       return { ...state, isDarkMode: action.isDarkMode }
     case TOGGLE_NAV_OPEN:

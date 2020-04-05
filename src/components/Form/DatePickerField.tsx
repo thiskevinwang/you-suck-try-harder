@@ -3,6 +3,7 @@ import { useField } from "formik"
 import styled, { BaseProps } from "styled-components"
 import { animated } from "react-spring"
 import theme from "styled-theming"
+import DatePicker from "react-datepicker"
 
 const background = theme("mode", {
   light: (props: BaseProps) => props.theme.formInput.background,
@@ -33,7 +34,7 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
   max-width: 15rem;
   position: relative;
 
-  > input {
+  input {
     ::selection {
       background: ${theme("mode", {
         light: "var(--geist-cyan)",
@@ -67,7 +68,7 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
     outline: none;
   }
 
-  > input:-webkit-autofill,
+  input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus {
     -webkit-text-fill-color: ${color};
@@ -75,23 +76,23 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
     box-shadow: 0 0 0px 1000px ${background} inset;
   }
 
-  > input:focus {
+  input:focus {
     border-color: ${theme("mode", {
       light: (props) => (props.hasError ? "red" : borderColorFocus),
       dark: (props) => (props.hasError ? "darkred" : borderColorFocus),
     })};
   }
 
-  > input::placeholder {
+  input::placeholder {
     transition: opacity 150ms ease-in-out;
     will-change: opacity;
   }
-  > input:focus::placeholder {
+  input:focus::placeholder {
     opacity: 0;
   }
 
-  > input:focus + label,
-  > input:not(:placeholder-shown) + label {
+  input:focus + label,
+  input:not(:placeholder-shown) + label {
     transform: translateY(-1.1rem);
     opacity: 1;
   }
@@ -125,27 +126,20 @@ const FieldError = styled(animated.div)`
   transform: translateY(3.1rem);
 `
 
-interface FieldProps {
-  id: string
+interface DatePickerFieldProps {
+  id?: string
   name: string
   type: string
   label: string
   placeholder: string
+  dateFormat?: string
 }
 
-/**
- * @usage
- * ```ts
- * <Field
- *   id="email"
- *   name="email"
- *   type="email"
- *   label="email"
- *   placeholder="email"
- * />
- * ```
- */
-export const Field = ({ label, ...props }: FieldProps) => {
+export const DatePickerField = ({
+  label,
+  dateFormat = "MM/dd/yyyy",
+  ...props
+}: DatePickerFieldProps) => {
   /**
    * ⚠️if field.value is `undefined` (ex. after Formik's `resetForm({})`),
    * it will no longer 'control' the associated input field.
@@ -154,12 +148,22 @@ export const Field = ({ label, ...props }: FieldProps) => {
    * value={field.value ?? ""}
    *
    */
-  const [field, meta] = useField(props)
+  const [field, meta, helpers] = useField(props)
+
   return (
     <FieldRenderer
       hasError={((meta.touched && meta.error) as unknown) as boolean}
     >
-      <input {...field} {...props} value={field.value ?? ""} />
+      <DatePicker
+        name={field.name}
+        placeholderText={"MM/DD/YYYY"}
+        selected={field.value}
+        onChange={helpers.setValue}
+        onBlur={field.onBlur}
+        customInput={<input {...field} {...props} value={field.value ?? ""} />}
+        dateFormat={dateFormat}
+      />
+
       <label htmlFor={props.id ?? props.name}>{label}</label>
       {meta.touched && meta.error ? (
         <FieldError>{meta.error}</FieldError>

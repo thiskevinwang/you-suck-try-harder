@@ -1,24 +1,36 @@
 import { useEffect } from "react"
-import App from "next/app"
+import { AppProps } from "next/app"
+import Head from "next/head"
+import Router from "next/router"
+import { useLazyQuery, gql } from "@apollo/client"
 import { useMediaQuery } from "@material-ui/core"
 import { ThemeProvider, createGlobalStyle, BaseProps } from "styled-components"
 import { Provider, useDispatch, useSelector } from "react-redux"
 import _ from "lodash"
+import "react-datepicker/dist/react-datepicker.css"
 
+import NProgress from "nprogress"
+
+import { useAuthentication } from "hooks/useAuthentication"
 import { Colors } from "consts/Colors"
-import { store, setIsDarkMode, RootState, setIsNavOpen } from "state"
+import { store, setIsDarkMode, RootState, setMounted } from "state"
 import { withApollo } from "lib/withApollo"
 
 import DARK_THEME from "theme/dark"
 import LIGHT_THEME from "theme/light"
 
+import "../../_fonts.css"
+
 /**
  * Optional
  * @see https://github.com/zeit/next.js/blob/canary/examples/with-loading/pages/_app.js
  */
-// Router.events.on("routeChangeComplete", url => {
-//   store.dispatch(setIsNavOpen(false))
-// })
+Router.events.on("routeChangeStart", (url) => {
+  console.log(`Loading: ${url}`)
+  NProgress.start()
+})
+Router.events.on("routeChangeComplete", () => NProgress.done())
+Router.events.on("routeChangeError", () => NProgress.done())
 
 /**
  * Docs on `public` vs `static` directory
@@ -27,11 +39,6 @@ import LIGHT_THEME from "theme/light"
 const GlobalStyle = createGlobalStyle`
   body {
     font-family: Cereal, Arial, sans-serif;
-    /* max-width: 800px; */
-    /* padding-left: 1rem; */
-    /* padding-right: 1rem; */
-    /* margin-left: auto; */
-    /* margin-right: auto; */
     margin: 0;
   }
   input {
@@ -107,10 +114,18 @@ const GlobalStyleDark = createGlobalStyle`
 `
 
 const ColorSchemeProvider = ({ children }) => {
-  const prefersDark = useMediaQuery("(prefers-color-scheme: dark)")
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(setMounted())
+  }, [])
+  const isMounted = useSelector((state: RootState) => state.isMounted)
+
+  const prefersDark = useMediaQuery("(prefers-color-scheme: dark)", {
+    noSsr: true,
+  })
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
   const isNavOpen = useSelector((state: RootState) => state.isNavOpen)
-  const dispatch = useDispatch()
+
   useEffect(() => {
     dispatch(setIsDarkMode(prefersDark))
   }, [prefersDark, dispatch])
@@ -151,26 +166,63 @@ const ColorSchemeProvider = ({ children }) => {
 
   return (
     <ThemeProvider theme={theme}>
+      {isDarkMode ? (
+        <style jsx>{`
+          :root {
+            --opposite: #79ffe1;
+          }
+        `}</style>
+      ) : (
+        <style jsx>{`
+          :root {
+            --opposite: #f81ce5;
+          }
+        `}</style>
+      )}
       <GlobalStyle />
       {isDarkMode ? <GlobalStyleDark /> : <GlobalStyleLight />}
-      {children}
+      {isMounted && children}
     </ThemeProvider>
   )
 }
 
-class MyApp extends App {
-  render() {
-    const { Component, pageProps } = this.props
-    return (
-      <>
-        <Provider store={store}>
-          <ColorSchemeProvider>
-            <Component {...pageProps} />
-          </ColorSchemeProvider>
-        </Provider>
-      </>
-    )
+export const GET_USER_BY_ID = gql`
+  fragment NameParts on User {
+    first_name
+    last_name
   }
+  query GetUserById($id: ID!) {
+    user: getUserById(id: $id) {
+      id
+      username
+      ...NameParts
+      avatar_url
+    }
+  }
+`
+
+const MyApp = ({ Component, pageProps, ...props }: AppProps) => {
+  const { currentUserId } = useAuthentication()
+  const [fetch] = useLazyQuery(GET_USER_BY_ID)
+  useEffect(() => {
+    currentUserId &&
+      fetch({
+        variables: { id: currentUserId },
+      })
+  }, [currentUserId])
+  return (
+    <>
+      <Head>
+        {/* Import CSS for nprogress */}
+        <link rel="stylesheet" type="text/css" href="/nprogress.css" />
+      </Head>
+      <Provider store={store}>
+        <ColorSchemeProvider>
+          <Component {...pageProps} />
+        </ColorSchemeProvider>
+      </Provider>
+    </>
+  )
 }
 
 export default withApollo({ ssr: true })(MyApp)

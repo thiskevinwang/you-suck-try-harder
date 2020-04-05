@@ -1,38 +1,56 @@
-import styled from "styled-components"
-import { useSelector } from "react-redux"
+import styled, { BaseProps } from "styled-components"
+import { useSelector, useDispatch } from "react-redux"
 import { animated, useSpring } from "react-spring"
 import { useMediaQuery } from "@material-ui/core"
 
 import { Header } from "components/Header"
 import LeftSidebar from "components/LeftSidebar"
-import { RootState } from "state"
+import TopAside from "components/TopAside"
+import { RootState, setIsNavOpen } from "state"
 
 import { Breakpoints } from "consts/Breakpoints"
 
 export const Layout: React.FC = ({ children }) => {
   const isNavOpen = useSelector((s: RootState) => s.isNavOpen)
-  const lgUp = useMediaQuery(Breakpoints.lgUp)
+  const dispatch = useDispatch()
+  const handleCloseModal = () => dispatch(setIsNavOpen(false))
+  const lgUp = useMediaQuery(Breakpoints.lgUp, { noSsr: true })
   const props = useSpring({
     opacity: lgUp ? 1 : isNavOpen ? 0.3 : 1,
   })
   return (
     <>
+      <TopAside />
       <Header />
       <SiteWrapper>
+        {!lgUp && isNavOpen && (
+          <OutsideClickHelper onClick={handleCloseModal} />
+        )}
         <LeftSidebar />
         <SiteContentWrapper>
-          <SiteContent style={props}>{children}</SiteContent>
+          <SiteContent style={props}>
+            <Margin>{children}</Margin>
+          </SiteContent>
         </SiteContentWrapper>
-        <aside>Right side bar</aside>
       </SiteWrapper>
     </>
   )
 }
+const OutsideClickHelper = styled.div`
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  z-index: 1;
+`
 
-const SiteWrapper = styled.div`
+const SiteWrapper = styled(animated.div)`
   display: flex;
   min-height: 100vh;
-  overflow-x: hidden;
+
+  /* NOTE TO SELF, this conflicts with STICKY because CSS IS A BITCH */
+  /* overflow-x: hidden; */
 `
 
 const SiteContentWrapper = styled.div`
@@ -41,11 +59,16 @@ const SiteContentWrapper = styled.div`
 `
 
 const SiteContent = styled(animated.main)`
-  padding: 2rem 1rem 2rem;
+  padding-top: calc(
+    ${(p: BaseProps) => p.theme.headerHeight} +
+      ${(p: BaseProps) => p.theme.topAsideHeight}
+  );
+`
 
-  @media ${Breakpoints.lgUp} {
-    opacity: 1;
-    padding: 7rem 3rem 3rem;
-    max-width: 50rem;
-  }
+/**
+ * Margin helper, for now...
+ */
+const Margin = styled.div`
+  margin-left: 2rem;
+  margin-right: 2rem;
 `

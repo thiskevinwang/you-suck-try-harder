@@ -2,7 +2,7 @@
  * ℹ️ These file paths correspond with the svg
  * names on https://zeit.co/design/icons
  */
-
+export { BarChart } from "./bar-chart"
 export { CheckInCircleFill } from "./check-in-circle-fill"
 export { CheckInCircle } from "./check-in-circle"
 export { Home } from "./home"

@@ -6,31 +6,34 @@ function About() {
     <>
       <SEO title="About" />
       <Layout>
-        <h1>About</h1>
-
-        <h2>
-          <i>"You Suck, Try Harder"</i>
-        </h2>
-        <p>
-          Often times I've found myself at the my climbing gym, basically just
-          waisting time, not climbing, but fooling myself into thinking I
-          actually was climbing. This is a fun project to help shed some light
-          on how much climbing I'm actually doing.
-        </p>
-
-        <h2>Developer Stuff</h2>
-        <p>
-          This is built with 'next', 'styled-components', 'react-spring',
-          'apollo', 'typescript', and talks to a detached graphql apollo server.
-        </p>
-
+        <h1>The title says it all</h1>
         <h2>Find me</h2>
         <p>
-          I attempt to blog about stuff (mostly about my self-taught programming
-          life) at <a href="https://coffeecodeclimb.com">Coffee Code Climb</a>.
+          I attempt to&nbsp;
+          <a target="_blank" rel="noopener" href="https://coffeecodeclimb.com">
+            blog about stuff
+          </a>
+          &nbsp;(mostly learning code)
         </p>
         <p>
-          I'm also on <a href="https://twitter.com/thekevinwang">Twitter</a>.
+          I try to fit into the&nbsp;
+          <a
+            target="_blank"
+            rel="noopener"
+            href="https://twitter.com/thekevinwang"
+          >
+            developer world
+          </a>
+        </p>
+        <p>
+          I take&nbsp;
+          <a
+            target="_blank"
+            rel="noopener"
+            href="https://instagram.com/thekevinwang"
+          >
+            pics of random things
+          </a>
         </p>
       </Layout>
     </>
