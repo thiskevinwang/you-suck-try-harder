@@ -67,13 +67,11 @@ const Tooltip = styled(animated.div)`
   margin-right: auto;
 `
 const HeatmapContainer = styled(animated.div)`
-  /* from github */
   padding-top: 4px;
   margin-right: 16px;
   margin-left: 16px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-direction: row-reverse;
   overflow-x: hidden;
 
   /* display: flex; */
@@ -86,6 +84,7 @@ const HeatmapContainer = styled(animated.div)`
   }
   /* Large devices (desktops, less than 1200px) */
   @media (max-width: 1199.98px) {
+    /* align-items: flex-end; */
   }
   /* Medium devices (tablets, less than 992px) */
   @media (max-width: 991.98px) {
@@ -99,6 +98,9 @@ const HeatmapContainer = styled(animated.div)`
   /* Extra small devices (portrait phones, less than 576px) */
   @media (max-width: 575.98px) {
   }
+`
+const HeatmapInner = styled.div`
+  flex: 1;
 `
 const Svg = styled(animated.svg)`
   width: 722px;
@@ -384,10 +386,10 @@ export default function Heatmap({ data }: Props) {
 
   return (
     <>
-      <h2>Heatmap</h2>
-
       <HeatmapContainer>
-        <Svg className="d3-component" ref={d3Container} />
+        <HeatmapInner>
+          <Svg className="d3-component" ref={d3Container} />
+        </HeatmapInner>
       </HeatmapContainer>
       <Tooltip ref={tooltipRef}></Tooltip>
       {springs
