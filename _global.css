@@ -1,0 +1,38 @@
+:root {
+  --dark: #000;
+  --light: #fff;
+  --accents-1: #fafafa;
+  --accents-2: #eaeaea;
+  --accents-3: #999;
+  --accents-4: #888;
+  --accents-5: #666;
+  --accents-6: #444;
+  --accents-7: #333;
+  --accents-8: #111;
+
+  --shadow-smallest: 0px 4px 8px rgba(0, 0, 0, 0.12);
+  --shadow-small: 0 5px 10px rgba(0, 0, 0, 0.12);
+  --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.12);
+  --shadow-large: 0 30px 60px rgba(0, 0, 0, 0.12);
+
+  --highlight-smallest: 0px 4px 8px rgba(255, 255, 255, 0.19);
+  --highlight-small: 0 5px 10px rgba(255, 255, 255, 0.19);
+  --highlight-medium: 0 8px 30px rgba(255, 255, 255, 0.19);
+  --highlight-large: 0 30px 60px rgba(255, 255, 255, 0.19);
+
+  --radius-small: 0.25rem;
+
+  --geist-gap: 16pt;
+
+  --font-sans: Cereal, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  --font-mono: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+    Bitstream Vera Sans Mono, Courier New, monospace;
+
+  font-family: var(--font-sans);
+}
+
+code {
+  font-family: var(--font-mono);
+}
