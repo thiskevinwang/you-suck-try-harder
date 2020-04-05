@@ -48,9 +48,6 @@ export const Header = () => {
           <Hamburger isOpen={isNavOpen} clickHandler={toggleIsNavOpen} />
         </animated.div>
         <NavLinks>
-          <Link href="/">
-            <A>Overview</A>
-          </Link>
           <Link href="/about">
             <A>About</A>
           </Link>

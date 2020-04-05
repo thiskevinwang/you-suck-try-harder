@@ -11,7 +11,7 @@ import { useAuthentication } from "hooks/useAuthentication"
 import { Breakpoints } from "consts/Breakpoints"
 import { Strings } from "consts/Strings"
 
-import { LogOut, LogIn, Home, UserPlus } from "icons"
+import { BarChart, LogOut, LogIn, Home, UserPlus } from "icons"
 
 const LeftSidebar = () => {
   const { currentUserId } = useAuthentication()
@@ -46,6 +46,20 @@ const LeftSidebar = () => {
             </a>
           </Link>
         </StyledNavItem>
+        {currentUserId && (
+          <>
+            <StyledNavItem>
+              <Link href="/user/[id]" as={`/user/${currentUserId}`}>
+                <a>
+                  <StyledNavItemInner>
+                    <BarChart /> Stats
+                  </StyledNavItemInner>
+                </a>
+              </Link>
+            </StyledNavItem>
+          </>
+        )}
+        <Line />
         {currentUserId ? (
           <>
             <StyledNavItem>
@@ -85,6 +99,11 @@ const LeftSidebar = () => {
     </LeftSidebarWrapper>
   )
 }
+
+const Line = styled.div`
+  height: 1px;
+  background-color: ${(p: BaseProps) => p.theme.colors.borderColor};
+`
 
 const StyledNavItemInner = styled.div`
   display: flex;

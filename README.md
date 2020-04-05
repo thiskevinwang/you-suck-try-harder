@@ -41,3 +41,9 @@ Used https://github.com/codebushi/gatsby-theme-document/tree/master/gatsby-theme
 ### Typing `styled-components`
 
 https://stackoverflow.com/questions/47077210/using-styled-components-with-props-and-typescript/52045733#52045733
+
+### Zeit
+
+because they're the best
+
+https://zeit.co/design/icons
