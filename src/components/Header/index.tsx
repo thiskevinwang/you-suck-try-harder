@@ -34,7 +34,10 @@ export const Header = () => {
   // lgUp
   // ? hide then shift
   // : shift then hide
-  useChain(lgUp ? [hoRef, hwRef] : [hwRef, hoRef], [0, 0.5])
+  useChain(
+    lgUp ? [hoRef, hwRef] : [hwRef, hoRef],
+    lgUp ? [0, 0.5] : [0.5, 0.75]
+  )
 
   return (
     <StyledHeader style={props}>

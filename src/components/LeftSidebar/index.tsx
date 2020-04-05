@@ -35,6 +35,7 @@ const LeftSidebar = () => {
   })
   return (
     <LeftSidebarWrapper style={leftSidebarWrapperProps}>
+      <MockHeaderHeight />
       <LeftSidebarNav style={props}>
         <StyledNavItem>
           <Link href="/">
@@ -111,7 +112,9 @@ const StyledNavItem = styled.li`
 const LeftSidebarWrapper = styled(animated.aside)`
   z-index: 1;
   flex: 0 0 16rem;
-
+  position: sticky;
+  top: 200px;
+  background: grey;
   @media ${Breakpoints.lgUp} {
   }
 `
@@ -119,20 +122,30 @@ const LeftSidebarWrapper = styled(animated.aside)`
 interface LeftSidebarNavProps {
   navOpen?: boolean
 }
+const MockHeaderHeight = styled.div`
+  height: calc(
+    ${(p: BaseProps) => p.theme.headerHeight} +
+      ${(p: BaseProps) => p.theme.topAsideHeight}
+  );
+`
 const LeftSidebarNav = styled(animated.nav)<LeftSidebarNavProps>`
   background: ${(p: BaseProps) => p.theme.colors.leftSidebarNavBackground};
   border-top: 1px solid ${(p: BaseProps) => p.theme.colors.borderColor};
   border-right: 1px solid ${(p: BaseProps) => p.theme.colors.borderColor};
   position: fixed;
   top: calc(
-    ${(p: BaseProps) => p.theme.headerHeight} + 2 * 16px
-  ); /* match header height */
-  bottom: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
+    ${(p: BaseProps) => p.theme.headerHeight} +
+      ${(p: BaseProps) => p.theme.topAsideHeight}
+  );
   width: 16rem;
   height: 100%;
-  @media ${Breakpoints.lgUp} {
+  @media ${Breakpoints.mdDown} {
+    position: sticky;
+    top: calc(
+    /* ${(p: BaseProps) => p.theme.headerHeight} + */
+      ${(p: BaseProps) => p.theme.topAsideHeight}
+  );
+    height: calc(100vh - ${(p: BaseProps) => p.theme.topAsideHeight});
   }
 `
 
