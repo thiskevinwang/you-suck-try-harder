@@ -20,6 +20,7 @@ import DARK_THEME from "theme/dark"
 import LIGHT_THEME from "theme/light"
 
 import "../../_fonts.css"
+import "../../_global.css"
 
 /**
  * Optional

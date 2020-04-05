@@ -1,14 +1,28 @@
 import { useRef, useEffect } from "react"
 import * as d3 from "d3"
 import _ from "lodash"
-import styled from "styled-components"
+import styled, { BaseProps } from "styled-components"
 import { animated, useSprings } from "react-spring"
 import { useSelector } from "react-redux"
-import { html } from "common-tags"
 
 import { RootState } from "state"
 import { Colors } from "consts/Colors"
+import { Spacer } from "components/Spacer"
 
+import {
+  Tooltip,
+  Total,
+  Sends,
+  HeatmapContainer,
+  HeatmapInner,
+  Svg,
+  HEIGHT,
+  MARGIN,
+  STROKE_MARGIN,
+  OFFSET_LEFT,
+} from "./styles"
+
+const GRADES = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 export interface Attempt {
   id: string
   grade: number
@@ -40,78 +54,6 @@ const formatDay = (d: Date) =>
 
 const countDay = (d) => (d.getUTCDay() + 6) % 7
 
-const HEIGHT = 10
-const MARGIN = 3
-const STROKE_MARGIN = 1
-const ROWS = 8
-const OFFSET_LEFT = 2
-
-const Total = styled(animated.div)`
-  display: flex;
-  justify-content: center;
-`
-const Sends = styled(animated.div)`
-  display: flex;
-  justify-content: center;
-`
-const Tooltip = styled(animated.div)`
-  border: solid;
-  border-color: lightgrey;
-  border-width: 1px;
-  border-radius: 0.2rem;
-  padding: 5px;
-
-  display: flex;
-  width: 400px;
-
-  margin-right: auto;
-`
-const HeatmapContainer = styled(animated.div)`
-  /* from github */
-  padding-top: 4px;
-  margin-right: 16px;
-  margin-left: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  overflow-x: hidden;
-
-  /* display: flex; */
-  /* width: 100%; */
-  height: ${(HEIGHT + STROKE_MARGIN) * 2 + ROWS * 13}px;
-  /* margin-bottom: 1rem; */
-  /* overflow-x: hidden; */
-
-  @media (min-width: 768px) {
-  }
-  /* Large devices (desktops, less than 1200px) */
-  @media (max-width: 1199.98px) {
-  }
-  /* Medium devices (tablets, less than 992px) */
-  @media (max-width: 991.98px) {
-  }
-  /* Small devices (landscape phones, less than 768px) */
-  @media (max-width: 767.98px) {
-    /* flex-direction: column; */
-    /* align-items: flex-end; */
-    /* justify-content: flex-end; */
-  }
-  /* Extra small devices (portrait phones, less than 576px) */
-  @media (max-width: 575.98px) {
-  }
-`
-const Svg = styled(animated.svg)`
-  width: 722px;
-  height: 112px;
-  /* padding: 10px; */
-  /* border: 1px solid lightgrey; */
-  /* border-radius: 0.2rem; */
-  /* margin-left: auto; */
-  /* margin-right: auto; */
-
-  /* TODO */
-  /* width: 100%; */
-`
 const BASE_LIGHT = Colors.silver
 const BASE_DARK = Colors.black
 const LIGHT = Colors.geistCyan
@@ -139,16 +81,15 @@ export default function Heatmap({ data }: Props) {
   const d3Container = useRef(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
 
-  const refs = Array(11)
-    .fill(null)
-    .map((e, i) => useRef<HTMLDivElement>(null))
+  const refs = GRADES.map((e, i) => useRef<HTMLDivElement>(null))
 
-  const maxAttempts = useRef(0)
   const [springs, set] = useSprings(refs.length, (index) => ({
     opacity: 0.2,
     backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
     sendWidth: `0%`,
+    sends: 0,
     totalWidth: `0%`,
+    total: 0,
   }))
 
   const isDarkMode = useSelector((state: RootState) => state.isDarkMode)
@@ -156,7 +97,7 @@ export default function Heatmap({ data }: Props) {
   const mouseover = function (d: Bin) {
     const attemptMap = _.groupBy(d.attempts, (o) => o.grade)
     const grades = _.keys(attemptMap)
-    set((i) => grades.includes(`${i}`) && { opacity: 1 })
+    set((i) => (grades.includes(`${i}`) ? { opacity: 1 } : { opacity: 0 }))
   }
   const mouseleave = function (d: Bin) {
     const attemptMap = _.groupBy(d.attempts, (o) => o.grade)
@@ -166,10 +107,12 @@ export default function Heatmap({ data }: Props) {
         grades.includes(`${i}`) && {
           opacity: 0,
           sendWidth: `0%`,
+          sends: 0,
           totalWidth: `0%`,
+          total: 0,
+          delay: 500,
         }
     )
-    maxAttempts.current = 0
   }
   const mousemove = function (d: Bin) {
     const tooltip = tooltipRef.current
@@ -179,28 +122,37 @@ export default function Heatmap({ data }: Props) {
     const month = timestamp.getMonth() + 1
     const date = timestamp.getDate()
     const display = `${month}-${date}-${year}`
-    tooltip.innerHTML = html` <div>${display}</div> `
+    tooltip.innerHTML = display
 
     /**
      * group together based on grade (0-10)
      */
-    const attemptMap: _.Dictionary<Attempt[]> = _.groupBy(
-      d.attempts,
-      (o) => o.grade
-    )
+    const attemptMap = _.groupBy(d.attempts, (o) => o.grade)
     /**
      * array of attemptMap keys to access the value pairs
      * [0...10]
      */
     const grades = _.keys(attemptMap)
+
+    const lookup = _.keyBy(grades)
+    const missingGrades = _.filter(GRADES, (g) => {
+      return lookup[g] !== g
+    })
+
     set(
       (i) =>
         grades.includes(`${i}`) && {
           opacity: 1,
-          // width: `100%`,
           backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
         }
     )
+    // set(
+    //   (i) =>
+    //     missingGrades.includes(`${i}`) && {
+    //       opacity: 0,
+    //       backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
+    //     }
+    // )
 
     grades
       .slice()
@@ -215,26 +167,39 @@ export default function Heatmap({ data }: Props) {
         const sends = attemptsGradedAndGroupedBySend[0].length
         const fails = attemptsGradedAndGroupedBySend[1].length
         const total = sends + fails
-        if (total >= maxAttempts.current) {
-          maxAttempts.current = total
-        }
-        const percent = (sends / (sends + fails)) * 100
+
+        const percent = (sends / total) * 100
+        console.log(`V${grade}:`, `( ${sends} / ${total} )`, `${percent}%`)
 
         set(
           (i) =>
             `${i}` === grade && {
               sendWidth: `${percent}%`,
-              totalWidth: `${(total / maxAttempts.current) * 100}%`,
+              sends,
+              totalWidth: `100%`,
+              total,
             }
         )
-        refs.slice().reverse()[
-          grade
-        ].current.innerHTML = /** `V${grade}: ${sends}, ${fails}` */ `<code>${sends} : ${fails}</code>`
+        refs.slice().reverse()[grade].current.innerHTML = `${sends} / ${total}`
       })
-
-    // These don't work yet, given my nested Array data structure
-    // .style("left", d3.mouse(this)[0] + 70 + "px")
-    // .style("top", d3.mouse(this)[1] + "px")
+    missingGrades
+      .slice()
+      .reverse()
+      // [10...0]
+      .map((grade) => {
+        /* RESET to 0 */
+        set(
+          (i) =>
+            `${i}` === grade && {
+              sendWidth: `${0}%`,
+              sends: 0,
+              totalWidth: `0%`,
+              total: 0,
+              delay: 300,
+            }
+        )
+        refs.slice().reverse()[grade].current.innerHTML = `-`
+      })
   }
 
   useEffect(() => {
@@ -384,51 +349,60 @@ export default function Heatmap({ data }: Props) {
 
   return (
     <>
-      <h2>Heatmap</h2>
-
       <HeatmapContainer>
-        <Svg className="d3-component" ref={d3Container} />
+        <HeatmapInner>
+          <Svg className="d3-component" ref={d3Container} />
+        </HeatmapInner>
       </HeatmapContainer>
-      <Tooltip ref={tooltipRef}></Tooltip>
+      <Tooltip ref={tooltipRef}>
+        &nbsp;-&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;
+      </Tooltip>
       {springs
         .slice()
         .reverse()
-        .map((props, i) => (
-          <div key={i} style={{ display: "flex", overflowY: `hidden` }}>
-            <div style={{ width: `40px` }}>V{refs.length - 1 - i}</div>
-            <div
-              style={{
-                display: `flex`,
-                justifyContent: `center`,
-                backgroundColor: isDarkMode
-                  ? Colors.blackDark
-                  : Colors.silverLight,
-                width: `200px`,
-                height: 21,
-              }}
-            >
-              <Total
+        .map((props, i) => {
+          const grade = refs.length - 1 - i
+          return (
+            <div key={i} style={{ display: "flex", alignItems: "center" }}>
+              <VGrade>
+                <small>V{grade}</small>
+              </VGrade>
+              <Spacer x={10} />
+              <animated.div
                 style={{
-                  width: props.totalWidth,
+                  display: `flex`,
                   backgroundColor: isDarkMode
-                    ? Colors.blackLighter
-                    : Colors.silverDarker,
+                    ? Colors.blackDark
+                    : Colors.silverLight,
+                  // height: 18,
+                  width: props.total.interpolate((a) => {
+                    return (a + 1) * 30
+                  }),
                 }}
               >
-                <Sends
-                  style={{
-                    width: props.sendWidth,
-                    ...props,
-                  }}
-                >
-                  <div style={{ position: `absolute` }} ref={refs[i]}>
-                    ?
-                  </div>
-                </Sends>
-              </Total>
+                <Total style={{ width: props.totalWidth }}>
+                  <Sends style={{ width: props.sendWidth, ...props }}></Sends>
+                </Total>
+                <Spacer x={5} />
+                <small style={{ minWidth: 30 }} ref={refs[i]}>
+                  ?
+                </small>
+              </animated.div>
             </div>
-          </div>
-        ))}
+          )
+        })}
     </>
   )
 }
+
+const VGrade = styled(animated.div)`
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dotted ${(p: BaseProps) => p.theme.commentRenderer.borderColor};
+  border-radius: 50%;
+  margin-top: 2px;
+  margin-bottom: 2px;
+`

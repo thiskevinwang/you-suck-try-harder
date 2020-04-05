@@ -37,22 +37,13 @@ const UserPage = ({ id }) => {
   const { data: uData } = useQuery(GET_USER_BY_ID_QUERY, { variables: { id } })
   const { chunked: heatmapData } = useQueryHeatmap({ userId: id, count: 365 })
 
-  // const { data: uData, error: uError, isValidating: uIsValidating } = useSWR<
-  //   ApolloQueryResult<{ user: User }>
-  // >(`/api/user/${id}`, fetcher)
-  // const {
-  //   data: hData,
-  //   error: hError,
-  //   isValidating: hIsValidating,
-  //   revalidate,
-  // } = useSWR(() => `/api/heatmap?count=365&userId=${id}`, fetcher)
-
   const { currentUserId } = useAuthentication()
   const isCurrentUser = id === currentUserId
 
   return (
     <Layout>
       <UserDetails user={uData?.user}></UserDetails>
+      <h2>Heatmap</h2>
       <HeatmapLoadingWrapper data={heatmapData}></HeatmapLoadingWrapper>
       {isCurrentUser && (
         <>
