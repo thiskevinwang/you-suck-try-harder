@@ -169,7 +169,7 @@ export default function Heatmap({ data }: Props) {
         const total = sends + fails
 
         const percent = (sends / total) * 100
-        console.log(`V${grade}:`, `( ${sends} / ${total} )`, `${percent}%`)
+        // console.log(`V${grade}:`, `( ${sends} / ${total} )`, `${percent}%`)
 
         set(
           (i) =>
