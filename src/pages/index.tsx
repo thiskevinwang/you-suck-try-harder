@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { useQuery, gql } from "@apollo/client"
+import { useTransition, animated } from "react-spring"
 
 import { SEO } from "components/SEO"
 import { Layout } from "components/Layout"
@@ -14,12 +15,13 @@ const UserDetailsLink = ({ id, user, isActive }) => (
     </a>
   </Link>
 )
+interface User {
+  id: string
+  username: string
+  avatar_url: string
+}
 interface Users {
-  users: {
-    id: string
-    username: string
-    avatar_url: string
-  }[]
+  users: User[]
 }
 
 const GET_ALL_USERS_QUERY = gql`
@@ -35,22 +37,38 @@ const GET_ALL_USERS_QUERY = gql`
 `
 
 function Overview() {
-  const { data } = useQuery<Users>(GET_ALL_USERS_QUERY)
+  const { data: uData } = useQuery<Users>(GET_ALL_USERS_QUERY)
   const { currentUserId } = useAuthentication()
+
+  const transition = useTransition(uData?.users, {
+    from: { opacity: 0, transform: "translate3d(-10%,0,0)" },
+    enter: (_item) => ({
+      opacity: 1,
+      transform: "translate3d(0%,0,0)",
+    }),
+    leave: { opacity: 0, transform: "translate3d(20%,0,0)" },
+    trail: 100,
+  })
   return (
     <>
       <SEO title="Overview" />
       <Layout>
         <h1>Overview</h1>
         <ul>
-          {data?.users.map((user) => (
-            <UserDetailsLink
-              id={user.id}
-              key={`${user.id}-${user.username}`}
-              user={user}
-              isActive={user.id === currentUserId}
-            />
-          )) ?? <UserDetailsLoader />}
+          {uData ? (
+            transition((props, user) => (
+              <animated.div style={props}>
+                <UserDetailsLink
+                  id={user.id}
+                  key={`${user.id}-${user.username}`}
+                  user={user}
+                  isActive={user.id === currentUserId}
+                />
+              </animated.div>
+            ))
+          ) : (
+            <UserDetailsLoader />
+          )}
         </ul>
       </Layout>
     </>
