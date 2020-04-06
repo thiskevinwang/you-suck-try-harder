@@ -1,4 +1,4 @@
-import { useRef, useEffect, MutableRefObject } from "react"
+import { useRef, useEffect, MutableRefObject, createRef } from "react"
 import * as d3 from "d3"
 import _ from "lodash"
 import styled, { BaseProps } from "styled-components"
@@ -65,7 +65,7 @@ export default function Heatmap({ data }: Props) {
   const d3ref = useRef(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
 
-  const refs = GRADES.map((e, i) => useRef<HTMLDivElement>(null))
+  const refs = GRADES.map((e, i) => createRef<HTMLDivElement>())
 
   const [springs, set] = useSprings(refs.length, (index) => ({
     opacity: 0.2,
