@@ -3,6 +3,8 @@ import * as d3 from "d3"
 import _ from "lodash"
 import styled, { BaseProps } from "styled-components"
 import { animated, useSprings } from "react-spring"
+import { useDrag } from "react-use-gesture"
+import useMeasure from "react-use-measure"
 import { useSelector } from "react-redux"
 
 import { RootState } from "state"
@@ -321,6 +323,10 @@ export default function Heatmap({ data }: Props) {
     }
   }, [data, d3ref.current, isDarkMode])
 
+  const [measureRef, bounds] = useMeasure()
+  const { props, bind, pages } = usePager(bounds.width)
+  console.log("bind", bind())
+  console.log("bounds", bounds)
   return (
     <>
       <HeatmapContainer>
@@ -332,6 +338,89 @@ export default function Heatmap({ data }: Props) {
         &nbsp;-&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;
       </Tooltip>
       <StatusBars springs={springs} refs={refs} />
+      <div style={{ position: "relative" }}>
+        <PagerWrapper style={{ height: bounds.height }}>
+          {props.map(({ x, display, scale }, i) => (
+            <PagerGestureHandler
+              {...bind()}
+              ref={measureRef}
+              key={i}
+              style={{ display, x }}
+            >
+              <PagerItem
+                style={{ scale, backgroundImage: `url(${pages[i]})` }}
+              />
+            </PagerGestureHandler>
+          ))}
+        </PagerWrapper>
+      </div>
     </>
   )
+}
+
+/**
+ * GIVE ME HEIGHHT
+ */
+const PagerWrapper = styled(animated.div)`
+  border: 1px dotted purple;
+  overscroll-behavior-y: contain;
+  user-select: none;
+  position: absolute;
+  overflow: hidden;
+
+  width: 100%;
+`
+
+/**
+ * MEASURE ME
+ */
+const PagerGestureHandler = styled(animated.div)`
+  border: 3px dotted red;
+  position: absolute;
+  width: 100%;
+  height: 360px;
+  willchange: transform;
+`
+
+const PagerItem = styled(animated.div)`
+  border: 3px dashed green;
+  height: 100%;
+  width: 100%;
+`
+
+const usePager = (
+  width = window.innerWidth,
+  pages = [
+    "https://images.pexels.com/photos/62689/pexels-photo-62689.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+    "https://images.pexels.com/photos/296878/pexels-photo-296878.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+  ]
+) => {
+  const index = useRef(0)
+  const [props, set] = useSprings(pages.length, (i) => ({
+    x: (i * width) / 2,
+    scale: 1,
+    display: "block",
+  }))
+  const bind = useDrag(
+    ({ down, movement: [mx], direction: [xDir], distance, cancel }) => {
+      if (down && distance > width / 2) {
+        cancel()
+
+        index.current = _.clamp(
+          index.current + (xDir > 0 ? -1 : 1),
+          0,
+          pages.length - 1
+        )
+      }
+
+      set((i) => {
+        if (i < index.current - 1 || i > index.current + 1)
+          return { display: "none" }
+        const x = (i - index.current) * width + (down ? mx : 0)
+        const scale = down ? 1 - distance / width / 2 : 1
+        return { x, scale, display: "block" }
+      })
+    }
+  )
+  return { props, bind, pages }
 }
