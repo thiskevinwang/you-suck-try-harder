@@ -43,42 +43,25 @@ export interface Props {
   data?: Week[]
 }
 
-/**
- * util func
- * @see https://observablehq.com/@d3/calendar-view
- *
- * @param d u
- */
-const formatDay = (d: Date) =>
-  ["", "Mon", "", "Wed", "", "Fri", ""][d.getUTCDay()]
-
-const countDay = (d) => (d.getUTCDay() + 6) % 7
-
 const BASE_LIGHT = Colors.silver
 const BASE_DARK = Colors.black
 const LIGHT = Colors.geistCyan
 const DARK = Colors.geistPurple
 
-const DOMAIN = [0, 40]
-/**
- * @usage
- * ```ts
- * .attr("fill", d => myColor(d.value))
- */
 const myColor = d3
   .scaleLinear<string, string>()
-  .domain(DOMAIN)
+  .domain([0, 40])
   .range([BASE_LIGHT, LIGHT])
 const myDarkColor = d3
   .scaleLinear<string, string>()
-  .domain(DOMAIN)
+  .domain([0, 40])
   .range([BASE_DARK, DARK])
 
 /**
  * the `data` prop is `_.chunk(..., 7)`'d
  */
 export default function Heatmap({ data }: Props) {
-  const d3Container = useRef(null)
+  const d3ref = useRef(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
 
   const refs = GRADES.map((e, i) => useRef<HTMLDivElement>(null))
@@ -146,14 +129,8 @@ export default function Heatmap({ data }: Props) {
           backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
         }
     )
-    // set(
-    //   (i) =>
-    //     missingGrades.includes(`${i}`) && {
-    //       opacity: 0,
-    //       backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
-    //     }
-    // )
 
+    const r = [...refs].reverse()
     grades
       .slice()
       .reverse()
@@ -180,7 +157,8 @@ export default function Heatmap({ data }: Props) {
               total,
             }
         )
-        refs.slice().reverse()[grade].current.innerHTML = `${sends} / ${total}`
+
+        r[grade].current.innerHTML = `${sends} / ${total}`
       })
     missingGrades
       .slice()
@@ -198,19 +176,16 @@ export default function Heatmap({ data }: Props) {
               delay: 300,
             }
         )
-        refs.slice().reverse()[grade].current.innerHTML = `-`
+        r[grade].current.innerHTML = `-`
       })
   }
 
   useEffect(() => {
-    if (data && d3Container.current) {
-      const svg = d3
-        /** create an empty sub-selection */
-        .select(d3Container.current)
+    if (data && d3ref.current) {
+      /** create an empty sub-selection */
+      const svg = d3.select(d3ref.current)
 
-      /**
-       * Mon Wed Fri labels
-       */
+      /** create "Mon Wed Fri" labels */
       svg
         .append("g")
         .attr("text-anchor", "end")
@@ -220,14 +195,11 @@ export default function Heatmap({ data }: Props) {
         .attr("fill", isDarkMode ? "white" : "black")
         .attr("class", "wday")
         .attr("x", -5)
-        // .attr("y", d => (countDay(d) + 0.5) * 17)
-        .attr("y", (d, i) => {
-          return (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN
-        })
+        .attr("y", (d, i) => (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN)
         .attr("dy", HEIGHT)
         // .attr("dx", -10)
         .attr("font-size", HEIGHT)
-        .text(formatDay)
+        .text((d) => ["", "Mon", "", "Wed", "", "Fri", ""][d.getUTCDay()])
 
       const columns = svg
         .selectAll("g")
@@ -316,7 +288,8 @@ export default function Heatmap({ data }: Props) {
           return (i + OFFSET_LEFT) * (HEIGHT + MARGIN) + STROKE_MARGIN
         })
 
-      const squares = columns
+      /* GENERATE SQUARES */
+      columns
         .selectAll("rect")
         /** past nested data to <rect> children */
         .data((d: Week) => d)
@@ -328,72 +301,65 @@ export default function Heatmap({ data }: Props) {
         .attr("width", HEIGHT)
         .attr("height", HEIGHT)
         /** offset Y, based on the day */
-        .attr("y", (d, i) => {
-          return (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN
-        })
+        .attr("y", (d, i) => (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN)
         .attr("data-count", (d) => d.attempts?.length ?? 0)
         .attr("data-date", (d) => d.date)
         .attr("fill", (d) => {
           const value = d.attempts?.length ?? 0
           return isDarkMode ? myDarkColor(value) : myColor(value)
         })
-        /** @TODO - buggy */
-        // .attr("tabindex", "0")
-        // .on("focus", mousemove)
-        // .on("blur", mouseleave)
+        .attr("tabindex", "0")
+        .on("focus", mousemove)
+        .on("blur", mouseleave)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
     }
-  }, [data, d3Container.current, isDarkMode])
+  }, [data, d3ref.current, isDarkMode])
 
   return (
     <>
       <HeatmapContainer>
         <HeatmapInner>
-          <Svg className="d3-component" ref={d3Container} />
+          <Svg className="d3-component" ref={d3ref} />
         </HeatmapInner>
       </HeatmapContainer>
       <Tooltip ref={tooltipRef}>
         &nbsp;-&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;
       </Tooltip>
-      {springs
-        .slice()
-        .reverse()
-        .map((props, i) => {
-          const grade = refs.length - 1 - i
-          return (
-            <div key={i} style={{ display: "flex", alignItems: "center" }}>
-              <VGrade>
-                <small>V{grade}</small>
-              </VGrade>
-              <Spacer x={10} />
-              <animated.div
-                style={{
-                  display: `flex`,
-                  backgroundColor: isDarkMode
-                    ? Colors.blackDark
-                    : Colors.silverLight,
-                  // height: 18,
-                  width: props.total.interpolate((a) => {
-                    return (a + 1) * 30
-                  }),
-                }}
-              >
-                <Total style={{ width: props.totalWidth }}>
-                  <Sends style={{ width: props.sendWidth, ...props }}></Sends>
-                </Total>
-                <Spacer x={5} />
-                <small style={{ minWidth: 30 }} ref={refs[i]}>
-                  ?
-                </small>
-              </animated.div>
-            </div>
-          )
-        })}
+      {[...springs].reverse().map((props, i) => {
+        const grade = refs.length - 1 - i
+        return (
+          <FlexRowAlignCenter key={i}>
+            <VGrade>
+              <small>V{grade}</small>
+            </VGrade>
+            <Spacer x={10} />
+            <animated.div // container for percentage bars
+              style={{
+                display: `flex`,
+                width: props.total.to((a) => (a + 2) * 30),
+              }}
+            >
+              <Total style={{ width: props.totalWidth }}>
+                <Sends style={{ width: props.sendWidth, ...props }}></Sends>
+              </Total>
+              <Spacer x={5} />
+              <small style={{ minWidth: 60 }} ref={refs[i]}>
+                ?
+              </small>
+            </animated.div>
+          </FlexRowAlignCenter>
+        )
+      })}
     </>
   )
 }
+
+const FlexRowAlignCenter = styled.div`
+  display: flex;
+  align-items: center;
+`
 
 const VGrade = styled(animated.div)`
   width: 30px;
