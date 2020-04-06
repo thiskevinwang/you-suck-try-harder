@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, MutableRefObject } from "react"
 import * as d3 from "d3"
 import _ from "lodash"
 import styled, { BaseProps } from "styled-components"
@@ -97,15 +97,18 @@ export default function Heatmap({ data }: Props) {
         }
     )
   }
-  const mousemove = function (d: Bin) {
-    const tooltip = tooltipRef.current
 
+  const updateDateLabel = (d: Bin, ref: MutableRefObject<HTMLDivElement>) => {
     const timestamp = new Date(d.date)
     const year = timestamp.getFullYear()
     const month = timestamp.getMonth() + 1
     const date = timestamp.getDate()
     const display = `${month}-${date}-${year}`
-    tooltip.innerHTML = display
+    ref.current.innerHTML = display
+  }
+
+  const mousemove = function (d: Bin) {
+    updateDateLabel(d, tooltipRef)
 
     /**
      * group together based on grade (0-10)
