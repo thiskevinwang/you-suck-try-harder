@@ -3,6 +3,8 @@
  * names on https://zeit.co/design/icons
  */
 export { BarChart } from "./bar-chart"
+export { Checkbox } from "./checkbox"
+export { CheckboxFill } from "./checkbox-fill"
 export { CheckInCircleFill } from "./check-in-circle-fill"
 export { CheckInCircle } from "./check-in-circle"
 export { Home } from "./home"
