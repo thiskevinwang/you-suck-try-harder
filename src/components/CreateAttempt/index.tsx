@@ -2,19 +2,21 @@ import * as React from "react"
 import styled, { BaseProps } from "styled-components"
 import { Formik, Form, FieldArray, useField } from "formik"
 import { gql, useMutation, DataProxy, FetchResult } from "@apollo/client"
+import { Grid } from "@material-ui/core"
 
 import { Spacer } from "components/Spacer"
-import { SubmitButton, Field, DatePickerField } from "components/Form"
+import {
+  CheckboxField,
+  SubmitButton,
+  Field,
+  DatePickerField,
+} from "components/Form"
 import { StyledCircularProgress } from "components/Loaders/StyledCircularProgress"
 import { GET_ATTEMPTS_BY_USER_ID } from "hooks/useQueryHeatmap"
 
 import { ValidationSchema } from "./validation"
 
 import { MinusSquare } from "icons/minus-square"
-import { CheckInCircle } from "icons/check-in-circle"
-import { CheckInCircleFill } from "icons/check-in-circle-fill"
-import { XCircle } from "icons/x-circle"
-import { XCircleFill } from "icons/x-circle-fill"
 
 const CREATE_ATTEMPT_MUTATION = gql`
   mutation CreateAttempt(
@@ -35,47 +37,37 @@ const CREATE_ATTEMPT_MUTATION = gql`
   }
 `
 
-const YesNoSelect = ({ name, label = "Label", ...props }) => {
-  const [field, meta, { setValue }] = useField({ name })
-  const setTrue = () => setValue(true)
-  const setFalse = () => setValue(false)
+const CheckboxComponent = ({ name, label = "Label", ...props }) => {
+  const [field, meta, { setValue }] = useField({ name, type: "checkbox" })
+
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        alignItems: "center",
-        alignSelf: "center",
-      }}
-    >
-      {label}
-      <div>
-        <Button
-          {...field}
-          type="button"
-          onClick={setTrue}
-          hasError={((meta.touched && meta.error) as unknown) as boolean}
+    <Grid container>
+      <Grid item xs={"auto"}>
+        <span
+          style={{
+            textTransform: "uppercase",
+            fontSize: "0.9rem",
+            letterSpacing: "2px",
+          }}
         >
-          {field.value === true ? <CheckInCircleFill /> : <CheckInCircle />}
-        </Button>
-        <Button
+          {label}
+        </span>
+      </Grid>
+      <Grid item xs={"auto"}>
+        <CheckboxField
           {...field}
-          type="button"
-          onClick={setFalse}
-          hasError={((meta.touched && meta.error) as unknown) as boolean}
-        >
-          {field.value === false ? <XCircleFill /> : <XCircle />}
-        </Button>
-      </div>
-    </div>
+          id={field.name}
+          checked={field.checked ?? field.value}
+        />
+      </Grid>
+    </Grid>
   )
 }
 
 const DEFAULT_ATTEMPT = {
   grade: undefined,
-  send: undefined,
-  flash: undefined,
+  send: false,
+  flash: false,
   date: undefined,
 }
 export const CreateAttempt = ({ currentUserId }) => {
@@ -155,35 +147,54 @@ export const CreateAttempt = ({ currentUserId }) => {
                   const handleRemove = () => arrayHelpers.remove(index)
                   return (
                     <React.Fragment key={index}>
-                      <div style={{ display: "flex" }}>
-                        <Button type="button" onClick={handleRemove}>
-                          <MinusSquare />
-                        </Button>
+                      <Grid container alignItems={"center"}>
+                        {/** 1 */}
+                        <Grid item xs={2} sm={2} md={1} direction={"column"}>
+                          <Button type="button" onClick={handleRemove}>
+                            <MinusSquare />
+                          </Button>
+                          <Spacer y={17} />
+                        </Grid>
 
-                        <Field
-                          type={"text"}
-                          name={`attempts[${index}].grade`}
-                          id={`attempts[${index}].grade`}
-                          label={`V Grade`}
-                          placeholder={`V Grade`}
-                        />
+                        {/** 2 */}
+                        <Grid item xs={8} sm={8} md={10}>
+                          <Grid container>
+                            <Grid item xs={12} sm={5} md={4} lg={4}>
+                              <Field
+                                type={"text"}
+                                name={`attempts[${index}].grade`}
+                                id={`attempts[${index}].grade`}
+                                label={`V Grade`}
+                                placeholder={`V Grade`}
+                              />
+                            </Grid>
 
-                        <YesNoSelect
-                          name={`attempts[${index}].send`}
-                          label={"Send"}
-                        />
-                        <YesNoSelect
-                          name={`attempts[${index}].flash`}
-                          label={"Flash"}
-                        />
-                        <DatePickerField
-                          type={"text"}
-                          name={`attempts[${index}].date`}
-                          label={"Date"}
-                          placeholder={"MM/DD/YYYY"}
-                        />
-                      </div>
-                      <Spacer y={20} />
+                            <Grid item xs={12} sm={5} md={4} lg={4}>
+                              <DatePickerField
+                                type={"text"}
+                                name={`attempts[${index}].date`}
+                                label={"Date"}
+                                placeholder={"MM/DD/YYYY"}
+                              />
+                            </Grid>
+                          </Grid>
+                        </Grid>
+
+                        {/** 3 */}
+                        <Grid item xs={2} sm={2} md={1}>
+                          <Grid container direction={"column"}>
+                            <CheckboxComponent
+                              name={`attempts[${index}].send`}
+                              label={"Send"}
+                            />
+                            <CheckboxComponent
+                              name={`attempts[${index}].flash`}
+                              label={"Flash"}
+                            />
+                            <Spacer y={17} />
+                          </Grid>
+                        </Grid>
+                      </Grid>
                     </React.Fragment>
                   )
                 })}
@@ -253,9 +264,10 @@ const Button = styled.button<ButtonProps>`
       stroke: ${(p: BaseProps) => p.theme.colors.main};
     }
   }
+  padding-left: 0px;
+  padding-right: 0px;
   /* disable focus border */
   outline: none;
-  display: inline-block;
   border: none;
   background: none;
   cursor: pointer;

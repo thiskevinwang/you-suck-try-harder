@@ -86,7 +86,10 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
   }
 
   input::placeholder {
-    transition: opacity 150ms ease-in-out;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+
+    transition: opacity 200ms ease-in-out;
     will-change: opacity;
   }
   input:focus::placeholder {
@@ -99,7 +102,7 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
     opacity: 1;
   }
 
-  > label {
+  label {
     border-radius: 0.25rem;
     font-size: 0.7rem;
     opacity: 0;
@@ -162,14 +165,19 @@ export const DatePickerField = ({
         placeholderText={"MM/DD/YYYY"}
         selected={field.value}
         onChange={helpers.setValue}
+        onSelect={helpers.setValue}
         onBlur={field.onBlur}
         maxDate={new Date()}
-        // customInput={<input {...field} {...props} value={field.value ?? ""} />}
+        // customInput={
+        //   <>
+        //     <input {...field} {...props} value={field.value ?? ""} />
+        //     <label htmlFor={props.id ?? props.name}>{label}</label>
+        //   </>
+        // }
         dateFormat={dateFormat}
         wrapperClassName={"react-datepicker-input"}
       />
 
-      <label htmlFor={props.id ?? props.name}>{label}</label>
       {meta.touched && meta.error ? (
         <FieldError>{meta.error}</FieldError>
       ) : null}

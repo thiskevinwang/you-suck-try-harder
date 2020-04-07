@@ -85,7 +85,10 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
   }
 
   > input::placeholder {
-    transition: opacity 150ms ease-in-out;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+
+    transition: opacity 200ms ease-in-out;
     will-change: opacity;
   }
   > input:focus::placeholder {
