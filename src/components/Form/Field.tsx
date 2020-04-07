@@ -4,6 +4,8 @@ import styled, { BaseProps } from "styled-components"
 import { animated } from "react-spring"
 import theme from "styled-theming"
 
+import { Spacer } from "components/Spacer"
+
 const background = theme("mode", {
   light: (props: BaseProps) => props.theme.formInput.background,
   dark: (props: BaseProps) => props.theme.formInput.background,
@@ -51,7 +53,7 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
       dark: "var(--geist-purple)",
     })};
 
-    height: 2.8rem;
+    height: 2rem;
     background: ${background};
     border-color: ${theme("mode", {
       light: (props) => (props.hasError ? "red" : borderColorBase),
@@ -122,7 +124,7 @@ const FieldError = styled(animated.div)`
     light: "red",
     dark: "darkred",
   })};
-  transform: translateY(3.1rem);
+  transform: translateY(2.4rem);
 `
 
 interface FieldProps {
@@ -164,6 +166,7 @@ export const Field = ({ label, ...props }: FieldProps) => {
       {meta.touched && meta.error ? (
         <FieldError>{meta.error}</FieldError>
       ) : null}
+      <Spacer y={17} />
     </FieldRenderer>
   )
 }

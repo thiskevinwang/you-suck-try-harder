@@ -5,6 +5,8 @@ import { animated } from "react-spring"
 import theme from "styled-theming"
 import DatePicker from "react-datepicker"
 
+import { Spacer } from "components/Spacer"
+
 const background = theme("mode", {
   light: (props: BaseProps) => props.theme.formInput.background,
   dark: (props: BaseProps) => props.theme.formInput.background,
@@ -52,7 +54,7 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
       dark: "var(--geist-purple)",
     })};
 
-    height: 2.8rem;
+    height: 2rem;
     background: ${background};
     border-color: ${theme("mode", {
       light: (props) => (props.hasError ? "red" : borderColorBase),
@@ -123,7 +125,7 @@ const FieldError = styled(animated.div)`
     light: "red",
     dark: "darkred",
   })};
-  transform: translateY(3.1rem);
+  transform: translateY(2.4rem);
 `
 
 interface DatePickerFieldProps {
@@ -170,6 +172,7 @@ export const DatePickerField = ({
       {meta.touched && meta.error ? (
         <FieldError>{meta.error}</FieldError>
       ) : null}
+      <Spacer y={17} />
     </FieldRenderer>
   )
 }
