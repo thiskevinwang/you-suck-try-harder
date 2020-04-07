@@ -22,23 +22,25 @@ const commentRenderer = {
 }
 
 const darkTheme = {
-  topAsideHeight: "2.5rem",
-  headerHeight: "4rem",
-  formInput,
-  formButton,
-  commentRenderer,
-  background: Colors.blackDarker,
+  background: Colors.blackDark,
   colors: {
-    main: Colors.silverLighter,
+    body: Colors.blackLighter,
+    borderColor: Colors.greyDarker,
     contrast: Colors.blackDarker,
     error: Colors.errorDark,
-    borderColor: Colors.greyDarker,
-    leftSidebarNavBackground: Colors.blackDark,
+
     /**
      * - geistPurple for Dark
      */
     highlight: Colors.geistPurple,
+    leftSidebarNavBackground: Colors.black,
+    main: Colors.silverLighter,
   },
+  commentRenderer,
+  formButton,
+  formInput,
+  headerHeight: "4rem",
+  topAsideHeight: "2.5rem",
 }
 
 export default darkTheme

@@ -58,6 +58,9 @@ const SiteContentWrapper = styled.div`
 `
 
 const SiteContent = styled(animated.main)`
+  background-color: ${(p: BaseProps) => p.theme.colors.body};
+  transition: background-color 200ms ease-in-out;
+  will-change: background-color;
   padding-top: calc(
     ${(p: BaseProps) => p.theme.headerHeight} +
       ${(p: BaseProps) => p.theme.topAsideHeight}
