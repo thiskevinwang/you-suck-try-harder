@@ -156,11 +156,13 @@ export const DatePickerField = ({
     >
       <DatePicker
         name={field.name}
+        autoComplete={"off"}
         placeholderText={"MM/DD/YYYY"}
         selected={field.value}
         onChange={helpers.setValue}
         onBlur={field.onBlur}
-        customInput={<input {...field} {...props} value={field.value ?? ""} />}
+        maxDate={new Date()}
+        // customInput={<input {...field} {...props} value={field.value ?? ""} />}
         dateFormat={dateFormat}
       />
 
