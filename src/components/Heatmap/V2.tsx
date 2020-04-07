@@ -9,7 +9,10 @@ import { useSelector } from "react-redux"
 
 import { RootState } from "state"
 import { Colors } from "consts/Colors"
+import { CreateAttempt } from "components/CreateAttempt"
 import { Spacer } from "components/Spacer"
+import { useAuthentication } from "hooks/useAuthentication"
+import { Square } from "icons"
 
 import { StatusBars } from "./StatusBars"
 import {
@@ -46,8 +49,8 @@ export interface Props {
   data?: Week[]
 }
 
-const BASE_LIGHT = Colors.silver
-const BASE_DARK = Colors.black
+const BASE_LIGHT = Colors.silverDarker
+const BASE_DARK = Colors.greyDarker
 const LIGHT = Colors.geistCyan
 const DARK = Colors.geistPurple
 
@@ -164,7 +167,9 @@ export default function Heatmap({ data }: Props) {
             }
         )
 
-        r[grade].current.innerHTML = `${sends} / ${total}`
+        if (r[grade].current && r[grade].current.innerHTML) {
+          r[grade].current.innerHTML = `${sends} / ${total}`
+        }
       })
     missingGrades
       .slice()
@@ -182,7 +187,9 @@ export default function Heatmap({ data }: Props) {
               delay: 300,
             }
         )
-        r[grade].current.innerHTML = `-`
+        if (r[grade].current) {
+          r[grade].current.innerHTML = `-`
+        }
       })
   }
 
@@ -323,10 +330,11 @@ export default function Heatmap({ data }: Props) {
     }
   }, [data, d3ref.current, isDarkMode])
 
-  const [measureRef, bounds] = useMeasure()
-  const { props, bind, pages } = usePager(bounds.width)
-  console.log("bind", bind())
-  console.log("bounds", bounds)
+  const { currentUserId } = useAuthentication()
+  const [measureRef1, bounds1] = useMeasure()
+  const [measureRef2, bounds2] = useMeasure()
+  const { props, bind } = usePager(bounds1.width)
+
   return (
     <>
       <HeatmapContainer>
@@ -337,37 +345,70 @@ export default function Heatmap({ data }: Props) {
       <Tooltip ref={tooltipRef}>
         &nbsp;-&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;
       </Tooltip>
-      <StatusBars springs={springs} refs={refs} />
-      <div style={{ position: "relative" }}>
-        <PagerWrapper style={{ height: bounds.height }}>
-          {props.map(({ x, display, scale }, i) => (
+      {/*<StatusBars springs={springs} refs={refs} />*/}
+      <div
+        style={{
+          position: "relative",
+          height: _.max([bounds1.height, bounds2.height]),
+        }}
+      >
+        <PagerWrapper
+          style={{ height: _.max([bounds1.height, bounds2.height]) }}
+        >
+          {props.map(({ x, display, scale, opacity }, i) => (
             <PagerGestureHandler
-              {...bind()}
-              ref={measureRef}
+              // {...bind()}
+              // ref={measureRef}
               key={i}
               style={{ display, x }}
             >
-              <PagerItem
-                style={{ scale, backgroundImage: `url(${pages[i]})` }}
-              />
+              <PagerItem style={{ scale, opacity }}>
+                {i === 0 ? (
+                  <div ref={measureRef1} style={{ padding: "1rem" }}>
+                    <DragWrapper {...bind()}>
+                      <Square />
+                    </DragWrapper>
+                    <StatusBars springs={springs} refs={refs} />
+                  </div>
+                ) : (
+                  <div ref={measureRef2} style={{ padding: "1rem" }}>
+                    <DragWrapper {...bind()}>
+                      <Square />
+                    </DragWrapper>
+                    <h3>Log Attempt(s)</h3>
+                    <CreateAttempt currentUserId={currentUserId} />
+                  </div>
+                )}
+              </PagerItem>
             </PagerGestureHandler>
           ))}
         </PagerWrapper>
       </div>
+      <Spacer y={40} />
     </>
   )
 }
+
+const DragWrapper = styled(animated.div)`
+  display: flex;
+  justify-content: center;
+
+  cursor: grab;
+  :active {
+    cursor: grabbing;
+  }
+`
 
 /**
  * GIVE ME HEIGHHT
  */
 const PagerWrapper = styled(animated.div)`
-  border: 1px dotted purple;
+  border: 1px solid ${(p: BaseProps) => p.theme.commentRenderer.borderColor};
+  border-radius: 5px;
   overscroll-behavior-y: contain;
   user-select: none;
   position: absolute;
   overflow: hidden;
-
   width: 100%;
 `
 
@@ -375,35 +416,33 @@ const PagerWrapper = styled(animated.div)`
  * MEASURE ME
  */
 const PagerGestureHandler = styled(animated.div)`
-  border: 3px dotted red;
+  /* border: 3px dotted red; */
   position: absolute;
   width: 100%;
-  height: 360px;
+  /* height: 360px; */
   willchange: transform;
 `
 
 const PagerItem = styled(animated.div)`
-  border: 3px dashed green;
+  /* border: 3px dashed green; */
   height: 100%;
   width: 100%;
+
+  /* padding-left: 1rem; */
+  /* padding-right: 1rem; */
 `
 
-const usePager = (
-  width = window.innerWidth,
-  pages = [
-    "https://images.pexels.com/photos/62689/pexels-photo-62689.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-    "https://images.pexels.com/photos/296878/pexels-photo-296878.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-  ]
-) => {
+const usePager = (width, pages = [null, null]) => {
   const index = useRef(0)
   const [props, set] = useSprings(pages.length, (i) => ({
     x: (i * width) / 2,
     scale: 1,
     display: "block",
+    opacity: i === 0 ? 1 : 0,
   }))
   const bind = useDrag(
     ({ down, movement: [mx], direction: [xDir], distance, cancel }) => {
-      if (down && distance > width / 2) {
+      if (down && distance > width / 4) {
         cancel()
 
         index.current = _.clamp(
@@ -416,11 +455,17 @@ const usePager = (
       set((i) => {
         if (i < index.current - 1 || i > index.current + 1)
           return { display: "none" }
+
         const x = (i - index.current) * width + (down ? mx : 0)
         const scale = down ? 1 - distance / width / 2 : 1
-        return { x, scale, display: "block" }
+        return {
+          x,
+          scale,
+          display: "block",
+          opacity: i === index.current ? 1 : 0,
+        }
       })
     }
   )
-  return { props, bind, pages }
+  return { props, bind }
 }
