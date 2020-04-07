@@ -166,6 +166,7 @@ export const DatePickerField = ({
         maxDate={new Date()}
         // customInput={<input {...field} {...props} value={field.value ?? ""} />}
         dateFormat={dateFormat}
+        wrapperClassName={"react-datepicker-input"}
       />
 
       <label htmlFor={props.id ?? props.name}>{label}</label>
