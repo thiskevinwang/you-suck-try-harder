@@ -1,7 +1,7 @@
 import { Colors } from "consts/Colors"
 
 const formInput = {
-  background: Colors.blackDarker,
+  background: Colors.black,
   borderColorBase: Colors.greyDarker,
   borderColorFocus: Colors.silverLighter,
   borderColorError: Colors.errorDark,
