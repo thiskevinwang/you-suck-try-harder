@@ -7,6 +7,7 @@ import { Header } from "components/Header"
 import LeftSidebar from "components/LeftSidebar"
 import TopAside from "components/TopAside"
 import { RootState, setIsNavOpen } from "state"
+import { Colors } from "consts/Colors"
 
 import { Breakpoints } from "consts/Breakpoints"
 
@@ -33,6 +34,7 @@ export const Layout: React.FC = ({ children }) => {
           </SiteContent>
         </SiteContentWrapper>
       </SiteWrapper>
+      <Footer></Footer>
     </>
   )
 }
@@ -47,10 +49,7 @@ const OutsideClickHelper = styled.div`
 
 const SiteWrapper = styled(animated.div)`
   display: flex;
-  min-height: 100vh;
-
-  /* NOTE TO SELF, this conflicts with STICKY because CSS IS A BITCH */
-  /* overflow-x: hidden; */
+  position: relative;
 `
 
 const SiteContentWrapper = styled.div`
@@ -71,4 +70,11 @@ const SiteContent = styled(animated.main)`
 const Margin = styled.div`
   margin-left: 2rem;
   margin-right: 2rem;
+`
+
+const Footer = styled.footer`
+  background: ${(p: BaseProps) =>
+    p.theme.isDarkMode ? Colors.blackDarker : Colors.silverDark};
+  height: 120px;
+  z-index: -1000;
 `
