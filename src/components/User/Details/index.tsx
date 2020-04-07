@@ -25,9 +25,7 @@ export const UserDetails: React.FC<Props> = ({ user, isActive }) => {
       <img src={user.avatar_url} />
 
       <div>
-        <h3>
-          <code>{user.username}</code>
-        </h3>
+        <h3>{user.username}</h3>
         <p>
           {user.first_name} {user.last_name}
         </p>

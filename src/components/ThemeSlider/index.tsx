@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import styled from "styled-components"
+import styled, { BaseProps } from "styled-components"
 import { animated, useSpring } from "react-spring"
 import { useSelector, useDispatch } from "react-redux"
 
@@ -20,7 +20,7 @@ const Moon = styled(animated.div)`
   height: 2rem;
 `
 const Container = styled(animated.div)`
-  border-color: lightgrey;
+  border-color: ${(p: BaseProps) => p.theme.commentRenderer.borderColor};
   border-width: 1px;
   border-style: solid;
   border-radius: 25% / 50%;

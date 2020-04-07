@@ -28,9 +28,7 @@ const lightTheme = {
     borderColor: Colors.greyLighter,
     contrast: Colors.silverLighter,
     error: Colors.errorLight,
-    /**
-     * - geistCyan for Light
-     */
+    header: Colors.silverDark,
     highlight: Colors.geistCyan,
     leftSidebarNavBackground: Colors.silver,
     main: Colors.blackDarker,

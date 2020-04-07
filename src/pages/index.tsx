@@ -54,22 +54,20 @@ function Overview() {
       <SEO title="Overview" />
       <Layout>
         <h1>Overview</h1>
-        <ul>
-          {uData ? (
-            transition((props, user) => (
-              <animated.div style={props}>
-                <UserDetailsLink
-                  id={user.id}
-                  key={`${user.id}-${user.username}`}
-                  user={user}
-                  isActive={user.id === currentUserId}
-                />
-              </animated.div>
-            ))
-          ) : (
-            <UserDetailsLoader />
-          )}
-        </ul>
+        {uData ? (
+          transition((props, user) => (
+            <animated.div style={props}>
+              <UserDetailsLink
+                id={user.id}
+                key={`${user.id}-${user.username}`}
+                user={user}
+                isActive={user.id === currentUserId}
+              />
+            </animated.div>
+          ))
+        ) : (
+          <UserDetailsLoader />
+        )}
       </Layout>
     </>
   )

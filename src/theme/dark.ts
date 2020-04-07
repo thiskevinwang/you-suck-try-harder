@@ -24,14 +24,11 @@ const commentRenderer = {
 const darkTheme = {
   background: Colors.blackDark,
   colors: {
-    body: Colors.blackLighter,
+    body: Colors.blackLight,
     borderColor: Colors.greyDarker,
     contrast: Colors.blackDarker,
     error: Colors.errorDark,
-
-    /**
-     * - geistPurple for Dark
-     */
+    header: Colors.blackDark,
     highlight: Colors.geistPurple,
     leftSidebarNavBackground: Colors.black,
     main: Colors.silverLighter,

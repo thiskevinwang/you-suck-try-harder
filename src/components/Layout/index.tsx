@@ -55,12 +55,18 @@ const SiteWrapper = styled(animated.div)`
 const SiteContentWrapper = styled.div`
   flex-grow: 1;
   min-width: 20rem;
-`
 
-const SiteContent = styled(animated.main)`
   background-color: ${(p: BaseProps) => p.theme.colors.body};
   transition: background-color 200ms ease-in-out;
   will-change: background-color;
+`
+
+const SiteContent = styled(animated.main)`
+  min-height: calc(
+    100vh - 120px - ${(p: BaseProps) => p.theme.headerHeight} -
+      ${(p: BaseProps) => p.theme.topAsideHeight}
+  );
+
   padding-top: calc(
     ${(p: BaseProps) => p.theme.headerHeight} +
       ${(p: BaseProps) => p.theme.topAsideHeight}
