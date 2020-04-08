@@ -37,32 +37,10 @@ const CREATE_ATTEMPT_MUTATION = gql`
   }
 `
 
-const CheckboxComponent = ({ name, label = "Label", ...props }) => {
-  const [field, meta, { setValue }] = useField({ name, type: "checkbox" })
-
-  return (
-    <Grid container>
-      <Grid item xs={"auto"}>
-        <span
-          style={{
-            textTransform: "uppercase",
-            fontSize: "0.9rem",
-            letterSpacing: "2px",
-          }}
-        >
-          {label}
-        </span>
-      </Grid>
-      <Grid item xs={"auto"}>
-        <CheckboxField
-          {...field}
-          id={field.name}
-          checked={field.checked ?? field.value}
-        />
-      </Grid>
-    </Grid>
-  )
-}
+const devBorder = (color: string) =>
+  process.env.NODE_ENV === "development" && {
+    border: `none` || `1px dashed ${color ?? "red"}`,
+  }
 
 const DEFAULT_ATTEMPT = {
   grade: undefined,
@@ -147,19 +125,45 @@ export const CreateAttempt = ({ currentUserId }) => {
                   const handleRemove = () => arrayHelpers.remove(index)
                   return (
                     <React.Fragment key={index}>
-                      <Grid container alignItems={"center"}>
+                      <Grid
+                        spacing={2}
+                        container
+                        alignItems={"stretch"}
+                        style={devBorder("red")}
+                      >
                         {/** 1 */}
-                        <Grid item xs={2} sm={2} md={1} direction={"column"}>
+                        <Grid
+                          xs={1}
+                          sm={1}
+                          md={1}
+                          container
+                          direction="column"
+                          justify="center"
+                          alignItems="center"
+                          style={devBorder("green")}
+                        >
                           <Button type="button" onClick={handleRemove}>
                             <MinusSquare />
                           </Button>
-                          <Spacer y={17} />
+                          {<Spacer y={17} />}
                         </Grid>
 
                         {/** 2 */}
-                        <Grid item xs={8} sm={8} md={10}>
-                          <Grid container>
-                            <Grid item xs={12} sm={5} md={4} lg={4}>
+                        <Grid
+                          item
+                          xs={9}
+                          sm={9}
+                          md={9}
+                          style={devBorder("yellow")}
+                        >
+                          <Grid container justify={"space-evenly"}>
+                            <Grid
+                              xs={12}
+                              sm={5}
+                              md={4}
+                              lg={4}
+                              justify={"center"}
+                            >
                               <Field
                                 type={"text"}
                                 name={`attempts[${index}].grade`}
@@ -181,18 +185,24 @@ export const CreateAttempt = ({ currentUserId }) => {
                         </Grid>
 
                         {/** 3 */}
-                        <Grid item xs={2} sm={2} md={1}>
-                          <Grid container direction={"column"}>
-                            <CheckboxComponent
-                              name={`attempts[${index}].send`}
-                              label={"Send"}
-                            />
-                            <CheckboxComponent
-                              name={`attempts[${index}].flash`}
-                              label={"Flash"}
-                            />
-                            <Spacer y={17} />
-                          </Grid>
+                        <Grid
+                          xs={2}
+                          sm={2}
+                          md={2}
+                          container
+                          direction={"column"}
+                          style={devBorder("pink")}
+                        >
+                          <Spacer y={8} />
+                          <CheckboxComponent
+                            name={`attempts[${index}].send`}
+                            label={"Send"}
+                          />
+                          <CheckboxComponent
+                            name={`attempts[${index}].flash`}
+                            label={"Flash"}
+                            flash
+                          />
                         </Grid>
                       </Grid>
                     </React.Fragment>
@@ -227,6 +237,36 @@ export const CreateAttempt = ({ currentUserId }) => {
         </Form>
       )}
     </Formik>
+  )
+}
+
+const CheckboxComponent = ({ name, label = "Label", ...props }) => {
+  const [field, meta, { setValue }] = useField({ name, type: "checkbox" })
+
+  return (
+    <Grid container justify={"center"} style={devBorder("lightgrey")}>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        style={{
+          textTransform: "uppercase",
+          fontSize: "0.8rem",
+          ...devBorder("cyan"),
+        }}
+      >
+        {label}
+      </Grid>
+      <Grid item xs={12} sm={6} style={devBorder("red")}>
+        <CheckboxField
+          flash={props.flash}
+          {...field}
+          id={field.name}
+          checked={field.checked ?? field.value}
+        />
+        <Spacer y={8} />
+      </Grid>
+    </Grid>
   )
 }
 
