@@ -1,7 +1,7 @@
 import { Field } from "formik"
 import styled from "styled-components"
 
-import { Checkbox, CheckboxFill } from "icons"
+import { Checkbox, CheckboxFill, Zap, ZapOff } from "icons"
 
 const StyledField = styled(Field)`
   /** styles just for the checkbox icon */
@@ -30,7 +30,18 @@ export const CheckboxField = (props: any) => {
           pointerEvents: `none`,
         }}
       >
-        {props.checked ? <CheckboxFill /> : <Checkbox />}
+        {/** Revisit this and make this scalable */
+        props.flash ? (
+          props.checked ? (
+            <Zap />
+          ) : (
+            <ZapOff />
+          )
+        ) : props.checked ? (
+          <CheckboxFill />
+        ) : (
+          <Checkbox />
+        )}
       </span>
     </span>
   )
