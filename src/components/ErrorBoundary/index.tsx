@@ -1,5 +1,10 @@
 import * as React from "react"
-export class ErrorBoundary extends React.Component {
+
+interface State {
+  hasError: boolean
+  error: any
+}
+export class ErrorBoundary extends React.Component<{}, State> {
   constructor(props) {
     super(props)
     this.state = { hasError: false, error: null }
@@ -11,6 +16,8 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
+    ;(window as any).analytics.track("ERROR", error)
+    ;(window as any).analytics?.track?.(errorInfo)
     // You can also log the error to an error reporting service
   }
 
