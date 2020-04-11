@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css"
 
 import NProgress from "nprogress"
 
+import { ErrorBoundary } from "components/ErrorBoundary"
 import { useAuthentication } from "hooks/useAuthentication"
 import { Colors } from "consts/Colors"
 import { store, setIsDarkMode, RootState, setMounted } from "state"
@@ -222,7 +223,9 @@ const MyApp = ({ Component, pageProps, ...props }: AppProps) => {
       </Head>
       <Provider store={store}>
         <ColorSchemeProvider>
-          <Component {...pageProps} />
+          <ErrorBoundary>
+            <Component {...pageProps} />
+          </ErrorBoundary>
         </ColorSchemeProvider>
       </Provider>
     </>
