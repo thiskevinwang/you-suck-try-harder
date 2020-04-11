@@ -16,8 +16,6 @@ export class ErrorBoundary extends React.Component<{}, State> {
   }
 
   componentDidCatch(error, errorInfo) {
-    ;(window as any).analytics.track("ERROR", error)
-    ;(window as any).analytics?.track?.(errorInfo)
     // You can also log the error to an error reporting service
   }
 
