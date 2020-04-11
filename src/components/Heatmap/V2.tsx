@@ -6,6 +6,7 @@ import { animated, useSprings } from "react-spring"
 import { useDrag } from "react-use-gesture"
 import useMeasure from "react-use-measure"
 import { useSelector } from "react-redux"
+import Link from "next/link"
 
 import { RootState } from "state"
 import { Colors } from "consts/Colors"
@@ -376,7 +377,16 @@ export default function Heatmap({ data }: Props) {
                       <Square />
                     </DragWrapper>
                     <h3>Log Attempt(s)</h3>
-                    <CreateAttempt currentUserId={currentUserId} />
+                    {currentUserId ? (
+                      <CreateAttempt currentUserId={currentUserId} />
+                    ) : (
+                      <>
+                        Please&nbsp;
+                        <Link href="/auth/login">
+                          <a>Login</a>
+                        </Link>
+                      </>
+                    )}
                   </div>
                 )}
               </PagerItem>
