@@ -82,7 +82,7 @@ const StyledHeader = styled(animated.header)`
   z-index: 5;
   border-bottom: 1px solid ${(p) => p.theme.colors.borderColor};
 
-  background-color: ${(props) => props.theme.background};
+  background-color: ${(props) => props.theme.colors.header};
   transition: background-color 200ms ease-in-out;
 
   @media ${Breakpoints.lgUp} {

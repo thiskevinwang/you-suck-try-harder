@@ -5,6 +5,8 @@ import { animated } from "react-spring"
 import theme from "styled-theming"
 import DatePicker from "react-datepicker"
 
+import { Spacer } from "components/Spacer"
+
 const background = theme("mode", {
   light: (props: BaseProps) => props.theme.formInput.background,
   dark: (props: BaseProps) => props.theme.formInput.background,
@@ -52,7 +54,7 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
       dark: "var(--geist-purple)",
     })};
 
-    height: 2.8rem;
+    height: 2rem;
     background: ${background};
     border-color: ${theme("mode", {
       light: (props) => (props.hasError ? "red" : borderColorBase),
@@ -84,7 +86,10 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
   }
 
   input::placeholder {
-    transition: opacity 150ms ease-in-out;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+
+    transition: opacity 200ms ease-in-out;
     will-change: opacity;
   }
   input:focus::placeholder {
@@ -97,7 +102,7 @@ const FieldRenderer = styled(animated.div)<FieldRendererProps>`
     opacity: 1;
   }
 
-  > label {
+  label {
     border-radius: 0.25rem;
     font-size: 0.7rem;
     opacity: 0;
@@ -123,7 +128,7 @@ const FieldError = styled(animated.div)`
     light: "red",
     dark: "darkred",
   })};
-  transform: translateY(3.1rem);
+  transform: translateY(2.4rem);
 `
 
 interface DatePickerFieldProps {
@@ -156,18 +161,27 @@ export const DatePickerField = ({
     >
       <DatePicker
         name={field.name}
+        autoComplete={"off"}
         placeholderText={"MM/DD/YYYY"}
         selected={field.value}
         onChange={helpers.setValue}
+        onSelect={helpers.setValue}
         onBlur={field.onBlur}
-        customInput={<input {...field} {...props} value={field.value ?? ""} />}
+        maxDate={new Date()}
+        // customInput={
+        //   <>
+        //     <input {...field} {...props} value={field.value ?? ""} />
+        //     <label htmlFor={props.id ?? props.name}>{label}</label>
+        //   </>
+        // }
         dateFormat={dateFormat}
+        wrapperClassName={"react-datepicker-input"}
       />
 
-      <label htmlFor={props.id ?? props.name}>{label}</label>
       {meta.touched && meta.error ? (
         <FieldError>{meta.error}</FieldError>
       ) : null}
+      <Spacer y={17} />
     </FieldRenderer>
   )
 }

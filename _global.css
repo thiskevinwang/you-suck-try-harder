@@ -36,3 +36,14 @@
 code {
   font-family: var(--font-mono);
 }
+
+/* styles... */
+.react-datepicker-input {
+  position: relative;
+}
+.react-datepicker-input div {
+  display: flex;
+}
+.react-datepicker-input input {
+  width: 100%;
+}

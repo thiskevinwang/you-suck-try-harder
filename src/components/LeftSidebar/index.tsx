@@ -133,7 +133,6 @@ const LeftSidebarWrapper = styled(animated.aside)`
   flex: 0 0 16rem;
   position: sticky;
   top: 200px;
-  background: grey;
   @media ${Breakpoints.lgUp} {
   }
 `

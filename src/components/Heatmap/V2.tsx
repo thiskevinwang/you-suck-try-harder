@@ -1,14 +1,21 @@
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, MutableRefObject, createRef } from "react"
 import * as d3 from "d3"
 import _ from "lodash"
 import styled, { BaseProps } from "styled-components"
 import { animated, useSprings } from "react-spring"
+import { useDrag } from "react-use-gesture"
+import useMeasure from "react-use-measure"
 import { useSelector } from "react-redux"
+import Link from "next/link"
 
 import { RootState } from "state"
 import { Colors } from "consts/Colors"
+import { CreateAttempt } from "components/CreateAttempt"
 import { Spacer } from "components/Spacer"
+import { useAuthentication } from "hooks/useAuthentication"
+import { Square } from "icons"
 
+import { StatusBars } from "./StatusBars"
 import {
   Tooltip,
   Total,
@@ -43,45 +50,28 @@ export interface Props {
   data?: Week[]
 }
 
-/**
- * util func
- * @see https://observablehq.com/@d3/calendar-view
- *
- * @param d u
- */
-const formatDay = (d: Date) =>
-  ["", "Mon", "", "Wed", "", "Fri", ""][d.getUTCDay()]
-
-const countDay = (d) => (d.getUTCDay() + 6) % 7
-
-const BASE_LIGHT = Colors.silver
-const BASE_DARK = Colors.black
+const BASE_LIGHT = Colors.silverDarker
+const BASE_DARK = Colors.greyDarker
 const LIGHT = Colors.geistCyan
 const DARK = Colors.geistPurple
 
-const DOMAIN = [0, 40]
-/**
- * @usage
- * ```ts
- * .attr("fill", d => myColor(d.value))
- */
 const myColor = d3
   .scaleLinear<string, string>()
-  .domain(DOMAIN)
+  .domain([0, 40])
   .range([BASE_LIGHT, LIGHT])
 const myDarkColor = d3
   .scaleLinear<string, string>()
-  .domain(DOMAIN)
+  .domain([0, 40])
   .range([BASE_DARK, DARK])
 
 /**
  * the `data` prop is `_.chunk(..., 7)`'d
  */
 export default function Heatmap({ data }: Props) {
-  const d3Container = useRef(null)
+  const d3ref = useRef(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
 
-  const refs = GRADES.map((e, i) => useRef<HTMLDivElement>(null))
+  const refs = GRADES.map((e, i) => createRef<HTMLDivElement>())
 
   const [springs, set] = useSprings(refs.length, (index) => ({
     opacity: 0.2,
@@ -114,15 +104,18 @@ export default function Heatmap({ data }: Props) {
         }
     )
   }
-  const mousemove = function (d: Bin) {
-    const tooltip = tooltipRef.current
 
+  const updateDateLabel = (d: Bin, ref: MutableRefObject<HTMLDivElement>) => {
     const timestamp = new Date(d.date)
     const year = timestamp.getFullYear()
     const month = timestamp.getMonth() + 1
     const date = timestamp.getDate()
     const display = `${month}-${date}-${year}`
-    tooltip.innerHTML = display
+    ref.current.innerHTML = display
+  }
+
+  const mousemove = function (d: Bin) {
+    updateDateLabel(d, tooltipRef)
 
     /**
      * group together based on grade (0-10)
@@ -146,14 +139,8 @@ export default function Heatmap({ data }: Props) {
           backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
         }
     )
-    // set(
-    //   (i) =>
-    //     missingGrades.includes(`${i}`) && {
-    //       opacity: 0,
-    //       backgroundColor: isDarkMode ? Colors.geistPurple : Colors.geistCyan,
-    //     }
-    // )
 
+    const r = [...refs].reverse()
     grades
       .slice()
       .reverse()
@@ -169,7 +156,7 @@ export default function Heatmap({ data }: Props) {
         const total = sends + fails
 
         const percent = (sends / total) * 100
-        console.log(`V${grade}:`, `( ${sends} / ${total} )`, `${percent}%`)
+        // console.log(`V${grade}:`, `( ${sends} / ${total} )`, `${percent}%`)
 
         set(
           (i) =>
@@ -180,7 +167,10 @@ export default function Heatmap({ data }: Props) {
               total,
             }
         )
-        refs.slice().reverse()[grade].current.innerHTML = `${sends} / ${total}`
+
+        if (r[grade].current && r[grade].current.innerHTML) {
+          r[grade].current.innerHTML = `${sends} / ${total}`
+        }
       })
     missingGrades
       .slice()
@@ -198,19 +188,18 @@ export default function Heatmap({ data }: Props) {
               delay: 300,
             }
         )
-        refs.slice().reverse()[grade].current.innerHTML = `-`
+        if (r[grade].current) {
+          r[grade].current.innerHTML = `-`
+        }
       })
   }
 
   useEffect(() => {
-    if (data && d3Container.current) {
-      const svg = d3
-        /** create an empty sub-selection */
-        .select(d3Container.current)
+    if (data && d3ref.current) {
+      /** create an empty sub-selection */
+      const svg = d3.select(d3ref.current)
 
-      /**
-       * Mon Wed Fri labels
-       */
+      /** create "Mon Wed Fri" labels */
       svg
         .append("g")
         .attr("text-anchor", "end")
@@ -220,14 +209,11 @@ export default function Heatmap({ data }: Props) {
         .attr("fill", isDarkMode ? "white" : "black")
         .attr("class", "wday")
         .attr("x", -5)
-        // .attr("y", d => (countDay(d) + 0.5) * 17)
-        .attr("y", (d, i) => {
-          return (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN
-        })
+        .attr("y", (d, i) => (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN)
         .attr("dy", HEIGHT)
         // .attr("dx", -10)
         .attr("font-size", HEIGHT)
-        .text(formatDay)
+        .text((d) => ["", "Mon", "", "Wed", "", "Fri", ""][d.getUTCDay()])
 
       const columns = svg
         .selectAll("g")
@@ -316,7 +302,8 @@ export default function Heatmap({ data }: Props) {
           return (i + OFFSET_LEFT) * (HEIGHT + MARGIN) + STROKE_MARGIN
         })
 
-      const squares = columns
+      /* GENERATE SQUARES */
+      columns
         .selectAll("rect")
         /** past nested data to <rect> children */
         .data((d: Week) => d)
@@ -328,81 +315,167 @@ export default function Heatmap({ data }: Props) {
         .attr("width", HEIGHT)
         .attr("height", HEIGHT)
         /** offset Y, based on the day */
-        .attr("y", (d, i) => {
-          return (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN
-        })
+        .attr("y", (d, i) => (i + 1) * (HEIGHT + MARGIN) + STROKE_MARGIN)
         .attr("data-count", (d) => d.attempts?.length ?? 0)
         .attr("data-date", (d) => d.date)
         .attr("fill", (d) => {
           const value = d.attempts?.length ?? 0
           return isDarkMode ? myDarkColor(value) : myColor(value)
         })
-        /** @TODO - buggy */
-        // .attr("tabindex", "0")
-        // .on("focus", mousemove)
-        // .on("blur", mouseleave)
+        .attr("tabindex", "0")
+        .on("focus", mousemove)
+        .on("blur", mouseleave)
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave)
     }
-  }, [data, d3Container.current, isDarkMode])
+  }, [data, d3ref.current, isDarkMode])
+
+  const { currentUserId } = useAuthentication()
+  const [measureRef1, bounds1] = useMeasure()
+  const [measureRef2, bounds2] = useMeasure()
+  const { props, bind } = usePager(bounds1.width)
 
   return (
     <>
       <HeatmapContainer>
         <HeatmapInner>
-          <Svg className="d3-component" ref={d3Container} />
+          <Svg className="d3-component" ref={d3ref} />
         </HeatmapInner>
       </HeatmapContainer>
       <Tooltip ref={tooltipRef}>
         &nbsp;-&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;
       </Tooltip>
-      {springs
-        .slice()
-        .reverse()
-        .map((props, i) => {
-          const grade = refs.length - 1 - i
-          return (
-            <div key={i} style={{ display: "flex", alignItems: "center" }}>
-              <VGrade>
-                <small>V{grade}</small>
-              </VGrade>
-              <Spacer x={10} />
-              <animated.div
-                style={{
-                  display: `flex`,
-                  backgroundColor: isDarkMode
-                    ? Colors.blackDark
-                    : Colors.silverLight,
-                  // height: 18,
-                  width: props.total.interpolate((a) => {
-                    return (a + 1) * 30
-                  }),
-                }}
-              >
-                <Total style={{ width: props.totalWidth }}>
-                  <Sends style={{ width: props.sendWidth, ...props }}></Sends>
-                </Total>
-                <Spacer x={5} />
-                <small style={{ minWidth: 30 }} ref={refs[i]}>
-                  ?
-                </small>
-              </animated.div>
-            </div>
-          )
-        })}
+      {/*<StatusBars springs={springs} refs={refs} />*/}
+      <div
+        style={{
+          position: "relative",
+          height: _.max([bounds1.height, bounds2.height]),
+        }}
+      >
+        <PagerWrapper
+          style={{ height: _.max([bounds1.height, bounds2.height]) }}
+        >
+          {props.map(({ x, display, scale, opacity }, i) => (
+            <PagerGestureHandler
+              // {...bind()}
+              // ref={measureRef}
+              key={i}
+              style={{ display, x }}
+            >
+              <PagerItem style={{ scale, opacity }}>
+                {i === 0 ? (
+                  <div ref={measureRef1} style={{ padding: "1rem" }}>
+                    <DragWrapper {...bind()}>
+                      <Square />
+                    </DragWrapper>
+                    <StatusBars springs={springs} refs={refs} />
+                  </div>
+                ) : (
+                  <div ref={measureRef2} style={{ padding: "1rem" }}>
+                    <DragWrapper {...bind()}>
+                      <Square />
+                    </DragWrapper>
+                    <h3>Log Attempt(s)</h3>
+                    {currentUserId ? (
+                      <CreateAttempt currentUserId={currentUserId} />
+                    ) : (
+                      <>
+                        Please&nbsp;
+                        <Link href="/auth/login">
+                          <a>Login</a>
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                )}
+              </PagerItem>
+            </PagerGestureHandler>
+          ))}
+        </PagerWrapper>
+      </div>
+      <Spacer y={40} />
     </>
   )
 }
 
-const VGrade = styled(animated.div)`
-  width: 30px;
-  height: 30px;
+const DragWrapper = styled(animated.div)`
   display: flex;
-  align-items: center;
   justify-content: center;
-  border: 1px dotted ${(p: BaseProps) => p.theme.commentRenderer.borderColor};
-  border-radius: 50%;
-  margin-top: 2px;
-  margin-bottom: 2px;
+
+  cursor: grab;
+  :active {
+    cursor: grabbing;
+  }
 `
+
+/**
+ * GIVE ME HEIGHHT
+ */
+const PagerWrapper = styled(animated.div)`
+  border: 1px solid ${(p: BaseProps) => p.theme.commentRenderer.borderColor};
+  border-radius: 5px;
+  overscroll-behavior-y: contain;
+  user-select: none;
+  position: absolute;
+  overflow: hidden;
+  width: 100%;
+`
+
+/**
+ * MEASURE ME
+ */
+const PagerGestureHandler = styled(animated.div)`
+  /* border: 3px dotted red; */
+  position: absolute;
+  width: 100%;
+  /* height: 360px; */
+  willchange: transform;
+`
+
+const PagerItem = styled(animated.div)`
+  /* border: 3px dashed green; */
+  height: 100%;
+  width: 100%;
+
+  /* padding-left: 1rem; */
+  /* padding-right: 1rem; */
+`
+
+const usePager = (width, pages = [null, null]) => {
+  const index = useRef(0)
+  const [props, set] = useSprings(pages.length, (i) => ({
+    x: (i * width) / 2,
+    scale: 1,
+    display: "block",
+    opacity: i === 0 ? 1 : 0,
+  }))
+  const bind = useDrag(
+    ({ down, movement: [mx], direction: [xDir], distance, cancel }) => {
+      if (down && distance > width / 4) {
+        cancel()
+
+        index.current = _.clamp(
+          index.current + (xDir > 0 ? -1 : 1),
+          0,
+          pages.length - 1
+        )
+      }
+
+      set((i) => {
+        if (i < index.current - 1 || i > index.current + 1)
+          return { display: "none" }
+
+        const x = (i - index.current) * width + (down ? mx : 0)
+        const scale = down ? 1 - distance / width / 2 : 1
+        return {
+          x,
+          scale,
+          display: "block",
+          opacity: i === index.current ? 1 : 0,
+        }
+      })
+    }
+  )
+  return { props, bind }
+}

@@ -22,19 +22,22 @@ const commentRenderer = {
 }
 
 const lightTheme = {
-  topAsideHeight: "2.5rem",
-  headerHeight: "4rem",
-  formInput,
-  formButton,
-  commentRenderer,
   background: Colors.silverLighter,
   colors: {
-    main: Colors.blackDarker,
+    body: Colors.silverLighter,
+    borderColor: Colors.greyLighter,
     contrast: Colors.silverLighter,
     error: Colors.errorLight,
-    borderColor: Colors.greyLighter,
+    header: Colors.silverDark,
+    highlight: Colors.geistCyan,
     leftSidebarNavBackground: Colors.silver,
+    main: Colors.blackDarker,
   },
+  commentRenderer,
+  formButton,
+  formInput,
+  headerHeight: "4rem",
+  topAsideHeight: "2.5rem",
 }
 
 export default lightTheme
