@@ -12,6 +12,7 @@ import { RootState } from "state"
 import { Colors } from "consts/Colors"
 import { CreateAttempt } from "components/CreateAttempt"
 import { Spacer } from "components/Spacer"
+import { ErrorBoundary } from "components/ErrorBoundary"
 import { useAuthentication } from "hooks/useAuthentication"
 import { Square } from "icons"
 
@@ -334,10 +335,10 @@ export default function Heatmap({ data }: Props) {
   const { currentUserId } = useAuthentication()
   const [measureRef1, bounds1] = useMeasure()
   const [measureRef2, bounds2] = useMeasure()
-  const { props, bind } = usePager(bounds1.width)
+  const { props, bind } = usePager(bounds1?.width)
 
   return (
-    <>
+    <ErrorBoundary>
       <HeatmapContainer>
         <HeatmapInner>
           <Svg className="d3-component" ref={d3ref} />
@@ -395,7 +396,7 @@ export default function Heatmap({ data }: Props) {
         </PagerWrapper>
       </div>
       <Spacer y={40} />
-    </>
+    </ErrorBoundary>
   )
 }
 
