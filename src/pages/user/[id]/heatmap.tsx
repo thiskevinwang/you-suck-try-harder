@@ -2,10 +2,13 @@ import { NextPageContext } from "next"
 import { useQuery, gql } from "@apollo/client"
 
 import { Layout } from "components/Layout"
+import Heatmap from "components/Heatmap/V2"
 import { LoadingIndicator } from "components/Loaders"
 import { UserDetails } from "components/User/Details"
+import { CreateAttempt } from "components/CreateAttempt"
 
 import { useAuthentication } from "hooks/useAuthentication"
+import { useQueryHeatmap } from "hooks/useQueryHeatmap"
 
 const GET_USER_BY_ID_QUERY = gql`
   query GetUserById($id: ID!) {
@@ -30,8 +33,9 @@ interface User {
   avatar_url: string
 }
 
-const UserPage = ({ id }) => {
+const UserHeatmapPage = ({ id }) => {
   const { data: uData } = useQuery(GET_USER_BY_ID_QUERY, { variables: { id } })
+  const { chunked: heatmapData } = useQueryHeatmap({ userId: id, count: 365 })
 
   const { currentUserId } = useAuthentication()
   const isCurrentUser = id === currentUserId
@@ -39,13 +43,26 @@ const UserPage = ({ id }) => {
   return (
     <Layout>
       <UserDetails user={uData?.user}></UserDetails>
+      <h2>Heatmap</h2>
+      <HeatmapLoadingWrapper data={heatmapData}></HeatmapLoadingWrapper>
+      {isCurrentUser && (
+        <>
+          <h3>Log Attempt(s)</h3>
+          <CreateAttempt currentUserId={currentUserId} />
+        </>
+      )}
     </Layout>
   )
 }
 
-UserPage.getInitialProps = async ({ query }: NextPageContext) => {
+UserHeatmapPage.getInitialProps = async ({ query }: NextPageContext) => {
   // const userAgent = req ? req.headers["user-agent"] : navigator.userAgent
   return query
 }
 
-export default UserPage
+const HeatmapLoadingWrapper = ({ data }) => {
+  if (!data) return <LoadingIndicator />
+  return <Heatmap data={data} />
+}
+
+export default UserHeatmapPage
