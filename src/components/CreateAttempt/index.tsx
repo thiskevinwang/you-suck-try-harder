@@ -37,11 +37,6 @@ const CREATE_ATTEMPT_MUTATION = gql`
   }
 `
 
-const devBorder = (color: string) =>
-  process.env.NODE_ENV === "development" && {
-    border: `none` || `1px dashed ${color ?? "red"}`,
-  }
-
 const DEFAULT_ATTEMPT = {
   grade: undefined,
   send: false,
@@ -125,12 +120,7 @@ export const CreateAttempt = ({ currentUserId }) => {
                   const handleRemove = () => arrayHelpers.remove(index)
                   return (
                     <React.Fragment key={index}>
-                      <Grid
-                        spacing={2}
-                        container
-                        alignItems={"stretch"}
-                        style={devBorder("red")}
-                      >
+                      <Grid spacing={2} container alignItems={"stretch"}>
                         {/** 1 */}
                         <Grid
                           xs={1}
@@ -140,7 +130,6 @@ export const CreateAttempt = ({ currentUserId }) => {
                           direction="column"
                           justify="center"
                           alignItems="center"
-                          style={devBorder("green")}
                         >
                           <Button type="button" onClick={handleRemove}>
                             <MinusSquare />
@@ -149,13 +138,7 @@ export const CreateAttempt = ({ currentUserId }) => {
                         </Grid>
 
                         {/** 2 */}
-                        <Grid
-                          item
-                          xs={9}
-                          sm={9}
-                          md={9}
-                          style={devBorder("yellow")}
-                        >
+                        <Grid item xs={9} sm={9} md={9}>
                           <Grid container justify={"space-evenly"}>
                             <Grid
                               xs={12}
@@ -191,7 +174,6 @@ export const CreateAttempt = ({ currentUserId }) => {
                           md={2}
                           container
                           direction={"column"}
-                          style={devBorder("pink")}
                         >
                           <Spacer y={8} />
                           <CheckboxComponent
@@ -244,7 +226,7 @@ const CheckboxComponent = ({ name, label = "Label", ...props }) => {
   const [field, meta, { setValue }] = useField({ name, type: "checkbox" })
 
   return (
-    <Grid container justify={"center"} style={devBorder("lightgrey")}>
+    <Grid container justify={"center"}>
       <Grid
         item
         xs={12}
@@ -252,12 +234,11 @@ const CheckboxComponent = ({ name, label = "Label", ...props }) => {
         style={{
           textTransform: "uppercase",
           fontSize: "0.8rem",
-          ...devBorder("cyan"),
         }}
       >
         {label}
       </Grid>
-      <Grid item xs={12} sm={6} style={devBorder("red")}>
+      <Grid item xs={12} sm={6}>
         <CheckboxField
           flash={props.flash}
           {...field}

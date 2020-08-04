@@ -5,6 +5,7 @@ import styled, { BaseProps } from "styled-components"
 import { animated, useSprings } from "react-spring"
 import { useDrag } from "react-use-gesture"
 import useMeasure from "react-use-measure"
+import { ResizeObserver } from "@juggle/resize-observer"
 import { useSelector } from "react-redux"
 import Link from "next/link"
 
@@ -12,6 +13,7 @@ import { RootState } from "state"
 import { Colors } from "consts/Colors"
 import { CreateAttempt } from "components/CreateAttempt"
 import { Spacer } from "components/Spacer"
+import { ErrorBoundary } from "components/ErrorBoundary"
 import { useAuthentication } from "hooks/useAuthentication"
 import { Square } from "icons"
 
@@ -332,12 +334,13 @@ export default function Heatmap({ data }: Props) {
   }, [data, d3ref.current, isDarkMode])
 
   const { currentUserId } = useAuthentication()
-  const [measureRef1, bounds1] = useMeasure()
-  const [measureRef2, bounds2] = useMeasure()
+
+  const [measureRef1, bounds1] = useMeasure({ polyfill: ResizeObserver })
+  const [measureRef2, bounds2] = useMeasure({ polyfill: ResizeObserver })
   const { props, bind } = usePager(bounds1.width)
 
   return (
-    <>
+    <ErrorBoundary>
       <HeatmapContainer>
         <HeatmapInner>
           <Svg className="d3-component" ref={d3ref} />
@@ -395,7 +398,7 @@ export default function Heatmap({ data }: Props) {
         </PagerWrapper>
       </div>
       <Spacer y={40} />
-    </>
+    </ErrorBoundary>
   )
 }
 
