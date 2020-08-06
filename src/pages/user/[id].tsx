@@ -4,6 +4,7 @@ import { useQuery, gql } from "@apollo/client"
 import { Layout } from "components/Layout"
 import { LoadingIndicator } from "components/Loaders"
 import { UserDetails } from "components/User/Details"
+import { BarChart } from "components/BarChart"
 
 import { useAuthentication } from "hooks/useAuthentication"
 
@@ -39,6 +40,7 @@ const UserPage = ({ id }) => {
   return (
     <Layout>
       <UserDetails user={uData?.user}></UserDetails>
+      <BarChart />
     </Layout>
   )
 }
