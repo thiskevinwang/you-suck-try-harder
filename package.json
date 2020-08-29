@@ -62,7 +62,7 @@
     "typescript": "^3.9.0-dev.20200215"
   },
   "scripts": {
-    "dev": "next",
+    "dev": "next -p 3001",
     "build": "next build",
     "start": "next start",
     "format": "prettier --write '**/*.tsx?'",
