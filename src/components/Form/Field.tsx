@@ -24,9 +24,9 @@ const color = theme("mode", {
 })
 
 interface FieldRendererProps {
-  hasError: boolean
+  hasError?: boolean
 }
-const FieldRenderer = styled(animated.div)<FieldRendererProps>`
+export const FieldRenderer = styled(animated.div)<FieldRendererProps>`
   --geist-cyan: #79ffe1;
   --geist-purple: #f81ce5;
 

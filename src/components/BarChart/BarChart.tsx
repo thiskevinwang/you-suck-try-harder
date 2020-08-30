@@ -1,23 +1,68 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
+import ms from "ms"
 import * as d3 from "d3"
+
+import { FieldRenderer as Field } from "components/Form/Field"
+import { Spacer } from "components/Spacer"
 
 /**
  * additional ticks, beyond the max y-extent
  */
 const Y_TOLERANCE = 2
 
+interface T {
+  created: Date // "2020-08-09T03:10:07.813517"
+  date: Date // "2020-08-04T23:10:07.782"
+  grade: number // 10
+  id: string // "4fe1660e-b309-4ce9-9288-d40fa50a4290"
+  updated: Date // "2020-08-09T03:10:07.813517"
+  user_id: string // "a5f5d36a-6677-41c2-85b8-7578b4d98972"
+}
+
+const WIDTH = 960
+const HEIGHT = 500
+const MARGIN = 5
+const PADDING = 5
+const ADJ = 30
+
+// **************
+// *** SCALES ***
+// **************
+
+/**
+ * Left-to-Right
+ */
+const X_SCALE = d3.scaleTime().range([0, WIDTH])
+/**
+ * Top-to-Bottom
+ */
+const Y_SCALE = d3.scaleLinear().rangeRound([HEIGHT, 0])
+
 export const BarChart = () => {
   // ===================================================================
-  const [start, setStart] = useState(() => new Date().getTime())
+  const [start, setStart] = useState(() => {
+    let now = new Date()
+    let nowTime = now.getTime()
+
+    return new Date(nowTime - ms("365 day")).getTime()
+  })
   const [end, setEnd] = useState(() => {
     let now = new Date()
-    var pastDate = now.getDate() - 24
-    now.setDate(pastDate)
     return now.getTime()
   })
 
   const [limit, setLimit] = useState("100")
   const [offset, setOffset] = useState("0")
+
+  const [data, setData] = useState<T[]>([])
+  useEffect(() => {
+    const userId = "a5f5d36a-6677-41c2-85b8-7578b4d98972"
+    fetch(
+      `http://localhost:3000/users/${userId}/attempts?limit=${limit}&offset=${offset}&start=${start}&end=${end}`
+    )
+      .then((r) => r.json())
+      .then((d) => setData(d))
+  }, [start, end, limit, offset])
 
   const makeHandleSetTime = (
     setterFn: React.Dispatch<React.SetStateAction<number>>
@@ -26,160 +71,144 @@ export const BarChart = () => {
     setterFn(time)
   }
 
-  // array of
-  // created: "2020-08-09T03:10:07.813517"
-  // date: "2020-08-04T23:10:07.782"
-  // deleted: null
-  // flash: null
-  // grade: 10
-  // id: "4fe1660e-b309-4ce9-9288-d40fa50a4290"
-  // send: true
-  // updated: "2020-08-09T03:10:07.813517"
-  // user_id: "a5f5d36a-6677-41c2-85b8-7578b4d98972"
-  // ===================================================================
-
-  interface T {
-    created: Date // "2020-08-09T03:10:07.813517"
-    date: Date // "2020-08-04T23:10:07.782"
-    grade: number // 10
-    id: string // "4fe1660e-b309-4ce9-9288-d40fa50a4290"
-    updated: Date // "2020-08-09T03:10:07.813517"
-    user_id: string // "a5f5d36a-6677-41c2-85b8-7578b4d98972"
-  }
+  const divContainerRef = useRef()
   useEffect(() => {
-    const width = 960
-    const height = 500
-    const margin = 5
-    const padding = 5
-    const adj = 30
+    var t = d3.transition().duration(333)
     // we are appending SVG first
-    const svg = d3
-      .select("div#container")
-      .append("svg")
+    const svg = d3.select(divContainerRef.current).append("svg")
+
+    svg
       .attr("preserveAspectRatio", "xMinYMin meet")
       .attr(
         "viewBox",
         "-" +
-          adj +
+          ADJ +
           " -" +
-          adj +
+          ADJ +
           " " +
-          (width + adj * 3) +
+          (WIDTH + ADJ * 3) +
           " " +
-          (height + adj * 3)
+          (HEIGHT + ADJ * 3)
       )
-      .style("padding", padding)
-      .style("margin", margin)
+      .style("padding", PADDING)
+      .style("margin", MARGIN)
       .classed("svg-content", true)
 
-    // --------------------
-    /* https://github.com/d3/d3-dsv */
-    // const dataset = d3.csv(
-    //   "https://raw.githubusercontent.com/thiskevinwang/you-suck-try-harder/linechart/public/data2.csv"
-    // )
-    // const dataset2 = Promise.resolve(d3.csvParse(CSV_STRING))
-    const dataset = d3.json<T[]>(
-      `http://localhost:3000/users/a5f5d36a-6677-41c2-85b8-7578b4d98972/attempts?limit=${limit}&offset=${offset}&start=${start}&end=${end}`
-    )
-
-    dataset.then((data) => {
-      data.sort((a, b) => a.date - b.date)
-      console.log("dataset1::data", data)
-
+    if (data && divContainerRef.current) {
       const slices = [
         {
           id: "grade",
-          values: data.map(function (d) {
+          values: data.map((d) => {
             return {
               date: new Date(d.date),
-              measurement: d.grade,
+              grade: d.grade,
             }
           }),
         },
       ]
-      console.log("dataset1::slices", slices)
-
-      //-----------------------------DATA------------------------------//
-      // console.log("Column headers", data.columns)
-      // returns the sliced dataset
-      console.log("Slices", slices)
-      // returns the first slice
-      console.log("First slice", slices?.[0])
-      // returns the array in the first slice
-      console.log("A array", slices?.[0]?.values)
-      // returns the date of the first row in the first slice
-      console.log("Date element", slices?.[0]?.values?.[0]?.date)
-      // returns the array's length
-      console.log("Array length", slices?.[0]?.values?.length)
-
-      //----------------------------SCALES-----------------------------//
-      const xScale = d3.scaleTime().range([0, width]) // Left-to-Right
-      const yScale = d3.scaleLinear().rangeRound([height, 0]) // Top-to-Bottom
 
       /* https://github.com/d3/d3-array/blob/master/README.md#extent */
       const xExtent = d3.extent(data, (d) => {
         return new Date(d.date)
       })
-      xScale.domain(xExtent)
 
-      /* https://github.com/d3/d3-array#max */
+      /**
+       * This limits the domain of the x-axis
+       */
+      X_SCALE.domain(xExtent)
+
+      /**
+       * From a UI/UX perspective,the max will always be max data value + 2
+       */
       const yMax = d3.max(data, (d) => {
         return d.grade + Y_TOLERANCE
       })
-      yScale.domain([0, yMax])
+      /**
+       * * From a UI/UX perspective, the min should scale, but non-linearly.
+       * * One idea is to scale logarithmically.
+       * * The intent is so that as you approach data that is "larger", the domain
+       * grows wider—but not "obnoxiously"—and conveys a sense of grandeur.
+       */
+      const yMin = d3.min(data, (d) => {
+        const max = d3.max(data, (d) => d.grade as number)
+        return d.grade - Math.log(max) * Math.log(max)
+      })
 
-      //-----------------------------AXES------------------------------//
-      const yaxis = d3
-        /* https://github.com/d3/d3-axis/blob/master/README.md#axisLeft */
-        .axisLeft(yScale)
-        /* https://github.com/d3/d3-axis/blob/master/README.md#axis_ticks */
-        .ticks(slices[0].values.length / 2)
-        .scale(yScale)
+      /**
+       * @WARN This mutates the D3 Scale.
+       */
+      Y_SCALE.domain([yMin, yMax])
 
-      const xTimeInterval = d3.timeHour.every(4)
-      const xaxis = d3
-        /* https://github.com/d3/d3-axis/blob/master/README.md#axisBottom */
-        .axisBottom(xScale)
+      /**
+       * The y-axis
+       */
+      const yaxis = d3.axisLeft(Y_SCALE)
+
+      /**
+       * The x-axis
+       */
+      const xaxis = d3.axisBottom(X_SCALE)
+
+      /**
+       * create x-axis ticks
+       */
+      xaxis
         /* https://github.com/d3/d3-axis/blob/master/README.md#axis_ticks */
-        .ticks(xTimeInterval)
+        .ticks(d3.timeHour.every(4))
         /* https://github.com/d3/d3-axis/blob/master/README.md#axis_tickFormat */
         .tickFormat((dt) => {
           switch (new Date(dt as any).getHours()) {
             case 0:
-              return d3.timeFormat("%b %d")(dt as Date)
+              return d3.timeFormat("%b %d %Y")(dt as Date)
             case 12:
               return d3.timeFormat("%H:%M")(dt as Date)
           }
         })
-        // .tickSize(9)
         .tickSizeInner(6)
         .tickSizeOuter(10)
-        .scale(xScale)
+        .scale(X_SCALE)
 
       //-------------------------2. DRAWING----------------------------//
 
-      // Draw X Axis line
-      // Defaults to top
-      svg
+      /**
+       * @NOTE Draw X Axis line
+       * Defaults to top
+       */
+      const xAxisSvg = svg
         .append("g")
-        .attr("class", "axis")
+        .attr("class", "x-axis-svg")
         // Position X Axis line at bottom
-        .attr("transform", "translate(0," + height + ")")
-        .call(xaxis)
-        // Rotate tick labels
+        .attr("transform", "translate(0," + HEIGHT + ")")
+
+      // Create x axis
+      xAxisSvg.call(xaxis)
+      // Rotate tick labels
+      xAxisSvg
         .selectAll("text")
-        // .style("text-anchor", "end")
-        .attr("dx", "1em")
+        .attr("dx", "2em")
         .attr("dy", "1em")
         .attr("transform", "rotate(45)")
-      // .attr("transform", "rotate(60)")
+
+      // Add X Axis Label: "Date"
+      let xAxisLabel = xAxisSvg.append("g").attr("class", "x-axis-label")
+      xAxisLabel = xAxisSvg.append("text")
+      xAxisLabel
+        .attr("dy", "-.75em")
+        .attr("dx", `${WIDTH}px`)
+        .style("text-anchor", "end")
+        .text("Date")
+
+      // Create y axis
+      const yAxisSvg = svg
+        .append("g")
+        .attr("class", "y-axis-svg")
+        .style("opacity", 1)
+      yAxisSvg.call(yaxis)
 
       // Add Y Axis Label: "Seconds"
-      svg
-        .append("g")
-        .attr("class", "axis")
-        .call(yaxis)
-        .append("text")
+      let yAxisLabel = yAxisSvg.append("g").attr("class", "y-axis-label")
+      yAxisLabel = yAxisSvg.append("text")
+      yAxisLabel
         .attr("transform", "rotate(-90)")
         .attr("dy", ".75em")
         .attr("y", 6)
@@ -189,96 +218,190 @@ export const BarChart = () => {
       // Line
       const line = d3
         .line()
-        .x((d: any) => xScale(d.date))
-        .y((d: any) => yScale(d.measurement))
+        .x((d: any) => X_SCALE(d.date))
+        .y((d: any) => Y_SCALE(d.grade))
 
-      const lines = svg.selectAll("lines").data(slices).enter().append("g")
+      const _lines = svg
+        .selectAll("lines")
+        .data(slices)
+        .join(
+          (enter) => {
+            // console.log("lines::enter", enter)
+            return enter
+              .append("g")
+              .append("path")
+              .attr("fill", "none")
+              .attr("stroke-dasharray", 2)
+              .attr("stroke", "var(--opposite")
+              .attr("opacity", 0.5)
+              .attr("d", (d) => line(d.values as any))
+          },
+          (update) => {
+            // console.log("lines::update", update)
+            return update
+          },
+          (exit) => {
+            // console.log("lines::exit", exit)
+            return exit.remove()
+          }
+        )
 
-      lines
-        .append("path")
-        .attr("fill", "none")
-        .attr("stroke-dasharray", 2)
-        .attr("stroke", "var(--opposite")
-        .attr("opacity", 0.5)
-        .attr("d", (d) => line(d.values as any))
+      /**
+       * Add div tooltip
+       */
+      const tooltipDiv = d3
+        .select(divContainerRef.current)
+        .append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("opacity", 0)
+        .style("pointer-events", "none")
+        .style("border", "1px solid var(--opposite)")
+        .style("border-radius", "5px")
+        .style("backdrop-filter", "blur(5px)")
 
       // -------------------Add dots-------------------------
-      svg
+      const radius = 3
+      const dots = svg
         .append("g")
         .selectAll("dot")
         .data(data)
-        .enter()
-        .append("circle")
-        // Position the dot (coordinate-x, coordinate-y)
-        .attr("cx", (d: any) => xScale(new Date(d.date)))
-        .attr("cy", (d: any) => yScale(d.grade))
-        .attr("r", 1) // Radius
+        .join(
+          (enter) => enter.append("circle"),
+          (update) => update,
+          (exit) => exit.remove()
+        )
+
+      dots
+        .attr("cx", (d: any) => X_SCALE(new Date(d.date)))
+        .attr("cy", (d: any) => Y_SCALE(d.grade))
+        .attr("r", radius)
+        .attr("cursor", "pointer")
         .style("fill", "var(--opposite")
-    })
-    return () => {
-      d3.select("#container").selectAll("*").remove()
+        .on("mouseover", function (d) {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("fill", "orange")
+            .attr("r", radius * 2)
+
+          // console.log(d3.event.pageX, d3.event.pageY)
+
+          const pX = d3.event.pageX
+          const pY = d3.event.pageY
+          const svgWidth = svg.property("width").baseVal?.value // suffixed with px
+          const svgHeight = svg.property("height").baseVal?.value // suffixed with px
+
+          // update div
+          tooltipDiv
+            .transition()
+            .duration(200)
+            .style("opacity", 0.9)
+            .style("left", `${pX + 28}px`)
+            .style("top", `${pY - 28}px`)
+            .style(
+              "transform",
+              `translate(${pX > svgWidth / 2 ? -410 : 0}px, 0%)`
+            )
+          tooltipDiv.html(`<pre>${JSON.stringify(d, null, 2)}</pre>`)
+        })
+        .on("mousedown", function () {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("fill", "orange")
+            .attr("r", radius * 3)
+        })
+        .on("mouseup", function () {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("fill", "orange")
+            .attr("r", radius * 2)
+        })
+        .on("mouseout", function (d) {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("fill", "orange")
+            .attr("r", radius)
+
+          tooltipDiv
+            .transition()
+            .duration(200)
+            .style("opacity", 0)
+            .style("left", `${d3.event.pageX + 28}px`)
+            .style("top", `${d3.event.pageY - 28}px`)
+          tooltipDiv.html(`<pre>${JSON.stringify(d, null, 2)}</pre>`)
+        })
     }
-  }, [limit, offset, start, end])
+    return () => {
+      d3.select(divContainerRef.current).selectAll("*").remove().transition(t)
+    }
+  }, [data, divContainerRef.current])
   return (
     <>
-      <h1>Time Under Tension</h1>
-      <div className="flex flex-col items-start border rounded border-red-500 sm:border-green-500 md:border-blue-500 lg:border-indigo-500 xl:border-pink-500 my-2 p-2">
-        <label className="text-white dark:text-green-400" htmlFor="start">
-          Start
-        </label>
-        <input
-          id="start"
-          type="date"
-          value={new Date(start).toISOString().slice(0, 10)}
-          min="2019-01-01"
-          max="2020-12-31"
-          onChange={makeHandleSetTime(setStart)}
-        />
+      <h1>Data viz is so hot 🔥</h1>
+      <div style={{ display: "flex" }}>
+        <div>
+          <Field>
+            <input
+              id="start"
+              type="date"
+              value={new Date(start).toISOString().slice(0, 10)}
+              min="2019-01-01"
+              max="2020-12-31"
+              onChange={makeHandleSetTime(setStart)}
+            />
+            <label htmlFor="start">Start</label>
+          </Field>
+          <Spacer y={30} />
+          <Field>
+            <input
+              id="end"
+              type="date"
+              value={new Date(end).toISOString().slice(0, 10)}
+              min="2019-01-01"
+              max="2020-12-31"
+              onChange={makeHandleSetTime(setEnd)}
+            />
+            <label htmlFor="end">End</label>
+          </Field>
+        </div>
+
+        <Spacer x={30} />
+
+        <div>
+          <Field>
+            <input
+              name="limit"
+              id="limit"
+              type="number"
+              // value="2018-07-22"
+              value={limit}
+              min="0"
+              // max="100"
+              onChange={(e) => setLimit(e.target.value)}
+            />
+            <label htmlFor="limit">Limit</label>
+          </Field>
+          <Spacer y={30} />
+          <Field>
+            <input
+              name="offset"
+              id="offset"
+              type="number"
+              // value="2018-07-22"
+              value={offset}
+              min="0"
+              // max="100"
+              onChange={(e) => setOffset(e.target.value)}
+            />
+            <label htmlFor="offset">Offset</label>
+          </Field>
+        </div>
       </div>
-      <div className="flex flex-col items-start border rounded border-red-500 sm:border-green-500 md:border-blue-500 lg:border-indigo-500 xl:border-pink-500 my-2 p-2">
-        <label className="text-white dark:text-red-400" htmlFor="end">
-          End
-        </label>
-        <input
-          id="end"
-          type="date"
-          value={new Date(end).toISOString().slice(0, 10)}
-          min="2019-01-01"
-          max="2020-12-31"
-          onChange={makeHandleSetTime(setEnd)}
-        />
-      </div>
-      <div className="flex flex-col items-start border rounded border-red-500 sm:border-green-500 md:border-blue-500 lg:border-indigo-500 xl:border-pink-500 my-2 p-2">
-        <label className="text-white" htmlFor="limit">
-          Limit
-        </label>
-        <input
-          name="limit"
-          id="limit"
-          type="number"
-          // value="2018-07-22"
-          value={limit}
-          min="0"
-          max="100"
-          onChange={(e) => setLimit(e.target.value)}
-        />
-      </div>
-      <div className="flex flex-col items-start border rounded border-red-500 sm:border-green-500 md:border-blue-500 lg:border-indigo-500 xl:border-pink-500 my-2 p-2">
-        <label className="text-white" htmlFor="offset">
-          Offset
-        </label>
-        <input
-          name="offset"
-          id="offset"
-          type="number"
-          // value="2018-07-22"
-          value={offset}
-          min="0"
-          max="100"
-          onChange={(e) => setOffset(e.target.value)}
-        />
-      </div>
-      <div id="container" className="svg-container"></div>
+      <div ref={divContainerRef}></div>
     </>
   )
 }
