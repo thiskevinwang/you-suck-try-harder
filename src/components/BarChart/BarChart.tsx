@@ -328,7 +328,6 @@ export const BarChart = () => {
 
     return () => {
       svg.selectAll("path").remove()
-      svg.selectAll("circle").remove()
     }
   }, [data, divContainerRef.current])
 
@@ -416,6 +415,10 @@ export const BarChart = () => {
           .style("top", `${d3.event.pageY - 28}px`)
         tooltipDiv.html(`<pre>${JSON.stringify(d, null, 2)}</pre>`)
       })
+
+    return () => {
+      svg.selectAll("circle").remove()
+    }
   }, [data, divContainerRef.current])
 
   return (
