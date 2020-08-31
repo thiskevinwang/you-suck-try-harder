@@ -143,9 +143,11 @@ export const BarChart = () => {
   //   }, 1500)
   // }, [alphabet])
 
+  /**
+   * ============================== EFFECT FOR ESTABLISHING SVG VIEWBOX ===================
+   */
   useEffect(() => {
     const svg = d3.select(divContainerRef.current)
-
     svg
       .attr("preserveAspectRatio", "xMinYMin meet")
       .attr(
@@ -154,7 +156,14 @@ export const BarChart = () => {
       )
       .style("padding", PADDING)
       .style("margin", MARGIN)
-    // .classed("svg-content", true)
+      .classed("svg-content", true)
+  }, [divContainerRef.current])
+
+  /**
+   * ============================== EFFECT FOR DRAWING AXES ==============================
+   */
+  useEffect(() => {
+    const svg = d3.select(divContainerRef.current)
 
     /* https://github.com/d3/d3-array/blob/master/README.md#extent */
     const xExtent = d3.extent(data, (d) => {
@@ -273,6 +282,16 @@ export const BarChart = () => {
       .style("text-anchor", "end")
       .text("Seconds")
 
+    return () => {
+      svg.selectAll(".x-axis-label").remove()
+      svg.selectAll(".y-axis-label").remove()
+    }
+  }, [data, divContainerRef.current])
+
+  /** EFFECT FOR DRAWING LINE */
+  useEffect(() => {
+    const svg = d3.select(divContainerRef.current)
+
     /**
      * Create a update selection: bind to the new data
      * @see https://www.d3-graph-gallery.com/graph/line_change_data.html
@@ -307,6 +326,17 @@ export const BarChart = () => {
         (exit) => exit.remove()
       )
 
+    return () => {
+      svg.selectAll("path").remove()
+      svg.selectAll("circle").remove()
+    }
+  }, [data, divContainerRef.current])
+
+  /**
+   * ========================= EFFECT FOR DRAWING DOTS + TOOLTIP ================================
+   */
+  useEffect(() => {
+    const svg = d3.select(divContainerRef.current)
     /**
      * GET OR CREATE div tooltip
      */
@@ -386,14 +416,8 @@ export const BarChart = () => {
           .style("top", `${d3.event.pageY - 28}px`)
         tooltipDiv.html(`<pre>${JSON.stringify(d, null, 2)}</pre>`)
       })
-
-    return () => {
-      svg.selectAll("path").remove()
-      svg.selectAll("circle").remove()
-      svg.selectAll(".x-axis-label").remove()
-      svg.selectAll(".y-axis-label").remove()
-    }
   }, [data, divContainerRef.current])
+
   return (
     <>
       <h1>Data 🔥</h1>
